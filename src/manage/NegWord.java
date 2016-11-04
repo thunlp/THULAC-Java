@@ -20,8 +20,7 @@ public class NegWord {
 			    	String tmpWord = "";
 					tmpWord += (sentence.get(i).charAt(1));
 					sentence.add(i + 1, tmpWord);
-					int tmpInt = sentence.get(i).charAt(0);
-					sentence.set(i, ""+tmpInt);
+					sentence.set(i, ""+sentence.get(i).charAt(0));
 				}
 			}
 	    };
