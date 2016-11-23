@@ -67,8 +67,8 @@ public class Preprocesser {
 			// singlePun correspond to (see otherSet)
 			int singlePun[] = {65292, 12290, 65311, 65281, 65306, 65307, 8216, 8217, 8220, 8221, 1230, 12304, 
 								12305, 12289, 12298, 12299, 64,35, 65288, 65289, 34, 91, 93, 126, 47, 44, 58,
-								63, 9700, 9734, 9733, 8230, 39, 33, 42, 43, 62, 40, 41};
-			len = 39;
+								63, 9700, 9734, 9733, 8230, 39, 33, 42, 43, 62, 40, 41, 59};
+			len = 40;
 			for(int i = 0 ; i < len; i ++){
 				singlePunSet.add(singlePun[i]);
 			}
@@ -140,7 +140,7 @@ public class Preprocesser {
 			boolean hasOther = false;		//use to check whether isOther(char);
 			boolean hasSinglePun = false;	//use to check whether isSinglePun(char);
 			boolean hasHttp = false;		//use to check whether isHttp(char);
-			boolean hasAt = false;			//use to check whether the char is @
+			// boolean hasAt = false;			//use to check whether the char is @
 			boolean hasTitle = false;		//use to check whether the sentence has 《》
 			Vector<Integer> httpStartVec =new Vector<Integer>();
 			int httpStart = -1;
@@ -149,8 +149,8 @@ public class Preprocesser {
 			Raw tmpRaw =new Raw();
 			Raw npRaw =new Raw();
 			int npStart = -1;
-			Vector<Integer> npStartVec = new Vector<Integer>();
-			Vector<Raw> npVec =new Vector<Raw>();
+			// Vector<Integer> npStartVec = new Vector<Integer>();
+			// Vector<Raw> npVec =new Vector<Raw>();
 			Raw titleRaw =new Raw();
 			int titleStart = -1;
 			Vector<Integer> titleStartVec =new Vector<Integer>();
@@ -171,11 +171,11 @@ public class Preprocesser {
 	                    hasSpace=true;
 	                }
 
-					if(hasAt){
-						npVec.add(npRaw);
-						npStartVec.add(npStart);
-						hasAt = false;
-					}
+					// if(hasAt){
+					// 	npVec.add(npRaw);
+					// 	npStartVec.add(npStart);
+					// 	hasAt = false;
+					// }
 	            }else if(isOther(c)){
 					if(hasSpace){
 						senClean+=sentence.charAt(i);
@@ -220,13 +220,13 @@ public class Preprocesser {
 							hasSinglePun = false;
 						}
 					}
-					if(c == 41 || c == 65289){
-						if(hasAt){
-							npVec.add(npRaw);
-							npStartVec.add(npStart);
-							hasAt = false;
-						}
-					}
+					// if(c == 41 || c == 65289){
+					// 	if(hasAt){
+					// 		npVec.add(npRaw);
+					// 		npStartVec.add(npStart);
+					// 		hasAt = false;
+					// 	}
+					// }
 					if(c == 12299){
 						if(hasTitle){
 							titleVec.add(titleRaw);
@@ -276,18 +276,18 @@ public class Preprocesser {
 					}
 				}
 
-				if(c == 64){
-					if(hasAt){
-						npVec.add(npRaw);
-						npStartVec.add(npStart);
-						npRaw.clear();
-					}
-					hasAt = true;
-					npStart = graph.size() - 1;
-					npRaw.clear();
-				}else if(hasAt){
-					npRaw.add(c);
-				}
+				// if(c == 64){
+				// 	if(hasAt){
+				// 		npVec.add(npRaw);
+				// 		npStartVec.add(npStart);
+				// 		npRaw.clear();
+				// 	}
+				// 	hasAt = true;
+				// 	npStart = graph.size() - 1;
+				// 	npRaw.clear();
+				// }else if(hasAt){
+				// 	npRaw.add(c);
+				// }
 
 				if(c == 12298){
 					hasTitle = true;
@@ -301,10 +301,10 @@ public class Preprocesser {
 				httpVec.add(tmpRaw);
 				httpStartVec.add(httpStart);
 			}
-			if(npRaw.size() != 0){
-				npVec.add(npRaw);
-				npStartVec.add(npStart);
-			}
+			// if(npRaw.size() != 0){
+			// 	npVec.add(npRaw);
+			// 	npStartVec.add(npStart);
+			// }
 
 			String str;
 			for(int i = 0 ; i < httpVec.size(); i ++){
@@ -324,20 +324,20 @@ public class Preprocesser {
 				}
 			}
 
-			for(int i = 0; i < npVec.size(); i ++){
-				npRaw = npVec.get(i);
-				if(npRaw.size() < 15 && npRaw.size() > 0){
-					int start = npStartVec.get(i);
-					int size = npRaw.size();
+			// for(int i = 0; i < npVec.size(); i ++){
+			// 	npRaw = npVec.get(i);
+			// 	if(npRaw.size() < 15 && npRaw.size() > 0){
+			// 		int start = npStartVec.get(i);
+			// 		int size = npRaw.size();
 					
-					graph.setElementAt(1, start);
-					for(int j = start + 1; j < start + size - 1; j ++){
-						graph.setElementAt(2, j);
-					}
-					graph.setElementAt(4, start + size - 1);
+			// 		graph.setElementAt(1, start);
+			// 		for(int j = start + 1; j < start + size - 1; j ++){
+			// 			graph.setElementAt(2, j);
+			// 		}
+			// 		graph.setElementAt(4, start + size - 1);
 					
-				}
-			}
+			// 	}
+			// }
 
 			for(int i = 0; i < titleVec.size(); i ++){
 				titleRaw = titleVec.get(i);
