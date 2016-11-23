@@ -67,8 +67,8 @@ public class Preprocesser {
 			// singlePun correspond to (see otherSet)
 			int singlePun[] = {65292, 12290, 65311, 65281, 65306, 65307, 8216, 8217, 8220, 8221, 1230, 12304, 
 								12305, 12289, 12298, 12299, 64,35, 65288, 65289, 34, 91, 93, 126, 47, 44, 58,
-								63, 9700, 9734, 9733, 8230, 39, 33, 42, 43, 62, 40, 41, 59};
-			len = 40;
+								63, 9700, 9734, 9733, 8230, 39, 33, 42, 43, 62, 40, 41, 59, 61};
+			len = 41;
 			for(int i = 0 ; i < len; i ++){
 				singlePunSet.add(singlePun[i]);
 			}
@@ -257,24 +257,24 @@ public class Preprocesser {
 					hasOther = false;
 				}
 
-				if(isHttp(c)){
-					if(!hasHttp){
-						if(c == 'h'){
-							httpStart = graph.size() - 1;
-							tmpRaw.clear();
-							tmpRaw.add(c);
-							hasHttp = true;
-						}
-					}else{
-						tmpRaw.add(c);
-					}
-				}else{
-					if(hasHttp){
-						httpVec.add(tmpRaw);
-						httpStartVec.add(httpStart);
-						hasHttp = false;
-					}
-				}
+				// if(isHttp(c)){
+				// 	if(!hasHttp){
+				// 		if(c == 'h'){
+				// 			httpStart = graph.size() - 1;
+				// 			tmpRaw.clear();
+				// 			tmpRaw.add(c);
+				// 			hasHttp = true;
+				// 		}
+				// 	}else{
+				// 		tmpRaw.add(c);
+				// 	}
+				// }else{
+				// 	if(hasHttp){
+				// 		httpVec.add(tmpRaw);
+				// 		httpStartVec.add(httpStart);
+				// 		hasHttp = false;
+				// 	}
+				// }
 
 				// if(c == 64){
 				// 	if(hasAt){
@@ -297,32 +297,32 @@ public class Preprocesser {
 					titleRaw.add(c);
 				}
 			}
-			if(tmpRaw.size() != 0){
-				httpVec.add(tmpRaw);
-				httpStartVec.add(httpStart);
-			}
+			// if(tmpRaw.size() != 0){
+			// 	httpVec.add(tmpRaw);
+			// 	httpStartVec.add(httpStart);
+			// }
 			// if(npRaw.size() != 0){
 			// 	npVec.add(npRaw);
 			// 	npStartVec.add(npStart);
 			// }
 
-			String str;
-			for(int i = 0 ; i < httpVec.size(); i ++){
-				str=httpVec.get(i).toString();
-				int found = str.indexOf("http");
-				if(found != -1){
-					int start = httpStartVec.get(i);
-					int size = str.length();
-					//std::cout<<std::endl<<sentence<<":Here:"<<str<<":"<<start<<":"<<size<<":"<<graph.size()<<std::endl;
+			// String str;
+			// for(int i = 0 ; i < httpVec.size(); i ++){
+			// 	str=httpVec.get(i).toString();
+			// 	int found = str.indexOf("http");
+			// 	if(found != -1){
+			// 		int start = httpStartVec.get(i);
+			// 		int size = str.length();
+			// 		//std::cout<<std::endl<<sentence<<":Here:"<<str<<":"<<start<<":"<<size<<":"<<graph.size()<<std::endl;
 					
-					graph.setElementAt(1, start);
-					for(int j = start + 1; j < start + size - 1; j ++){
-						graph.setElementAt(2, j);
-					}
-					graph.setElementAt(4, start + size - 1);
+			// 		graph.setElementAt(1, start);
+			// 		for(int j = start + 1; j < start + size - 1; j ++){
+			// 			graph.setElementAt(2, j);
+			// 		}
+			// 		graph.setElementAt(4, start + size - 1);
 					
-				}
-			}
+			// 	}
+			// }
 
 			// for(int i = 0; i < npVec.size(); i ++){
 			// 	npRaw = npVec.get(i);
