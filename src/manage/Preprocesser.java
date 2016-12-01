@@ -169,6 +169,7 @@ public class Preprocesser {
 	                        graph.setElementAt(o, graph.size()-1);
 	                    }
 	                    hasSpace=true;
+	                    continue;
 	                }
 
 					// if(hasAt){
@@ -291,7 +292,7 @@ public class Preprocesser {
 
 				if(c == 12298){
 					hasTitle = true;
-					titleStart = graph.size() - 1;
+					titleStart = graph.size();
 					titleRaw.clear();
 				}else if(hasTitle){
 					titleRaw.add(c);
