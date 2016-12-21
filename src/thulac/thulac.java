@@ -8,7 +8,6 @@ import manage.Postprocesser;
 import manage.Preprocesser;
 import manage.Punctuation;
 import manage.TimeWord;
-import manage.VerbWord;
 
 import base.POCGraph;
 import base.SegmentedSentence;
@@ -103,7 +102,6 @@ public class thulac {
 	    Punctuation punctuation = new Punctuation((prefix+"singlepun.dat"));
 	    TimeWord timeword = new TimeWord();
 	    NegWord negword = new NegWord((prefix+"neg.dat"));
-	    VerbWord verbword = new VerbWord((prefix+"vM.dat"), (prefix+"vD.dat"));
 	    Filter filter = null;
 	    if(useFilter){
 	        filter = new Filter((prefix+"xu.dat"), (prefix+"time.dat"));
@@ -186,7 +184,6 @@ public class thulac {
 	    			punctuation.adjust(tagged);
 	    			timeword.adjustDouble(tagged);
 	    			negword.adjust(tagged);
-	    			verbword.adjust(tagged);
 	    			if(useFilter){
 	    				filter.adjust(tagged);
 	    			}
