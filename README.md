@@ -114,6 +114,9 @@ CNKI_journal.txt（51 MB）
 ###THULAC（Python版）
 [https://github.com/thunlp/THULAC-Python](https://github.com/thunlp/THULAC-Python)
 
+###THULAC（so版）
+[https://github.com/thunlp/THULAC.so](https://github.com/thunlp/THULAC.so)
+
 ##历史
 
 |更新时间 | 更新内容|

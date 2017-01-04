@@ -248,7 +248,7 @@ public class Preprocesser {
 							hasSinglePun = false;
 						}else{					
 							senClean+=sentence.charAt(i);
-							graph.add(15);
+							graph.add(9);
 						}
 					}else{
 						senClean+=sentence.charAt(i);

@@ -1,6 +1,8 @@
 package thulac;
 
 import java.io.*;
+import java.util.Vector;
+import java.util.regex.*;
 
 import manage.Filter;
 import manage.NegWord;
@@ -8,6 +10,7 @@ import manage.Postprocesser;
 import manage.Preprocesser;
 import manage.Punctuation;
 import manage.TimeWord;
+import manage.VerbWord;
 
 import base.POCGraph;
 import base.SegmentedSentence;
@@ -31,7 +34,7 @@ public class thulac {
 	    boolean useT2S = false;
 	    boolean seg_only = false;
 	    boolean useFilter = false;
-	    boolean use_second = false;
+	    int maxLength = 50000;
 	    String input_file = "";
 	    String output_file = "";
 	    
@@ -124,88 +127,97 @@ public class thulac {
         }
         
         long startTime = System.currentTimeMillis();//获取当前时间
+        Vector<String> vec = null;
 	    while(true)
 	    {
-	    	oiraw=getRaw(reader);
-	    	if(oiraw==null) break;
-	    	
-	    	if(useT2S) {
-	    		String traw = new String();
-	    		traw = preprocesser.clean(oiraw,poc_cands);
-				raw = preprocesser.T2S(traw);
-			}
-	    	else{
-	    		raw = preprocesser.clean(oiraw,poc_cands);
-			}
-//	    	System.out.print(poc_cands.toString()+"\n");
-	    	if(raw.length()>0)
-	    	{
-	    		if(seg_only) {
-	    			
-	    			cws_tagging_decoder.segment(raw, poc_cands, tagged);
-	    			cws_tagging_decoder.get_seg_result(segged);
-	    			nsDict.adjust(segged);
-		    		idiomDict.adjust(segged);
-		    		if(userDict!=null){
-	                    userDict.adjust(segged);
-	                }
-		    		punctuation.adjust(segged);
-		    		timeword.adjust(segged);
-		    		negword.adjust(segged);
-		    		if(useFilter){
-	                    filter.adjust(segged);
-	                }
-		    		if(out != null) {
-	    				for(int i=0;i<segged.size();i++) {
-	    					byte[] buff=new byte[]{};
-	    					buff=segged.get(i).getBytes();
-	    					try {
-	    						out.write(buff,0,buff.length);
-	    					} catch (IOException e) {
-	    						// TODO Auto-generated catch block
-	    						e.printStackTrace();
-	    					}
-	    					out.write(' ');
-	    				}
-	    				out.write('\n');
-	    			}
-	    			else {
-	    				for(int i=0;i<segged.size();i++) System.out.print(segged.get(i) + " ");
-	    				System.out.print("\n");
-	    			}
-	    		}
-	    		else {
-	    			tagging_decoder.segment(raw, poc_cands, tagged);
-	    			nsDict.adjust(tagged);
-	    			idiomDict.adjust(tagged);
-	    			if(userDict!=null){
-	    				userDict.adjust(tagged);
-	    			}
-	    			punctuation.adjust(tagged);
-	    			timeword.adjustDouble(tagged);
-	    			negword.adjust(tagged);
-	    			if(useFilter){
-	    				filter.adjust(tagged);
-	    			}
-	    			
-	    			if(out != null) {
-		    			for(int i=0;i<tagged.size();i++) tagged.get(i).print(out);
-		    			out.write('\n');
+	    	vec=getRaw(reader, maxLength);
+	    	if(vec.size() ==0) break;
+//	    	if(oiraw==null) break;
+			for(int i = 0; i < vec.size(); i++) {
+		    	oiraw = vec.get(i);
+		    	if(useT2S) {
+		    		String traw = new String();
+		    		traw = preprocesser.clean(oiraw,poc_cands);
+					raw = preprocesser.T2S(traw);
+				}
+		    	else{
+		    		raw = preprocesser.clean(oiraw,poc_cands);
+				}
+		    	if(raw.length()>0)
+		    	{
+		    		if(seg_only) {
+		    			cws_tagging_decoder.segment(raw, poc_cands, tagged);
+		    			cws_tagging_decoder.get_seg_result(segged);
+		    			nsDict.adjust(segged);
+			    		idiomDict.adjust(segged);
+			    		punctuation.adjust(segged);
+			    		timeword.adjust(segged);
+			    		negword.adjust(segged);
+			    		if(userDict!=null){
+		                    userDict.adjust(segged);
+		                }
+			    		if(useFilter){
+		                    filter.adjust(segged);
+		                }
+			    		
+			    		if(out != null) {
+		    				for(int j=0;j<segged.size();j++) {
+		    					byte[] buff=new byte[]{};
+		    					buff=segged.get(j).getBytes();
+		    					try {
+		    						out.write(buff,0,buff.length);
+		    					} catch (IOException e) {
+		    						// TODO Auto-generated catch block
+		    						e.printStackTrace();
+		    					}
+		    					if(j != segged.size() -1) out.write(' ');
+		    				}
+		    				if(i == vec.size() -1) out.write('\n');
+		    				else out.write(' ');
+		    			}
+		    			else {
+		    				System.out.print(segged.get(i));
+		    				for(int j=1;j<segged.size();j++) System.out.print( " "+segged.get(j));
+		    				if(i == vec.size() -1) System.out.print("\n");
+			    			else System.out.print(" ");
+		    			}
 		    		}
 		    		else {
-		    			for(int i=0;i<tagged.size();i++) tagged.get(i).print();
-		    			System.out.print("\n");
+		    			tagging_decoder.segment(raw, poc_cands, tagged);
+		    			nsDict.adjust(tagged);
+		    			idiomDict.adjust(tagged);
+		    			punctuation.adjust(tagged);
+		    			timeword.adjustDouble(tagged);
+		    			negword.adjust(tagged);
+		    			if(userDict!=null){
+		    				userDict.adjust(tagged);
+		    			}
+		    			if(useFilter){
+		    				filter.adjust(tagged);
+		    			}
+		    			
+		    			if(out != null) {
+			    			for(int j=0;j<tagged.size();j++) tagged.get(j).print(out);
+			    			if(i == vec.size() -1) out.write('\n');
+		    				else out.write(' ');
+			    		}
+			    		else {
+			    			for(int j=0;j<tagged.size();j++) tagged.get(j).print();
+			    			if(i == vec.size() -1) System.out.print("\n");
+			    			else System.out.print(" ");
+			    		}
 		    		}
-	    		}
-	    	}
+		    	}
+		    }
 	    }
 	    long endTime = System.currentTimeMillis();
         System.out.println("程序运行时间："+(endTime-startTime)+"ms");
 	    
 	}
-	public static String getRaw(BufferedReader reader)
+	public static Vector<String> getRaw(BufferedReader reader, int maxLength)
 	{
 		String ans=null;
+		Vector<String> ans_vec = new Vector<String>();
 		try {
 			while((ans = reader.readLine()) != null)
 			{
@@ -215,7 +227,28 @@ public class thulac {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//System.out.println(ans);
-		return ans;
+		if(ans == null) return ans_vec;
+		if(ans.length() < maxLength) {
+			ans_vec.add(ans);
+		}
+		else {
+			Pattern p = Pattern.compile(".*?[。？！；;!?]");
+			Matcher m = p.matcher(ans);
+			int num = 0, pos = 0;
+			String tmp;
+			while(m.find()) {
+				tmp = m.group(0);
+				if(num + tmp.length() > maxLength) {
+					ans_vec.add(ans.substring(pos, pos+num));
+					pos += num; 
+					num = tmp.length();
+				}
+				else {
+					num += tmp.length();
+				}
+			}
+			if(pos != ans.length()) ans_vec.add(ans.substring(pos));
+		}
+		return ans_vec;
 	}
 }

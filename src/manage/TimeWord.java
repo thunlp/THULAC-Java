@@ -143,8 +143,10 @@ public class TimeWord {
 	                        sentence.set(i,stmp);
 							sentence.remove(i+1);
 						}
+						else {
+							hasTimeWord = false;
+						}
 					}
-					hasTimeWord = false;
 				}
 			}
 
@@ -179,8 +181,10 @@ public class TimeWord {
 							sentence.remove(i + 1);
 							sentence.get(i).tag = "t";
 						}
+						else {
+							hasTimeWord = false;
+						}
 					}
-					hasTimeWord = false;
 				}
 			}
 			
@@ -225,8 +229,10 @@ public class TimeWord {
 							sentence.remove(i + 1);
 							sentence.get(i).tag = "t";
 						}
+						else {
+							hasTimeWord = false;
+						}
 					}
-					hasTimeWord = false;
 				}
 			}
 
