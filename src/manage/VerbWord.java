@@ -19,7 +19,7 @@ public class VerbWord {
 	    public void adjust(TaggedSentence sentence){
 			if((vM_dat==null)||(vD_dat==null))return;
 			for(int i=0;i<sentence.size()-1;i++){
-				if((sentence.get(i).tag==tag_v)&&(sentence.get(i+1).tag==tag_v)){
+				if((sentence.get(i).tag.equals(tag_v))&&(sentence.get(i+1).tag.equals(tag_v))){
 					if(vM_dat.match(sentence.get(i).word)!=-1){
 						sentence.get(i).tag="vm";
 					}else if(vD_dat.match(sentence.get(i+1).word)!=-1){

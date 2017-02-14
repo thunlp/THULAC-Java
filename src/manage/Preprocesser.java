@@ -345,7 +345,10 @@ public class Preprocesser {
 				if(isPossibleTitle(titleRaw)){
 					int start = titleStartVec.get(i);
 					int size = titleRaw.size();
-
+					if(size == 1) {
+						graph.setElementAt(9, start);
+						continue;
+					}
 					graph.setElementAt(1, start);
 					for(int j = start + 1; j < start + size - 1; j ++){
 						graph.setElementAt(2, j);
