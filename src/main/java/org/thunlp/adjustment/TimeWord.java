@@ -1,18 +1,18 @@
 package org.thunlp.adjustment;
 
 import org.thunlp.base.TaggedWord;
-import org.thunlp.util.StringHelper;
+import org.thunlp.util.StringUtil;
 
 import java.util.List;
 
 public class TimeWord implements IAdjustPass {
 	private static final String ARABIC_NUMBER_CODE_POINTS =
-			StringHelper.toString(48, 49, 50, 51, 52, 53, 54, 55, 56, 57,
+			StringUtil.toString(48, 49, 50, 51, 52, 53, 54, 55, 56, 57,
 					65296, 65297, 65298, 65299, 65300, 65301, 65302, 65303, 65304, 65305);
 	private static final String TIME_WORD_CODE_POINTS =
-			StringHelper.toString(24180, 26376, 26085, 21495, 26102, 28857, 20998, 31186);
+			StringUtil.toString(24180, 26376, 26085, 21495, 26102, 28857, 20998, 31186);
 	private static final String OTHER_CODE_POINTS =
-			StringHelper.toString(65292, 12290, 65311, 65281, 65306, 65307, 8216, 8217,
+			StringUtil.toString(65292, 12290, 65311, 65281, 65306, 65307, 8216, 8217,
 					8220, 8221, 12304, 12305, 12289, 12298, 12299, 126, 183, 64, 124, 35,
 					65509, 37, 8230, 38, 42, 65288, 65289, 8212, 45, 43, 61, 44, 46, 60,
 					62, 63, 47, 33, 59, 58, 39, 34, 123, 125, 91, 93, 92, 124, 35, 36, 37,

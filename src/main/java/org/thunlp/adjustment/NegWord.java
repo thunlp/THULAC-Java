@@ -2,7 +2,7 @@ package org.thunlp.adjustment;
 
 import org.thunlp.base.Dat;
 import org.thunlp.base.TaggedWord;
-import org.thunlp.util.StringHelper;
+import org.thunlp.util.StringUtil;
 
 import java.io.IOException;
 import java.util.List;
@@ -22,10 +22,10 @@ public class NegWord implements IAdjustPass {
 			TaggedWord tagged = sentence.get(i);
 			if (this.neg_dat.match(tagged.word) != -1) {
 				TaggedWord newWord = new TaggedWord(tagged.separator);
-				newWord.word = StringHelper.toString(tagged.word.codePointAt(1));
+				newWord.word = StringUtil.toString(tagged.word.codePointAt(1));
 				newWord.tag = "v";
 				sentence.add(i + 1, newWord);
-				tagged.word = StringHelper.toString(tagged.word.codePointAt(0));
+				tagged.word = StringUtil.toString(tagged.word.codePointAt(0));
 				tagged.tag = "d";
 			}
 		}
