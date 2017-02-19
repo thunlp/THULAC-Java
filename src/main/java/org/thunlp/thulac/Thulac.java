@@ -18,85 +18,70 @@ import java.util.regex.Pattern;
 public class Thulac {
 	public static void main(String[] args) throws IOException {
 		// input args
-		String user_specified_dict_name = null;
-		String model_path_char = null;
+		String prefix = "models/";
 		Character separator = '_';
 		boolean useT2S = false;
-		boolean seg_only = false;
+		boolean segOnly = false;
 		boolean useFilter = false;
-		String input_file = null, output_file = null;
-		int c = 0;
-		while (c < args.length) {
-			String arg = args[c];
-			switch (arg) {
+		Scanner in = null;
+		PrintStream out = System.out;
+		Postprocesser userDict = null;
+		for (int c = 0; c < args.length; ++c)
+			switch (args[c]) {
 				case "-t2s":
 					useT2S = true;
 					break;
 				case "-user":
-					user_specified_dict_name = args[++c];
+					userDict = new Postprocesser(args[++c], "uw", true);
 					break;
 				case "-deli":
 					separator = args[++c].charAt(0);
 					break;
 				case "-seg_only":
-					seg_only = true;
+					segOnly = true;
 					break;
 				case "-filter":
 					useFilter = true;
 					break;
 				case "-model_dir":
-					model_path_char = args[++c];
+					prefix = args[++c];
+					if (prefix.charAt(prefix.length() - 1) != '/')
+						prefix += '/';
 					break;
 				case "-input":
-					input_file = args[++c];
+					in = new Scanner(new File(args[++c]), "UTF-8");
 					break;
 				case "-output":
-					output_file = args[++c];
+					out = new PrintStream(args[++c]);
 					break;
-				default:
-					return;
 			}
-			c++;
-		}
+		if (in == null) in = new Scanner(System.in);
 
-		String prefix;
-		if (model_path_char != null) {
-			prefix = model_path_char;
-			if (prefix.charAt(prefix.length() - 1) != '/') {
-				prefix += "/";
-			}
-		} else {
-			prefix = "models/";
-		}
-
-		POCGraph poc_cands = new POCGraph();
+		POCGraph pocCands = new POCGraph();
 		TaggedSentence tagged = new TaggedSentence();
-		SegmentedSentence segged = new SegmentedSentence();
+		SegmentedSentence segmented = new SegmentedSentence();
 
-		CBTaggingDecoder cws_tagging_decoder = new CBTaggingDecoder();
-		CBTaggingDecoder tagging_decoder = new CBTaggingDecoder();
-		if (seg_only) {
-			cws_tagging_decoder.threshold = 0;
-			cws_tagging_decoder.separator = separator;
-			cws_tagging_decoder.init((prefix + "cws_model.bin"), (prefix + "cws_dat.bin"),
+		CBTaggingDecoder cwsTaggingDecoder = new CBTaggingDecoder();
+		CBTaggingDecoder taggingDecoder = new CBTaggingDecoder();
+		if (segOnly) {
+			cwsTaggingDecoder.threshold = 0;
+			cwsTaggingDecoder.separator = separator;
+			cwsTaggingDecoder.init((prefix + "cws_model.bin"), (prefix + "cws_dat.bin"),
 					(prefix + "cws_label.txt"));
-			cws_tagging_decoder.setLabelTrans();
+			cwsTaggingDecoder.setLabelTrans();
 		} else {
-			tagging_decoder.threshold = 10000;
-			tagging_decoder.separator = separator;
-			tagging_decoder.init((prefix + "model_c_model.bin"),
+			taggingDecoder.threshold = 10000;
+			taggingDecoder.separator = separator;
+			taggingDecoder.init((prefix + "model_c_model.bin"),
 					(prefix + "model_c_dat.bin"), (prefix + "model_c_label.txt"));
-			tagging_decoder.setLabelTrans();
+			taggingDecoder.setLabelTrans();
 		}
 
 		Preprocesser preprocesser = new Preprocesser();
 		preprocesser.setT2SMap((prefix + "t2s.dat"));
 		Postprocesser nsDict = new Postprocesser((prefix + "ns.dat"), "ns", false);
 		Postprocesser idiomDict = new Postprocesser((prefix + "idiom.dat"), "i", false);
-		Postprocesser userDict = null;
-		if (user_specified_dict_name != null) {
-			userDict = new Postprocesser(user_specified_dict_name, "uw", true);
-		}
+
 		Punctuation punctuation = new Punctuation((prefix + "singlepun.dat"));
 		TimeWord timeword = new TimeWord();
 		NegWord negword = new NegWord((prefix + "neg.dat"));
@@ -105,44 +90,36 @@ public class Thulac {
 			filter = new Filter((prefix + "xu.dat"), (prefix + "time.dat"));
 		}
 
-		Scanner in;
-		if (input_file != null)
-			in = new Scanner(new File(input_file), "UTF-8");
-		else in = new Scanner(System.in);
-		PrintStream out = System.out;
-		if (output_file != null && !output_file.isEmpty())
-			out = new PrintStream(output_file);
-
 		for (
 				Vector<String> vec = getRaw(in);
 				vec != null;
 				vec = getRaw(in)) {
 			for (String raw : vec) {
-				raw = preprocesser.clean(raw, poc_cands);
+				raw = preprocesser.clean(raw, pocCands);
 				if (useT2S) raw = preprocesser.T2S(raw);
 				if (raw.isEmpty()) continue;
 
-				if (seg_only) {
-					cws_tagging_decoder.segment(raw, poc_cands, tagged);
-					cws_tagging_decoder.get_seg_result(segged);
-					nsDict.adjust(segged);
-					idiomDict.adjust(segged);
-					punctuation.adjust(segged);
-					timeword.adjust(segged);
-					negword.adjust(segged);
+				if (segOnly) {
+					cwsTaggingDecoder.segment(raw, pocCands, tagged);
+					cwsTaggingDecoder.get_seg_result(segmented);
+					nsDict.adjust(segmented);
+					idiomDict.adjust(segmented);
+					punctuation.adjust(segmented);
+					timeword.adjust(segmented);
+					negword.adjust(segmented);
 					if (userDict != null) {
-						userDict.adjust(segged);
+						userDict.adjust(segmented);
 					}
 					if (useFilter) {
-						filter.adjust(segged);
+						filter.adjust(segmented);
 					}
 
-					for (String seg : segged) {
-						out.println(seg);
+					for (String segment : segmented) {
+						out.println(segment);
 						out.print(' ');
 					}
 				} else {
-					tagging_decoder.segment(raw, poc_cands, tagged);
+					taggingDecoder.segment(raw, pocCands, tagged);
 					nsDict.adjust(tagged);
 					idiomDict.adjust(tagged);
 					punctuation.adjust(tagged);
@@ -155,7 +132,7 @@ public class Thulac {
 						filter.adjust(tagged);
 					}
 
-					for (WordWithTag aTagged : tagged) aTagged.print(out);
+					for (WordWithTag word : tagged) word.print(out);
 				}
 			}
 			out.println();
