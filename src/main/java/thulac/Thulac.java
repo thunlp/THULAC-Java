@@ -3,22 +3,17 @@ package thulac;
 import base.POCGraph;
 import base.SegmentedSentence;
 import base.TaggedSentence;
+import base.WordWithTag;
 import character.CBTaggingDecoder;
 import manage.*;
 
 import java.io.*;
+import java.util.Objects;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class thulac {
-
-	/**
-	 * @param args
-	 *
-	 * @throws IOException
-	 */
-
+public class Thulac {
 	public static void main(String[] args) throws IOException {
 		String user_specified_dict_name = null;
 		String model_path_char = null;
@@ -35,25 +30,34 @@ public class thulac {
 		int c = 0;
 		while (c < args.length) {
 			String arg = args[c];
-			if (arg.equals("-t2s")) {
-				useT2S = true;
-			} else if (arg.equals("-user")) {
-				user_specified_dict_name = args[++c];
-			} else if (arg.equals("-deli")) {
-				separator = args[++c].charAt(0);
-			} else if (arg.equals("-seg_only")) {
-				seg_only = true;
-			} else if (arg.equals("-filter")) {
-				useFilter = true;
-			} else if (arg.equals("-model_dir")) {
-				model_path_char = args[++c];
-			} else if (arg.equals("-input")) {
-				input_file = args[++c];
-			} else if (arg.equals("-output")) {
-				output_file = args[++c];
-			} else {
-				//showhelp();
-				return;
+			switch (arg) {
+				case "-t2s":
+					useT2S = true;
+					break;
+				case "-user":
+					user_specified_dict_name = args[++c];
+					break;
+				case "-deli":
+					separator = args[++c].charAt(0);
+					break;
+				case "-seg_only":
+					seg_only = true;
+					break;
+				case "-filter":
+					useFilter = true;
+					break;
+				case "-model_dir":
+					model_path_char = args[++c];
+					break;
+				case "-input":
+					input_file = args[++c];
+					break;
+				case "-output":
+					output_file = args[++c];
+					break;
+				default:
+					//showhelp();
+					return;
 			}
 			c++;
 		}
@@ -69,7 +73,7 @@ public class thulac {
 		}
 
 		String oiraw;
-		String raw = new String();
+		String raw;
 		POCGraph poc_cands = new POCGraph();
 		TaggedSentence tagged = new TaggedSentence();
 		SegmentedSentence segged = new SegmentedSentence();
@@ -108,7 +112,7 @@ public class thulac {
 
 		BufferedReader reader = null;
 		try {
-			if (input_file != "") {
+			if (!Objects.equals(input_file, "")) {
 				reader = new BufferedReader(
 						new InputStreamReader(new FileInputStream(new File(input_file)),
 								"UTF8"));
@@ -119,12 +123,12 @@ public class thulac {
 			e.printStackTrace();
 		}
 		FileOutputStream out = null;
-		if (output_file != "") {
+		if (!Objects.equals(output_file, "")) {
 			out = new FileOutputStream(output_file);
 		}
 
 		long startTime = System.currentTimeMillis();//获取当前时间
-		Vector<String> vec = null;
+		Vector<String> vec;
 		while (true) {
 			vec = getRaw(reader, maxLength);
 			if (vec.size() == 0) break;
@@ -132,7 +136,7 @@ public class thulac {
 			for (int i = 0; i < vec.size(); i++) {
 				oiraw = vec.get(i);
 				if (useT2S) {
-					String traw = new String();
+					String traw;
 					traw = preprocesser.clean(oiraw, poc_cands);
 					raw = preprocesser.T2S(traw);
 				} else {
@@ -156,7 +160,7 @@ public class thulac {
 
 						if (out != null) {
 							for (int j = 0; j < segged.size(); j++) {
-								byte[] buff = new byte[]{};
+								byte[] buff;
 								buff = segged.get(j).getBytes();
 								try {
 									out.write(buff, 0, buff.length);
@@ -190,12 +194,11 @@ public class thulac {
 						}
 
 						if (out != null) {
-							for (int j = 0; j < tagged.size(); j++)
-								tagged.get(j).print(out);
+							for (WordWithTag aTagged : tagged) aTagged.print(out);
 							if (i == vec.size() - 1) out.write('\n');
 							else out.write(' ');
 						} else {
-							for (int j = 0; j < tagged.size(); j++) tagged.get(j).print();
+							for (WordWithTag aTagged : tagged) aTagged.print();
 							if (i == vec.size() - 1) System.out.print("\n");
 							else System.out.print(" ");
 						}
@@ -208,13 +211,11 @@ public class thulac {
 
 	}
 
-	public static Vector<String> getRaw(BufferedReader reader, int maxLength) {
+	private static Vector<String> getRaw(BufferedReader reader, int maxLength) {
 		String ans = null;
-		Vector<String> ans_vec = new Vector<String>();
+		Vector<String> ans_vec = new Vector<>();
 		try {
-			while ((ans = reader.readLine()) != null) {
-				break;
-			}
+			ans = reader.readLine();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
