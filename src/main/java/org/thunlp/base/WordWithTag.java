@@ -18,34 +18,5 @@ public class WordWithTag {
 		out.print(this.separator);
 		out.print(this.tag);
 		out.print(' ');
-//		byte[] buff=new byte[]{};
-//		buff=word.getBytes();
-//		try {
-//			out.write(buff,0,buff.length);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		try {
-//			out.write(separator);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		buff=tag.getBytes();
-//		try {
-//			out.write(buff,0,buff.length);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		out.write(' ');
-	}
-
-	public void print() throws IOException {
-		System.out.print(this.word);
-		System.out.print(this.separator);
-		System.out.print(this.tag);
-		System.out.print(' ');
 	}
 }

@@ -1,7 +1,6 @@
 package org.thunlp.thulac;
 
 import org.thunlp.base.POCGraph;
-import org.thunlp.base.SegmentedSentence;
 import org.thunlp.base.TaggedSentence;
 import org.thunlp.base.WordWithTag;
 import org.thunlp.character.CBTaggingDecoder;
@@ -59,23 +58,14 @@ public class Thulac {
 
 		POCGraph pocCands = new POCGraph();
 		TaggedSentence tagged = new TaggedSentence();
-		SegmentedSentence segmented = new SegmentedSentence();
+//		SegmentedSentence segmented = new SegmentedSentence();
 
 		CBTaggingDecoder cwsTaggingDecoder = new CBTaggingDecoder();
-		CBTaggingDecoder taggingDecoder = new CBTaggingDecoder();
-		if (segOnly) {
-			cwsTaggingDecoder.threshold = 0;
-			cwsTaggingDecoder.separator = separator;
-			cwsTaggingDecoder.init((prefix + "cws_model.bin"), (prefix + "cws_dat.bin"),
-					(prefix + "cws_label.txt"));
-			cwsTaggingDecoder.setLabelTrans();
-		} else {
-			taggingDecoder.threshold = 10000;
-			taggingDecoder.separator = separator;
-			taggingDecoder.init((prefix + "model_c_model.bin"),
-					(prefix + "model_c_dat.bin"), (prefix + "model_c_label.txt"));
-			taggingDecoder.setLabelTrans();
-		}
+		cwsTaggingDecoder.threshold = segOnly ? 0 : 10000;
+		cwsTaggingDecoder.separator = separator;
+		cwsTaggingDecoder.init((prefix + "cws_model.bin"), (prefix + "cws_dat.bin"),
+				(prefix + "cws_label.txt"));
+		cwsTaggingDecoder.setLabelTrans();
 
 		Preprocesser preprocesser = new Preprocesser();
 		preprocesser.setT2SMap((prefix + "t2s.dat"));
@@ -99,41 +89,21 @@ public class Thulac {
 				if (useT2S) raw = preprocesser.T2S(raw);
 				if (raw.isEmpty()) continue;
 
-				if (segOnly) {
-					cwsTaggingDecoder.segment(raw, pocCands, tagged);
-					cwsTaggingDecoder.get_seg_result(segmented);
-					nsDict.adjust(segmented);
-					idiomDict.adjust(segmented);
-					punctuation.adjust(segmented);
-					timeword.adjust(segmented);
-					negword.adjust(segmented);
-					if (userDict != null) {
-						userDict.adjust(segmented);
-					}
-					if (useFilter) {
-						filter.adjust(segmented);
-					}
+				cwsTaggingDecoder.segment(raw, pocCands, tagged);
+				nsDict.adjust(tagged);
+				idiomDict.adjust(tagged);
+				punctuation.adjust(tagged);
+				timeword.adjustDouble(tagged);
+				negword.adjust(tagged);
+				if (userDict != null) userDict.adjust(tagged);
+				if (useFilter) filter.adjust(tagged);
 
-					for (String segment : segmented) {
-						out.println(segment);
+				if (segOnly)
+					for (WordWithTag word : tagged) {
+						out.print(word.word);
 						out.print(' ');
 					}
-				} else {
-					taggingDecoder.segment(raw, pocCands, tagged);
-					nsDict.adjust(tagged);
-					idiomDict.adjust(tagged);
-					punctuation.adjust(tagged);
-					timeword.adjustDouble(tagged);
-					negword.adjust(tagged);
-					if (userDict != null) {
-						userDict.adjust(tagged);
-					}
-					if (useFilter) {
-						filter.adjust(tagged);
-					}
-
-					for (WordWithTag word : tagged) word.print(out);
-				}
+				else for (WordWithTag word : tagged) word.print(out);
 			}
 			out.println();
 		}
