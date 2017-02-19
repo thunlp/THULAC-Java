@@ -1,11 +1,11 @@
 package org.thunlp.manage;
 
 import org.thunlp.base.Dat;
-import org.thunlp.base.TaggedSentence;
-import org.thunlp.base.WordWithTag;
+import org.thunlp.base.TaggedWord;
 import org.thunlp.util.StringHelper;
 
 import java.io.IOException;
+import java.util.List;
 
 public class NegWord {
 	private Dat neg_dat;
@@ -14,13 +14,13 @@ public class NegWord {
 		this.neg_dat = new Dat(filename);
 	}
 
-	public void adjust(TaggedSentence sentence) {
+	public void adjust(List<TaggedWord> sentence) {
 		if (this.neg_dat == null) return;
 
 		for (int i = sentence.size() - 1; i >= 0; --i) {
-			WordWithTag tagged = sentence.get(i);
+			TaggedWord tagged = sentence.get(i);
 			if (this.neg_dat.match(tagged.word) != -1) {
-				WordWithTag newWord = new WordWithTag(tagged.separator);
+				TaggedWord newWord = new TaggedWord(tagged.separator);
 				newWord.word = StringHelper.toString(tagged.word.codePointAt(1));
 				newWord.tag = "v";
 				sentence.add(i + 1, newWord);

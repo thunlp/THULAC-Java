@@ -1,8 +1,9 @@
 package org.thunlp.manage;
 
-import org.thunlp.base.TaggedSentence;
-import org.thunlp.base.WordWithTag;
+import org.thunlp.base.TaggedWord;
 import org.thunlp.util.StringHelper;
+
+import java.util.List;
 
 public class TimeWord {
 	private static final String ARABIC_NUMBER_CODE_POINTS =
@@ -47,21 +48,21 @@ public class TimeWord {
 		return word.length() >= 5 && word.startsWith("http");
 	}
 
-	public void adjust(TaggedSentence sentence) {
+	public void adjust(List<TaggedWord> sentence) {
 		processTimeWords(sentence);
 		processHttpWords(sentence);
 		processMailAddress(sentence);
 	}
 
-	public void adjustDouble(TaggedSentence sentence) {
+	public void adjustDouble(List<TaggedWord> sentence) {
 		processTimeWords(sentence);
 		processDoubleWords(sentence);
 		processHttpWords(sentence);
 		processMailAddress(sentence);
 	}
 
-	private void processDoubleWords(TaggedSentence sentence) {
-		WordWithTag tagged, last = sentence.get(sentence.size() - 1);
+	private void processDoubleWords(List<TaggedWord> sentence) {
+		TaggedWord tagged, last = sentence.get(sentence.size() - 1);
 		for (int i = sentence.size() - 2; i >= 0; i--) {
 			tagged = sentence.get(i);
 			if (isDoubleWord(tagged.word, last.word)) {
@@ -72,10 +73,10 @@ public class TimeWord {
 		}
 	}
 
-	private void processTimeWords(TaggedSentence sentence) {
+	private void processTimeWords(List<TaggedWord> sentence) {
 		boolean hasTimeWord = false;
 		for (int i = sentence.size() - 1; i >= 0; i--) {
-			WordWithTag tagged = sentence.get(i);
+			TaggedWord tagged = sentence.get(i);
 			if (isTimeWord(tagged.word)) hasTimeWord = true;
 			else if (hasTimeWord) {
 				if (isArabicNum(tagged.word)) {
@@ -86,13 +87,13 @@ public class TimeWord {
 		}
 	}
 
-	private void processHttpWords(TaggedSentence sentence) {
-		for (WordWithTag tagged : sentence)
+	private void processHttpWords(List<TaggedWord> sentence) {
+		for (TaggedWord tagged : sentence)
 			if (this.isHttpWord(tagged.word)) tagged.tag = "x";
 	}
 
-	private void processMailAddress(TaggedSentence sentence) {
-		WordWithTag last = sentence.get(0), tagged;
+	private void processMailAddress(List<TaggedWord> sentence) {
+		TaggedWord last = sentence.get(0), tagged;
 		for (int i = 1, size = sentence.size(); i < size; i++) {
 			tagged = sentence.get(i);
 			if ("@".equals(last.word) && !"@".equals(tagged.word)) tagged.tag = "np";

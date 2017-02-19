@@ -1,11 +1,11 @@
 package org.thunlp.base;
 
-public class WordWithTag {
+public class TaggedWord {
 	public String word;
 	public String tag;
 	public char separator;
 
-	public WordWithTag(char separator) {
+	public TaggedWord(char separator) {
 		this.separator = separator;
 		this.word = "";
 	}

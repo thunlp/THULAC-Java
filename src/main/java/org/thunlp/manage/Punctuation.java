@@ -1,10 +1,10 @@
 package org.thunlp.manage;
 
 import org.thunlp.base.Dat;
-import org.thunlp.base.TaggedSentence;
-import org.thunlp.base.WordWithTag;
+import org.thunlp.base.TaggedWord;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Vector;
 
 public class Punctuation {
@@ -14,12 +14,12 @@ public class Punctuation {
 		this.p_dat = new Dat(filename);
 	}
 
-	public void adjust(TaggedSentence sentence) {
+	public void adjust(List<TaggedWord> sentence) {
 		if (this.p_dat == null) return;
 
 		Vector<String> tmp = new Vector<>();
 		for (int i = 0; i < sentence.size(); i++) {
-			WordWithTag tagged = sentence.get(i);
+			TaggedWord tagged = sentence.get(i);
 			StringBuilder sb = new StringBuilder(tagged.word);
 			if (this.p_dat.getInfo(sb.toString()) >= 0) continue;
 

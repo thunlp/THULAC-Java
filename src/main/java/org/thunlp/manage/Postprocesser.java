@@ -1,11 +1,15 @@
 package org.thunlp.manage;
 
-import org.thunlp.base.*;
+import org.thunlp.base.Dat;
+import org.thunlp.base.DatMaker;
+import org.thunlp.base.KeyValue;
+import org.thunlp.base.TaggedWord;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
 import java.util.Vector;
 
 public class Postprocesser {
@@ -39,12 +43,12 @@ public class Postprocesser {
 		} else this.p_dat = new Dat(filename);
 	}
 
-	public void adjust(TaggedSentence sentence) {
+	public void adjust(List<TaggedWord> sentence) {
 		if (this.p_dat == null) return;
 
 		Vector<String> tmp = new Vector<>();
 		for (int i = 0; i < sentence.size(); i++) {
-			WordWithTag tagged = sentence.get(i);
+			TaggedWord tagged = sentence.get(i);
 			StringBuilder sb = new StringBuilder(tagged.word);
 			if (this.p_dat.getInfo(sb.toString()) >= 0) continue;
 

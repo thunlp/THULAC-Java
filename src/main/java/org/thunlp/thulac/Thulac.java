@@ -1,14 +1,14 @@
 package org.thunlp.thulac;
 
 import org.thunlp.base.POCGraph;
-import org.thunlp.base.TaggedSentence;
-import org.thunlp.base.WordWithTag;
+import org.thunlp.base.TaggedWord;
 import org.thunlp.character.CBTaggingDecoder;
 import org.thunlp.manage.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.List;
 import java.util.Scanner;
 import java.util.Vector;
 import java.util.regex.Matcher;
@@ -57,7 +57,7 @@ public class Thulac {
 		if (in == null) in = new Scanner(System.in);
 
 		POCGraph pocCands = new POCGraph();
-		TaggedSentence tagged = new TaggedSentence();
+		List<TaggedWord> tagged = new Vector<>();
 
 		CBTaggingDecoder cwsTaggingDecoder = new CBTaggingDecoder();
 		cwsTaggingDecoder.threshold = segOnly ? 0 : 10000;
@@ -100,7 +100,7 @@ public class Thulac {
 				if (userDict != null) userDict.adjust(tagged);
 				if (useFilter) filter.adjust(tagged);
 
-				for (WordWithTag word : tagged) {
+				for (TaggedWord word : tagged) {
 					if (segOnly)
 						out.print(word.word);
 					else out.print(word);

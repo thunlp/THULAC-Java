@@ -15,6 +15,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
 import java.util.Vector;
 
 public class CBTaggingDecoder {
@@ -311,7 +312,7 @@ public class CBTaggingDecoder {
 //		for(int i=0;i<size;i++) System.out.println(values[i]);
 	}
 
-	public int segment(String raw, POCGraph graph, TaggedSentence ts) {
+	public int segment(String raw, POCGraph graph, List<TaggedWord> ts) {
 		if (raw.length() == 0) return 0;
 
 		for (int i = 0; i < (int) raw.length(); i++) {
@@ -344,14 +345,15 @@ public class CBTaggingDecoder {
 		for (int i = 0; i < this.len; i++) {
 			if ((i == this.len - 1) || (this.labelInfo[this.result[i]].charAt(
 					0) == '2') || (this.labelInfo[this.result[i]].charAt(0) == '3')) {
-				ts.add(new WordWithTag(this.separator));
+				ts.add(new TaggedWord(this.separator));
 				for (int j = offset; j < i + 1; j++) {
-					ts.lastElement().word += (this.sequence.charAt(j));
+					ts.get(ts.size() - 1).word += (this.sequence.charAt(j));
 				}
 //	            System.out.println(ts.lastElement().word);
 				offset = i + 1;
 				if ((this.labelInfo[this.result[i]] + 1) != null) { //输出标签（如果有的话）
-					ts.lastElement().tag = this.labelInfo[this.result[i]].substring(1);
+					ts.get(ts.size() - 1).tag = this.labelInfo[this.result[i]].substring(
+							1);
 //	                System.out.printf("%s\n",labelInfo[result[i]]+1);
 				}
 				//if((i+1)<len)putchar(' ');//在分词位置输出空格

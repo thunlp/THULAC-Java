@@ -1,12 +1,13 @@
 package org.thunlp.manage;
 
 import org.thunlp.base.Dat;
-import org.thunlp.base.TaggedSentence;
+import org.thunlp.base.TaggedWord;
 import org.thunlp.util.StringHelper;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Filter {
@@ -27,7 +28,7 @@ public class Filter {
 		this.time_dat = new Dat(timeWordFile);
 	}
 
-	public void adjust(TaggedSentence sentence) {
+	public void adjust(List<TaggedWord> sentence) {
 		if (this.xu_dat == null || this.time_dat == null) return;
 
 		for (int i = sentence.size() - 1; i >= 0; --i) {
