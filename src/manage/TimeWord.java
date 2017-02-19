@@ -59,7 +59,7 @@ public class TimeWord {
 		public boolean isArabicNum(String word){
 			boolean allArabic = true;
 			for(int i = 0; i < word.length(); i ++){
-				if(arabicNumSet.contains(word.charAt(i))){
+				if(!arabicNumSet.contains(word.charAt(i))){
 					allArabic = false;
 					break;
 				}

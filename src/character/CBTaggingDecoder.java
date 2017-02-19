@@ -59,7 +59,7 @@ public class CBTaggingDecoder {
 	
 	public CBTaggingDecoder(){
 		separator = '_';
-		maxLength = 50000;
+		maxLength = 20000;
 		len = 0;
 		sequence =new String("");
 		allowedLabelLists = new int[maxLength][];

@@ -39,7 +39,7 @@ public class CBNGramFeature {
 		datSize = myDat.getDatSize();
 		dat = myDat.getDat();
 		this.model = model;
-		maxLength = 50000;
+		maxLength = 20000;
 		uniBases = new int[maxLength + 2];
 		biBases = new int[maxLength + 4];
 		this.values = values;

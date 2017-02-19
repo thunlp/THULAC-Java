@@ -34,7 +34,7 @@ public class thulac {
 	    boolean useT2S = false;
 	    boolean seg_only = false;
 	    boolean useFilter = false;
-	    int maxLength = 50000;
+	    int maxLength = 20000;
 	    String input_file = "";
 	    String output_file = "";
 	    
