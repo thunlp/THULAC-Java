@@ -1,9 +1,6 @@
 package org.thunlp.manage;
 
-import org.thunlp.base.Dat;
-import org.thunlp.base.DatMaker;
-import org.thunlp.base.KeyValue;
-import org.thunlp.base.TaggedSentence;
+import org.thunlp.base.*;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -26,132 +23,48 @@ public class Postprocesser {
 			int id = 0;
 			while ((str = buf.readLine()) != null) {
 				if (str.length() == 0) continue;
-				if (str.endsWith("\r")) {
-					str.substring(0, str.length() - 1);
-				}
+				if (str.endsWith("\r")) str = str.substring(0, str.length() - 1);
 				lexicon.lastElement().key = str;
 				lexicon.lastElement().value = id;
 
-				//init a new element
+				// add new element
 				lexicon.add(new KeyValue());
 				id += 1;
 			}
 			DatMaker dm = new DatMaker();
 			dm.makeDat(lexicon);
 			dm.shrink();
-				
-				/*
-				p_dat = new DAT();	
-				p_dat->dat_size = dm->dat_size;
-				p_dat->dat = (DAT::Entry*)calloc(sizeof(DAT::Entry), p_dat->dat_size);
-				memcpy(p_dat->dat, dm->dat, sizeof(DAT::Entry)*(p_dat->dat_size));
-				*/
-				
-				/*
-				dm->save("models/user.dat");
-				p_dat = new DAT("models/user.dat");
-				*/
 
 			this.p_dat = new Dat(dm.datSize, dm.dat);
-
-		} else {
-			this.p_dat = new Dat(filename);
-		}
+		} else this.p_dat = new Dat(filename);
 	}
-
-//	public void adjust(SegmentedSentence sentence) {
-//		if (this.p_dat == null) return;
-//		Vector<String> tmpVec = new Vector<>();
-//		for (int i = 0; i < sentence.size(); i++) {
-//			String tmp = sentence.get(i);
-//			if (this.p_dat.getInfo(tmp) >= 0) continue;
-//
-//			tmpVec.clear();
-//			int j;
-//			for (j = i + 1; j < sentence.size(); j++) {
-//				tmp += sentence.get(j);
-//				if (this.p_dat.getInfo(tmp) >= 0) {
-//					break;
-//				}
-//				tmpVec.add(tmp);
-//			}
-//			int vecSize = (int) tmpVec.size();
-//
-//			for (int k = vecSize - 1; k >= 0; k--) {
-//				tmp = tmpVec.get(k);
-//				if (this.p_dat.match(tmp) != -1) {
-//					for (j = i + 1; j < i + k + 2; j++) {
-//						String stmp = sentence.get(i) + sentence.get(j);
-//						sentence.set(i, stmp);
-//					}
-//					for (j = i + k + 1; j > i; j--) {
-//						sentence.remove(j);
-//					}
-//					break;
-//				}
-//			}
-//
-//		}
-//		tmpVec.clear();
-//	}
 
 	public void adjust(TaggedSentence sentence) {
 		if (this.p_dat == null) return;
-		Vector<String> tmpVec = new Vector<>();
+
+		Vector<String> tmp = new Vector<>();
 		for (int i = 0; i < sentence.size(); i++) {
-			String tmp = sentence.get(i).word;
-//	            System.out.println(tmp);
-			if (this.p_dat.getInfo(tmp) >= 0) continue;
+			WordWithTag tagged = sentence.get(i);
+			StringBuilder sb = new StringBuilder(tagged.word);
+			if (this.p_dat.getInfo(sb.toString()) >= 0) continue;
 
-			//std::cout<<tmp<<std::endl;
-
-			tmpVec.clear();
-			int j;
-			for (j = i + 1; j < sentence.size(); j++) {
-				tmp += sentence.get(j).word;
-				if (this.p_dat.getInfo(tmp) >= 0) {
-					break;
-				}
-				tmpVec.add(tmp);
-			}
-			int vecSize = (int) tmpVec.size();
-
-			//std::cout<<vecSize<<std::endl;
-
-			for (int k = vecSize - 1; k >= 0; k--) {
-				tmp = tmpVec.get(k);
-				//std::cout<<k<<":"<<tmp<<std::endl;
-				if (this.p_dat.match(tmp) != -1) {
-					//std::cout<<p_dat->match(tmp)<<std::endl;
-					for (j = i + 1; j < i + k + 2; j++) {
-						sentence.get(i).word += sentence.get(j).word;
-					}
-					for (j = i + k + 1; j > i; j--) {
-						sentence.remove(j);
-					}
-//	                    System.out.println(sentence.get(i).word);
-//	                    System.out.println(sentence.get(i).tag);
-					sentence.get(i).tag = this.tag;
-					break;
-				}
+			tmp.clear();
+			for (int j = i + 1; j < sentence.size(); j++) {
+				sb.append(sentence.get(j).word);
+				if (this.p_dat.getInfo(sb.toString()) >= 0) break;
+				tmp.add(sb.toString());
 			}
 
+			int k = tmp.size() - 1;
+			for (; k >= 0 && this.p_dat.match(tmp.get(k)) == -1; k--) ;
+			if (k >= 0) {
+				sb.setLength(0);
+				for (int j = i; j < i + k + 2; j++) sb.append(sentence.get(j).word);
+				tagged.word = sb.toString();
+				tagged.tag = this.tag;
+
+				for (int j = i + k + 1; j > i; j--) sentence.remove(j);
+			}
 		}
-		tmpVec.clear();
-	}
-
-	public void adjustSame(TaggedSentence sentence) {
-		if (this.p_dat == null) return;
-		Vector<String> tmpVec = new Vector<>();
-		for (int i = 0; i < sentence.size(); i++) {
-			String tmp = sentence.get(i).word;
-			if (this.p_dat.getInfo(tmp) >= 0) continue;
-
-			if (this.p_dat.match(sentence.get(i).word) != -1) {
-				sentence.get(i).tag = this.tag;
-			}
-
-		}
-		tmpVec.clear();
 	}
 }
