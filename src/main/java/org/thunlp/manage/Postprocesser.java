@@ -1,19 +1,16 @@
-package manage;
+package org.thunlp.manage;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Vector;
 
-import base.Dat;
-import base.DatMaker;
-import base.KeyValue;
-import base.Raw;
-import base.SegmentedSentence;
-import base.TaggedSentence;
+import org.thunlp.base.Dat;
+import org.thunlp.base.DatMaker;
+import org.thunlp.base.KeyValue;
+import org.thunlp.base.SegmentedSentence;
+import org.thunlp.base.TaggedSentence;
 
 public class Postprocesser {
 	private Dat p_dat;

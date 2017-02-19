@@ -6,7 +6,7 @@
  * filename：Node.java  
  * description：  
  */
-package base;
+package org.thunlp.base;
 
 /**
  * topological information about a node

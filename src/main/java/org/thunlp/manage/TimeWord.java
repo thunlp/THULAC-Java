@@ -1,9 +1,9 @@
-package manage;
+package org.thunlp.manage;
 
 import java.util.HashSet;
 
-import base.SegmentedSentence;
-import base.TaggedSentence;
+import org.thunlp.base.SegmentedSentence;
+import org.thunlp.base.TaggedSentence;
 
 public class TimeWord {
 		HashSet<Integer> arabicNumSet;

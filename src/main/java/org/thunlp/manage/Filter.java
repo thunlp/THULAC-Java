@@ -1,11 +1,11 @@
-package manage;
+package org.thunlp.manage;
 
 import java.io.IOException;
 import java.util.HashSet;
 
-import base.Dat;
-import base.SegmentedSentence;
-import base.TaggedSentence;
+import org.thunlp.base.Dat;
+import org.thunlp.base.SegmentedSentence;
+import org.thunlp.base.TaggedSentence;
 
 public class Filter {
 	    Dat xu_dat;

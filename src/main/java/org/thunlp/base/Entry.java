@@ -6,7 +6,7 @@
  * filename：Entry.java  
  * description：  
  */
-package base;
+package org.thunlp.base;
 
 public class Entry {
 	public int base;

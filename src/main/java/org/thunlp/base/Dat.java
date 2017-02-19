@@ -1,4 +1,4 @@
-package base;
+package org.thunlp.base;
 
 import java.io.BufferedWriter;
 import java.io.File;

@@ -6,14 +6,14 @@
  * filename锛�CBNGramFeature.java  
  * description锛�  
  */
-package character;
+package org.thunlp.character;
 
 import java.util.Vector;
 
-import base.Counter;
-import base.Dat;
-import base.Entry;
-import base.Indexer;
+import org.thunlp.base.Counter;
+import org.thunlp.base.Dat;
+import org.thunlp.base.Entry;
+import org.thunlp.base.Indexer;
 
 
 public class CBNGramFeature {

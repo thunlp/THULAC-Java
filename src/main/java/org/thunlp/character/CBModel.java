@@ -6,7 +6,7 @@
  * filename锛�CBModel.java  
  * description锛�  
  */
-package character;
+package org.thunlp.character;
 
 import java.io.File;
 import java.io.FileInputStream;

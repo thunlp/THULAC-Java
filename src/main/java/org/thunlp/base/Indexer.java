@@ -6,7 +6,7 @@
  * filename：Indexer.java  
  * description：  
  */
-package base;
+package org.thunlp.base;
 
 import java.util.HashMap;
 import java.util.Vector;

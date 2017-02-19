@@ -6,7 +6,7 @@
  * filename锛�Counter.java  
  * description锛�  
  */
-package base;
+package org.thunlp.base;
 
 import java.util.HashMap;
 

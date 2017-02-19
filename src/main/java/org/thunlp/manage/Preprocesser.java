@@ -1,17 +1,15 @@
-package manage;
+package org.thunlp.manage;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.Vector;
 
-import base.Dat;
-import base.POCGraph;
-import base.Raw;
-import base.TaggedSentence;
+import org.thunlp.base.POCGraph;
+import org.thunlp.base.Raw;
+import org.thunlp.base.TaggedSentence;
 
 public class Preprocesser {
 	HashMap<Integer,Integer> t2s;

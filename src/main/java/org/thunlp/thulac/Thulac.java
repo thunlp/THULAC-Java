@@ -1,11 +1,11 @@
-package thulac;
+package org.thunlp.thulac;
 
-import base.POCGraph;
-import base.SegmentedSentence;
-import base.TaggedSentence;
-import base.WordWithTag;
-import character.CBTaggingDecoder;
-import manage.*;
+import org.thunlp.base.POCGraph;
+import org.thunlp.base.SegmentedSentence;
+import org.thunlp.base.TaggedSentence;
+import org.thunlp.base.WordWithTag;
+import org.thunlp.character.CBTaggingDecoder;
+import org.thunlp.manage.*;
 
 import java.io.*;
 import java.util.Objects;
@@ -208,7 +208,6 @@ public class Thulac {
 		}
 		long endTime = System.currentTimeMillis();
 		System.out.println("程序运行时间：" + (endTime - startTime) + "ms");
-
 	}
 
 	private static Vector<String> getRaw(BufferedReader reader, int maxLength) {

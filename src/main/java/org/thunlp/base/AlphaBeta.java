@@ -6,7 +6,7 @@
  * filename锛�AlphaBeta.java  
  * description锛�  
  */
-package base;
+package org.thunlp.base;
 
 
 //a structure for alphas and betas

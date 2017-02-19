@@ -6,7 +6,7 @@
  * filename：KeyValue.java  
  * description：  
  */
-package base;
+package org.thunlp.base;
 
 public class KeyValue {
 	public String key;

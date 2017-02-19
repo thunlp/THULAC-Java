@@ -1,9 +1,9 @@
-package manage;
+package org.thunlp.manage;
 
 import java.io.IOException;
 
-import base.Dat;
-import base.TaggedSentence;
+import org.thunlp.base.Dat;
+import org.thunlp.base.TaggedSentence;
 
 public class VerbWord {
 	    Dat vM_dat;

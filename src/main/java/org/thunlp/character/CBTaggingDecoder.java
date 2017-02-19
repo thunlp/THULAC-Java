@@ -6,7 +6,7 @@
  * filename锛�CBTaggingDecoder.java  
  * description锛�  
  */
-package character;
+package org.thunlp.character;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -14,14 +14,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Vector;
 
-import base.AlphaBeta;
-import base.Dat;
-import base.Node;
-import base.POCGraph;
-import base.Raw;
-import base.SegmentedSentence;
-import base.TaggedSentence;
-import base.WordWithTag;
+import org.thunlp.base.AlphaBeta;
+import org.thunlp.base.Dat;
+import org.thunlp.base.Node;
+import org.thunlp.base.POCGraph;
+import org.thunlp.base.SegmentedSentence;
+import org.thunlp.base.TaggedSentence;
+import org.thunlp.base.WordWithTag;
 
 public class CBTaggingDecoder {
 

@@ -6,7 +6,7 @@
  * filename：DatMaker.java  
  * description：  
  */
-package base;
+package org.thunlp.base;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
