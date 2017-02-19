@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Filter {
+public class Filter implements IAdjustPass {
 	private static final Set<String> ALLOWED_TAGS = new HashSet<>(Arrays.asList(
 			"n", "np", "ns", "ni", "nz", "v", "a", "id", "t", "uw"));
 	private static final String ARABIC_NUMBER_CODE_POINTS =
@@ -28,6 +28,7 @@ public class Filter {
 		this.time_dat = new Dat(timeWordFile);
 	}
 
+	@Override
 	public void adjust(List<TaggedWord> sentence) {
 		if (this.xu_dat == null || this.time_dat == null) return;
 

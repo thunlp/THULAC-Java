@@ -12,7 +12,7 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Vector;
 
-public class Postprocesser {
+public class Postprocesser implements IAdjustPass {
 	private Dat p_dat;
 	private String tag;
 
@@ -43,6 +43,7 @@ public class Postprocesser {
 		} else this.p_dat = new Dat(filename);
 	}
 
+	@Override
 	public void adjust(List<TaggedWord> sentence) {
 		if (this.p_dat == null) return;
 

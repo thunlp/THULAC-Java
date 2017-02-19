@@ -5,7 +5,7 @@ import org.thunlp.util.StringHelper;
 
 import java.util.List;
 
-public class TimeWord {
+public class TimeWord implements IAdjustPass {
 	private static final String ARABIC_NUMBER_CODE_POINTS =
 			StringHelper.toString(48, 49, 50, 51, 52, 53, 54, 55, 56, 57,
 					65296, 65297, 65298, 65299, 65300, 65301, 65302, 65303, 65304, 65305);
@@ -48,6 +48,7 @@ public class TimeWord {
 		return word.length() >= 5 && word.startsWith("http");
 	}
 
+	@Override
 	public void adjust(List<TaggedWord> sentence) {
 		processTimeWords(sentence);
 		processHttpWords(sentence);

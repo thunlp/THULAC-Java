@@ -428,7 +428,7 @@ public class Preprocesser {
 		int cleanAndT2S(RawSentence& sentence, RawSentence& senClean, POCGraph& graph){
 	        senClean.clear();
 	        graph.clear();
-	        bool hasSpace = false;		//use to check whether the char is a space 
+	        bool hasSpace = false;		//use to check whether the char is a space
 			bool hasOther = false;		//use to check whether isOther(char);
 			bool hasSinglePun = false;	//use to check whether isSinglePun(char);
 			bool hasHttp = false;		//use to check whether isHttp(char);
@@ -473,7 +473,7 @@ public class Preprocesser {
 							if(hasSinglePun){
 								senClean.push_back(getT2S(c));
 								graph.push_back(9);
-							}else{						
+							}else{
 								if(!graph.back()) graph.back() = 7;
 								senClean.push_back(getT2S(c));
 								graph.push_back(2);
@@ -500,7 +500,7 @@ public class Preprocesser {
 							senClean.push_back(getT2S(c));
 							graph.push_back(9);
 							hasSinglePun = false;
-						}else{					
+						}else{
 							senClean.push_back(getT2S(c));
 							graph.push_back(15);
 						}
@@ -535,7 +535,7 @@ public class Preprocesser {
 				httpVec.push_back(tmpRaw);
 				httpStartVec.push_back(httpStart);
 			}
-			
+
 			std::ostringstream ost;
 			std::string str;
 			for(int i = 0 ; i < httpVec.size(); i ++){
@@ -547,16 +547,16 @@ public class Preprocesser {
 					int start = httpStartVec[i];
 					int size = str.size();
 					//std::cout<<std::endl<<sentence<<":Here:"<<str<<":"<<start<<":"<<size<<":"<<graph.size()<<std::endl;
-					
+
 					graph[start] = 1;
 					for(int j = start + 1; j < start + size - 1; j ++){
 						graph[j] = 2;
 					}
 					graph[start + size - 1] = 4;
-					
+
 				}
 			}
-			
+
 			if(graph.size()!=0){
 	            graph[0]&=9;
 	            graph.back()&=12;

@@ -6,7 +6,7 @@ import org.thunlp.base.TaggedWord;
 import java.io.IOException;
 import java.util.List;
 
-public class VerbWord {
+public class VerbWord implements IAdjustPass {
 	Dat vM_dat;
 	Dat vD_dat;
 	String tag_v;
@@ -17,7 +17,7 @@ public class VerbWord {
 		this.tag_v = "v";
 	}
 
-
+	@Override
 	public void adjust(List<TaggedWord> sentence) {
 		if ((this.vM_dat == null) || (this.vD_dat == null)) return;
 		for (int i = 0; i < sentence.size() - 1; i++) {
@@ -32,6 +32,4 @@ public class VerbWord {
 			}
 		}
 	}
-
-
 }

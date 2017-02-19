@@ -7,13 +7,14 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
-public class Punctuation {
+public class Punctuation implements IAdjustPass {
 	private Dat p_dat;
 
 	public Punctuation(String filename) throws IOException {
 		this.p_dat = new Dat(filename);
 	}
 
+	@Override
 	public void adjust(List<TaggedWord> sentence) {
 		if (this.p_dat == null) return;
 

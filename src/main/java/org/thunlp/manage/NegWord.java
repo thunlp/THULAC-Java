@@ -7,13 +7,14 @@ import org.thunlp.util.StringHelper;
 import java.io.IOException;
 import java.util.List;
 
-public class NegWord {
+public class NegWord implements IAdjustPass {
 	private Dat neg_dat;
 
 	public NegWord(String filename) throws IOException {
 		this.neg_dat = new Dat(filename);
 	}
 
+	@Override
 	public void adjust(List<TaggedWord> sentence) {
 		if (this.neg_dat == null) return;
 
