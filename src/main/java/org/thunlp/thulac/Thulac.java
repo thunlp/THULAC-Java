@@ -58,13 +58,15 @@ public class Thulac {
 
 		POCGraph pocCands = new POCGraph();
 		TaggedSentence tagged = new TaggedSentence();
-//		SegmentedSentence segmented = new SegmentedSentence();
 
 		CBTaggingDecoder cwsTaggingDecoder = new CBTaggingDecoder();
 		cwsTaggingDecoder.threshold = segOnly ? 0 : 10000;
 		cwsTaggingDecoder.separator = separator;
-		cwsTaggingDecoder.init((prefix + "cws_model.bin"), (prefix + "cws_dat.bin"),
-				(prefix + "cws_label.txt"));
+		if (segOnly)
+			cwsTaggingDecoder.init(prefix + "cws_model.bin", prefix + "cws_dat.bin",
+					prefix + "cws_label.txt");
+		else cwsTaggingDecoder.init(prefix + "model_c_model.bin",
+				prefix + "model_c_dat.bin", prefix + "model_c_label.txt");
 		cwsTaggingDecoder.setLabelTrans();
 
 		Preprocesser preprocesser = new Preprocesser();
@@ -98,12 +100,12 @@ public class Thulac {
 				if (userDict != null) userDict.adjust(tagged);
 				if (useFilter) filter.adjust(tagged);
 
-				if (segOnly)
-					for (WordWithTag word : tagged) {
+				for (WordWithTag word : tagged) {
+					if (segOnly)
 						out.print(word.word);
-						out.print(' ');
-					}
-				else for (WordWithTag word : tagged) word.print(out);
+					else out.print(word);
+					out.print(' ');
+				}
 			}
 			out.println();
 		}

@@ -360,20 +360,6 @@ public class CBTaggingDecoder {
 		return 1;
 	}
 
-//	public int get_seg_result(SegmentedSentence segged) {
-//		segged.clear();
-//		for (int i = 0; i < this.len; i++) {
-//			if ((i == 0) || (this.labelInfo[this.result[i]].charAt(
-//					0) == '0') || (this.labelInfo[this.result[i]].charAt(0) == '3')) {
-//				segged.add("");
-//			}
-//			String tmp = segged.lastElement() + this.sequence.charAt(i);
-//			segged.remove(segged.size() - 1);
-//			segged.add(tmp);
-//		}
-//		return 1;
-//	}
-
 	public void cs() {
 		for (int j = 0; j < 1000; j++) {
 			System.out.print(this.dat.dat.get(j).check);
