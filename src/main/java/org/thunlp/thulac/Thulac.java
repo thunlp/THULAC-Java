@@ -17,16 +17,16 @@ import java.util.regex.Pattern;
 
 public class Thulac {
 	public static void main(String[] args) throws IOException {
-		// passes
-		List<IAdjustPass> passes = new ArrayList<>();
-
 		// params
 		String modelDir = "models/";
-		Character separator = '_';
+		char separator = '_';
+		String userDict = null;
+
 		// flags
 		boolean useT2S = false;
 		boolean segOnly = false;
 		boolean useFilter = false;
+
 		// IO
 		Scanner in = null;
 		PrintStream out = System.out;
@@ -38,7 +38,7 @@ public class Thulac {
 					useT2S = true;
 					break;
 				case "-user":
-					passes.add(new Postprocesser(args[++c], "uw", true));
+					userDict = args[++c];
 					break;
 				case "-deli":
 					separator = args[++c].charAt(0);
@@ -63,13 +63,23 @@ public class Thulac {
 			}
 		if (in == null) in = new Scanner(System.in);
 
-		POCGraph pocGraph = new POCGraph();
+		run(modelDir, separator, useT2S, segOnly, useFilter, userDict, in, out);
 
+		// finally
+		in.close();
+		out.close();
+	}
+
+	public static void run(
+			String modelDir, char separator,
+			boolean useT2S, boolean segOnly, boolean useFilter,
+			String userDict, Scanner in, PrintStream out) throws IOException {
 		// segmentation
+		POCGraph pocGraph = new POCGraph();
 		CBTaggingDecoder cwsTaggingDecoder = new CBTaggingDecoder();
 		cwsTaggingDecoder.threshold = segOnly ? 0 : 10000;
 		cwsTaggingDecoder.separator = separator;
-		String prefix = modelDir + (segOnly ? "cws_" : "model_c");
+		String prefix = modelDir + (segOnly ? "cws_" : "model_c_");
 		cwsTaggingDecoder.init(prefix + "model.bin", prefix + "dat.bin",
 				prefix + "label.txt");
 		cwsTaggingDecoder.setLabelTrans();
@@ -79,11 +89,13 @@ public class Thulac {
 		preprocesser.setT2SMap(modelDir + "t2s.dat");
 
 		// adjustment passes
+		List<IAdjustPass> passes = new ArrayList<>();
 		passes.add(new Postprocesser(modelDir + "ns.dat", "ns", false)); // nsDict
 		passes.add(new Postprocesser(modelDir + "idiom.dat", "i", false)); // idiomDict
 		passes.add(new Punctuation(modelDir + "singlepun.dat")); // punctuation
 		passes.add(new TimeWord()); // timeword
 		passes.add(new NegWord(modelDir + "neg.dat")); // negword
+		if (userDict != null) passes.add(new Postprocesser(userDict, "uw", true));
 		if (useFilter) // filter
 			passes.add(new Filter(modelDir + "xu.dat", modelDir + "time.dat"));
 
@@ -110,10 +122,6 @@ public class Thulac {
 			}
 			out.println();
 		}
-
-		// finally
-		in.close();
-		out.close();
 	}
 
 	private static final int maxLength = 20000;
