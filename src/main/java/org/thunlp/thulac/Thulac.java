@@ -63,17 +63,18 @@ public class Thulac {
 			}
 		if (in == null) in = new Scanner(System.in);
 
-		POCGraph pocCands = new POCGraph();
+		POCGraph pocGraph = new POCGraph();
+
+		// segmentation
 		CBTaggingDecoder cwsTaggingDecoder = new CBTaggingDecoder();
 		cwsTaggingDecoder.threshold = segOnly ? 0 : 10000;
 		cwsTaggingDecoder.separator = separator;
-		if (segOnly)
-			cwsTaggingDecoder.init(modelDir + "cws_model.bin", modelDir + "cws_dat.bin",
-					modelDir + "cws_label.txt");
-		else cwsTaggingDecoder.init(modelDir + "model_c_model.bin",
-				modelDir + "model_c_dat.bin", modelDir + "model_c_label.txt");
+		String prefix = modelDir + (segOnly ? "cws_" : "model_c");
+		cwsTaggingDecoder.init(prefix + "model.bin", prefix + "dat.bin",
+				prefix + "label.txt");
 		cwsTaggingDecoder.setLabelTrans();
 
+		// preprocess
 		Preprocesser preprocesser = new Preprocesser();
 		preprocesser.setT2SMap(modelDir + "t2s.dat");
 
@@ -84,19 +85,19 @@ public class Thulac {
 		passes.add(new TimeWord()); // timeword
 		passes.add(new NegWord(modelDir + "neg.dat")); // negword
 		if (useFilter) // filter
-			passes.add(new Filter(modelDir + "xu.dat", modelDir + "time" + ".dat"));
+			passes.add(new Filter(modelDir + "xu.dat", modelDir + "time.dat"));
 
 		// main loop
-		for (Vector<String> vec = getRaw(in); vec != null; vec = getRaw(in)) {
+		for (List<String> vec = getRaw(in); vec != null; vec = getRaw(in)) {
 			for (String raw : vec) {
 				// preprocess
-				raw = preprocesser.clean(raw, pocCands);
+				raw = preprocesser.clean(raw, pocGraph);
 				if (useT2S) raw = preprocesser.T2S(raw);
 				if (raw.isEmpty()) continue;
 
 				// segmentation
 				List<TaggedWord> tagged = new Vector<>();
-				cwsTaggingDecoder.segment(raw, pocCands, tagged);
+				cwsTaggingDecoder.segment(raw, pocGraph, tagged);
 
 				// adjustment passes
 				for (IAdjustPass pass : passes) pass.adjust(tagged);
@@ -116,20 +117,20 @@ public class Thulac {
 	}
 
 	private static final int maxLength = 20000;
-	private static final Pattern punctuations =
+	private static final Pattern cutoffPattern =
 			Pattern.compile(".{0," + (maxLength - 1) + "}([。？！；;!?]|$)");
 
-	private static Vector<String> getRaw(Scanner scanner) {
+	private static List<String> getRaw(Scanner scanner) {
 		if (!scanner.hasNextLine()) return null;
 		String line = scanner.nextLine();
 
-		Vector<String> rawStrings = new Vector<>();
-		if (line.length() < maxLength)
-			rawStrings.add(line);
-		else {
-			Matcher matcher = punctuations.matcher(line);
+		List<String> rawStrings = new Vector<>();
+		if (line.length() < maxLength) rawStrings.add(line);
+		else { // cut off the line into short strings
+			Matcher matcher = cutoffPattern.matcher(line);
 			while (matcher.find()) rawStrings.add(matcher.group());
 		}
+
 		return rawStrings;
 	}
 }
