@@ -7,8 +7,11 @@ import org.thunlp.base.WordWithTag;
 import org.thunlp.character.CBTaggingDecoder;
 import org.thunlp.manage.*;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Objects;
+import java.util.Scanner;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -110,28 +113,19 @@ public class Thulac {
 			filter = new Filter((prefix + "xu.dat"), (prefix + "time.dat"));
 		}
 
-		BufferedReader reader = null;
-		try {
-			if (!Objects.equals(input_file, "")) {
-				reader = new BufferedReader(
-						new InputStreamReader(new FileInputStream(new File(input_file)),
-								"UTF8"));
-			} else reader = new BufferedReader(new InputStreamReader(System.in));
+		Scanner in;
+		if (!Objects.equals(input_file, ""))
+			in = new Scanner(new File(input_file), "UTF-8");
+		else in = new Scanner(System.in);
+		PrintStream out = System.out;
+		if (output_file != null && !output_file.isEmpty())
+			out = new PrintStream(output_file);
 
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		FileOutputStream out = null;
-		if (!Objects.equals(output_file, "")) {
-			out = new FileOutputStream(output_file);
-		}
-
-		long startTime = System.currentTimeMillis();//获取当前时间
+		long startTime = System.currentTimeMillis(); //获取当前时间
 		Vector<String> vec;
 		while (true) {
-			vec = getRaw(reader, maxLength);
-			if (vec.size() == 0) break;
+			vec = getRaw(in, maxLength);
+			if (vec == null) break;
 //	    	if(oiraw==null) break;
 			for (int i = 0; i < vec.size(); i++) {
 				oiraw = vec.get(i);
@@ -158,26 +152,9 @@ public class Thulac {
 							filter.adjust(segged);
 						}
 
-						if (out != null) {
-							for (int j = 0; j < segged.size(); j++) {
-								byte[] buff;
-								buff = segged.get(j).getBytes();
-								try {
-									out.write(buff, 0, buff.length);
-								} catch (IOException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-								if (j != segged.size() - 1) out.write(' ');
-							}
-							if (i == vec.size() - 1) out.write('\n');
-							else out.write(' ');
-						} else {
-							System.out.print(segged.get(i));
-							for (int j = 1; j < segged.size(); j++)
-								System.out.print(" " + segged.get(j));
-							if (i == vec.size() - 1) System.out.print("\n");
-							else System.out.print(" ");
+						for (String seg : segged) {
+							out.println(seg);
+							out.print(' ');
 						}
 					} else {
 						tagging_decoder.segment(raw, poc_cands, tagged);
@@ -193,33 +170,23 @@ public class Thulac {
 							filter.adjust(tagged);
 						}
 
-						if (out != null) {
-							for (WordWithTag aTagged : tagged) aTagged.print(out);
-							if (i == vec.size() - 1) out.write('\n');
-							else out.write(' ');
-						} else {
-							for (WordWithTag aTagged : tagged) aTagged.print();
-							if (i == vec.size() - 1) System.out.print("\n");
-							else System.out.print(" ");
-						}
+						for (WordWithTag aTagged : tagged) aTagged.print(out);
+						out.print(i == vec.size() - 1 ? '\n' : ' ');
 					}
 				}
 			}
 		}
+		in.close();
+		out.close();
 		long endTime = System.currentTimeMillis();
 		System.out.println("程序运行时间：" + (endTime - startTime) + "ms");
 	}
 
-	private static Vector<String> getRaw(BufferedReader reader, int maxLength) {
-		String ans = null;
+	private static Vector<String> getRaw(Scanner scanner, int maxLength) {
+		if (!scanner.hasNextLine()) return null;
+		String ans = scanner.nextLine();
 		Vector<String> ans_vec = new Vector<>();
-		try {
-			ans = reader.readLine();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		if (ans == null) return ans_vec;
+
 		if (ans.length() < maxLength) {
 			ans_vec.add(ans);
 		} else {
