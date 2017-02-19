@@ -30,7 +30,7 @@ public class Filter {
 	public void adjust(TaggedSentence sentence) {
 		if (this.xu_dat == null || this.time_dat == null) return;
 
-		for (int i = sentence.size() - 1; i >= 0; i--) {
+		for (int i = sentence.size() - 1; i >= 0; --i) {
 			String word = sentence.get(i).word;
 			String tag = sentence.get(i).tag;
 
