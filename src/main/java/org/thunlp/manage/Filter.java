@@ -2,137 +2,63 @@ package org.thunlp.manage;
 
 import org.thunlp.base.Dat;
 import org.thunlp.base.TaggedSentence;
+import org.thunlp.util.StringHelper;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Set;
 
 public class Filter {
-	Dat xu_dat;
-	Dat time_dat;
-	HashSet<String> posSet;
-	HashSet<Integer> arabicNumSet;
-	HashSet<Integer> chineseNumSet;
+	private static final Set<String> ALLOWED_TAGS = new HashSet<>(Arrays.asList(
+			"n", "np", "ns", "ni", "nz", "v", "a", "id", "t", "uw"));
+	private static final String ARABIC_NUMBER_CODE_POINTS =
+			StringHelper.toString(48, 49, 50, 51, 52, 53, 54, 55, 56, 57,
+					65296, 65297, 65298, 65299, 65300, 65301, 65302, 65303, 65304, 65305);
+	private static final String CHINESE_NUMBER_CODE_POINTS =
+			StringHelper.toString(12295, 19968, 20108, 19977, 22235,
+					20116, 20845, 19971, 20843, 20061);
+
+	private Dat xu_dat;
+	private Dat time_dat;
 
 	public Filter(String xuWordFile, String timeWordFile) throws IOException {
 		this.xu_dat = new Dat(xuWordFile);
 		this.time_dat = new Dat(timeWordFile);
-		this.posSet = new HashSet<>();
-		this.arabicNumSet = new HashSet<>();
-		this.chineseNumSet = new HashSet<>();
-		String POS_RESERVES[] = {"n", "np", "ns", "ni", "nz", "v", "a", "id", "t", "uw"};
-		for (int i = 0; i < 10; i++) {
-			this.posSet.add(POS_RESERVES[i]);
-		}
-		for (int i = 48; i < 58; i++) {
-			this.arabicNumSet.add(i);
-		}
-		for (int i = 65296; i < 65306; i++) {
-			this.arabicNumSet.add(i);
-		}
-		int chineseNums[] = {12295, 19968, 20108, 19977, 22235, 20116, 20845, 19971, 20843, 20061};
-		for (int i = 0; i < 10; i++) {
-			this.chineseNumSet.add(chineseNums[i]);
-		}
 	}
-
-//	    public void adjust(SegmentedSentence sentence){
-//	        if(xu_dat == null || time_dat == null)return;
-//			int size = sentence.size();
-//			String word;
-//			int count = 0;
-//			boolean checkArabic = false;
-//			boolean checkChinese = false;
-//
-//			for(int i = size - 1; i >= 0; i --){
-//				word = sentence.get(i);
-//				//if((word.size() < 2) || (xu_dat->match(word) != -1)){
-//				if(xu_dat.match(word) != -1){
-//					sentence.remove(i);
-//					continue;
-//				}
-//				count = 0;
-//				checkArabic = false;
-//				checkChinese = false;
-//
-//				for(int j = 0; j < word.length(); j ++){
-//					if(arabicNumSet.contains(word.charAt(j))){
-//						checkArabic = true;
-//						break;
-//					}
-//					if(chineseNumSet.contains(word.charAt(j))){
-//						count++;
-//						if(count == 2){
-//							checkChinese = true;
-//							break;
-//						}
-//					}
-//				}
-//				if(checkArabic || checkChinese || (time_dat.match(word) != -1)){
-//					sentence.remove(i);
-//					continue;
-//				}
-//			}
-//
-//			word = "";
-//	    };
 
 	public void adjust(TaggedSentence sentence) {
 		if (this.xu_dat == null || this.time_dat == null) return;
-		int size = sentence.size();
-		String word;
-		String tag;
-		int count = 0;
-		boolean checkArabic = false;
-		boolean checkChinese = false;
 
-		for (int i = size - 1; i >= 0; i--) {
-			word = sentence.get(i).word;
-				/*
-				if(word.size() < 2){
-					sentence.erase(sentence.begin() + i);
-					continue;
-				}
-				*/
-			tag = sentence.get(i).tag;
-			if (this.posSet.contains(tag)) {
-				if (this.xu_dat.match(word) != -1) {
+		for (int i = sentence.size() - 1; i >= 0; i--) {
+			String word = sentence.get(i).word;
+			String tag = sentence.get(i).tag;
+
+			if (ALLOWED_TAGS.contains(tag)) {
+				if (this.xu_dat.match(word) != -1)
 					sentence.remove(i);
-					continue;
-				}
-				if (tag == "t") {
-					count = 0;
-					checkArabic = false;
-					checkChinese = false;
-
-					for (int j = 0; j < word.length(); j++) {
-						if (this.arabicNumSet.contains(word.charAt(j))) {
-							checkArabic = true;
+				else if ("t".equals(tag)) {
+					int count = 0;
+					boolean hasArabicNum = false, hasChineseNum = false;
+					int length = word.codePointCount(0, word.length());
+					for (int j = 0; j < length; j++) {
+						int cp = word.codePointAt(j);
+						if (ARABIC_NUMBER_CODE_POINTS.indexOf(cp) != -1) {
+							hasArabicNum = true;
 							break;
 						}
-						this.chineseNumSet.contains(word.charAt(j));
-						if (this.chineseNumSet.contains(word.charAt(j))) {
-							count++;
+						if (CHINESE_NUMBER_CODE_POINTS.indexOf(cp) != -1) {
+							++count;
 							if (count == 2) {
-								checkChinese = true;
+								hasChineseNum = true;
 								break;
 							}
 						}
 					}
-					if (checkArabic || checkChinese || (this.time_dat.match(
-							word) != -1)) {
-						sentence.remove(i);
-						continue;
-					}
+					if (hasArabicNum || hasChineseNum ||
+							(this.time_dat.match(word) != -1)) sentence.remove(i);
 				}
-			} else {
-				sentence.remove(i);
-				continue;
-			}
-
+			} else sentence.remove(i);
 		}
-
-		word = "";
-		tag = "";
 	}
-
 }
