@@ -113,8 +113,6 @@ public class Thulac {
 		if (output_file != null && !output_file.isEmpty())
 			out = new PrintStream(output_file);
 
-		long startTime = System.currentTimeMillis(); //获取当前时间
-
 		for (
 				Vector<String> vec = getRaw(in);
 				vec != null;
@@ -164,9 +162,6 @@ public class Thulac {
 		}
 		in.close();
 		out.close();
-
-		long endTime = System.currentTimeMillis();
-		System.out.println("程序运行时间：" + (endTime - startTime) + "ms");
 	}
 
 	private static final int maxLength = 20000;
