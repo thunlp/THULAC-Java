@@ -8,6 +8,7 @@ import org.thunlp.character.CBTaggingDecoder;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Vector;
@@ -16,22 +17,28 @@ import java.util.regex.Pattern;
 
 public class Thulac {
 	public static void main(String[] args) throws IOException {
-		// input args
-		String prefix = "models/";
+		// passes
+		List<IAdjustPass> passes = new ArrayList<>();
+
+		// params
+		String modelDir = "models/";
 		Character separator = '_';
+		// flags
 		boolean useT2S = false;
 		boolean segOnly = false;
 		boolean useFilter = false;
+		// IO
 		Scanner in = null;
 		PrintStream out = System.out;
-		Postprocesser userDict = null;
+
+		// process input args
 		for (int c = 0; c < args.length; ++c)
 			switch (args[c]) {
 				case "-t2s":
 					useT2S = true;
 					break;
 				case "-user":
-					userDict = new Postprocesser(args[++c], "uw", true);
+					passes.add(new Postprocesser(args[++c], "uw", true));
 					break;
 				case "-deli":
 					separator = args[++c].charAt(0);
@@ -43,9 +50,9 @@ public class Thulac {
 					useFilter = true;
 					break;
 				case "-model_dir":
-					prefix = args[++c];
-					if (prefix.charAt(prefix.length() - 1) != '/')
-						prefix += '/';
+					modelDir = args[++c];
+					if (modelDir.charAt(modelDir.length() - 1) != '/')
+						modelDir += '/';
 					break;
 				case "-input":
 					in = new Scanner(new File(args[++c]), "UTF-8");
@@ -57,58 +64,53 @@ public class Thulac {
 		if (in == null) in = new Scanner(System.in);
 
 		POCGraph pocCands = new POCGraph();
-		List<TaggedWord> tagged = new Vector<>();
-
 		CBTaggingDecoder cwsTaggingDecoder = new CBTaggingDecoder();
 		cwsTaggingDecoder.threshold = segOnly ? 0 : 10000;
 		cwsTaggingDecoder.separator = separator;
 		if (segOnly)
-			cwsTaggingDecoder.init(prefix + "cws_model.bin", prefix + "cws_dat.bin",
-					prefix + "cws_label.txt");
-		else cwsTaggingDecoder.init(prefix + "model_c_model.bin",
-				prefix + "model_c_dat.bin", prefix + "model_c_label.txt");
+			cwsTaggingDecoder.init(modelDir + "cws_model.bin", modelDir + "cws_dat.bin",
+					modelDir + "cws_label.txt");
+		else cwsTaggingDecoder.init(modelDir + "model_c_model.bin",
+				modelDir + "model_c_dat.bin", modelDir + "model_c_label.txt");
 		cwsTaggingDecoder.setLabelTrans();
 
 		Preprocesser preprocesser = new Preprocesser();
-		preprocesser.setT2SMap((prefix + "t2s.dat"));
-		Postprocesser nsDict = new Postprocesser((prefix + "ns.dat"), "ns", false);
-		Postprocesser idiomDict = new Postprocesser((prefix + "idiom.dat"), "i", false);
+		preprocesser.setT2SMap(modelDir + "t2s.dat");
 
-		Punctuation punctuation = new Punctuation((prefix + "singlepun.dat"));
-		TimeWord timeword = new TimeWord();
-		NegWord negword = new NegWord((prefix + "neg.dat"));
-		Filter filter = null;
-		if (useFilter) {
-			filter = new Filter((prefix + "xu.dat"), (prefix + "time.dat"));
-		}
+		// adjustment passes
+		passes.add(new Postprocesser(modelDir + "ns.dat", "ns", false)); // nsDict
+		passes.add(new Postprocesser(modelDir + "idiom.dat", "i", false)); // idiomDict
+		passes.add(new Punctuation(modelDir + "singlepun.dat")); // punctuation
+		passes.add(new TimeWord()); // timeword
+		passes.add(new NegWord(modelDir + "neg.dat")); // negword
+		if (useFilter) // filter
+			passes.add(new Filter(modelDir + "xu.dat", modelDir + "time" + ".dat"));
 
-		for (
-				Vector<String> vec = getRaw(in);
-				vec != null;
-				vec = getRaw(in)) {
+		// main loop
+		for (Vector<String> vec = getRaw(in); vec != null; vec = getRaw(in)) {
 			for (String raw : vec) {
+				// preprocess
 				raw = preprocesser.clean(raw, pocCands);
 				if (useT2S) raw = preprocesser.T2S(raw);
 				if (raw.isEmpty()) continue;
 
+				// segmentation
+				List<TaggedWord> tagged = new Vector<>();
 				cwsTaggingDecoder.segment(raw, pocCands, tagged);
-				nsDict.adjust(tagged);
-				idiomDict.adjust(tagged);
-				punctuation.adjust(tagged);
-				timeword.adjustDouble(tagged);
-				negword.adjust(tagged);
-				if (userDict != null) userDict.adjust(tagged);
-				if (useFilter) filter.adjust(tagged);
+
+				// adjustment passes
+				for (IAdjustPass pass : passes) pass.adjust(tagged);
 
 				for (TaggedWord word : tagged) {
-					if (segOnly)
-						out.print(word.word);
+					if (segOnly) out.print(word.word);
 					else out.print(word);
 					out.print(' ');
 				}
 			}
 			out.println();
 		}
+
+		// finally
 		in.close();
 		out.close();
 	}
