@@ -1,4 +1,4 @@
-package org.thunlp.manage;
+package org.thunlp.adjustment;
 
 import org.thunlp.base.POCGraph;
 import org.thunlp.base.Raw;

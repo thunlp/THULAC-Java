@@ -3,7 +3,7 @@ package org.thunlp.thulac;
 import org.thunlp.base.POCGraph;
 import org.thunlp.base.TaggedWord;
 import org.thunlp.character.CBTaggingDecoder;
-import org.thunlp.manage.*;
+import org.thunlp.adjustment.*;
 
 import java.io.File;
 import java.io.IOException;

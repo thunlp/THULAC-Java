@@ -1,4 +1,4 @@
-package org.thunlp.manage;
+package org.thunlp.adjustment;
 
 import org.thunlp.base.TaggedWord;
 import org.thunlp.util.StringHelper;
