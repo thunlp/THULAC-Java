@@ -47,14 +47,6 @@ public class Preprocesser {
 			}
 			*/
 
-		// other correspond to ，:65292 。:12290 ？:65311 ！:65281 ：:65306
-		//						；:65307 ‘:8216 ’:8217 “:8220 ”:8221 【:12304 】:12305 、
-		//						:12289 《:12298 》:12299 ~:126 ·:183 @:64 |:124 #:35 ￥:65509
-		//						%:37 ……:8230 8230 &:38 *:42 （:65288 ）:65289 ——:8212 8212 -:45
-		//						+:43 =:61 ...:46 46 46 。。。:12290 12290 12290 ,:44 .:46 <:60 >:62
-		//						?:63 /:47 ~:126 !:33 @:64 ;:59 ::58 ':39 ":34 {:123 }:125 [:91 ]:93
-		//						\:92 |:124 @:64 #:35 $:36 %:37 ^:94 &:38 *:42 (:40 ):41 _:95 -:45 +:43 =:61
-		//						◤:9700 ☆:9734 ★:9733
 		int other[] = {65292, 12290, 65311, 65281, 65306, 65307, 8216, 8217, 8220, 8221, 12304, 12305,
 				12289, 12298, 12299, 126, 183, 64, 124, 35, 65509, 37, 8230, 38, 42, 65288,
 				65289, 8212, 45, 43, 61, 44, 46, 60, 62, 63, 47, 33, 59, 58, 39, 34, 123, 125,
@@ -140,7 +132,8 @@ public class Preprocesser {
 		boolean hasSinglePun = false;    //use to check whether isSinglePun(char);
 		boolean hasHttp = false;        //use to check whether isHttp(char);
 		// boolean hasAt = false;			//use to check whether the char is @
-		boolean hasTitle = false;        //use to check whether the sentence has 《》
+		boolean hasTitle = false;        //use to check whether the sentence has
+		// chinese book title punctations
 		Vector<Integer> httpStartVec = new Vector<>();
 		int httpStart = -1;
 		Vector<Raw> httpVec = new Vector<>();
@@ -620,7 +613,6 @@ public class Preprocesser {
 		Preprocesser preprocesser = new Preprocesser();
 		preprocesser.setT2SMap("models/t2s.dat");
 			/*
-			String testStrings[] = {"���","锛�","锛�",".","?","!"};
 			for(int i = 0; i < 6; i ++){
 				String test = testStrings[i];
 				System.out.println(test);

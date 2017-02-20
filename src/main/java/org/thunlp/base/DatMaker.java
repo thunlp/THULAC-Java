@@ -1,11 +1,3 @@
-/**
- * Created：May 5, 2013 3:45:34 PM  
- * Project：ThulacJava  
- * @author cxx
- * @since JDK 1.6.0_13  
- * filename：DatMaker.java  
- * description：  
- */
 package org.thunlp.base;
 
 import java.io.BufferedReader;
@@ -17,210 +9,216 @@ import java.util.Comparator;
 import java.util.Vector;
 
 public class DatMaker extends Dat {
-	
+
 	public static Comparator<KeyValue> compareWords = new Comparator<KeyValue>() {
 		@Override
 		public int compare(KeyValue first, KeyValue second) {
 			// TODO Auto-generated method stub
 			String firstKey = first.key;
 			String secondKey = second.key;
-			
-			int minSize = (firstKey.length() < secondKey.length()) ? firstKey.length() : secondKey.length();
-			for(int i = 0; i < minSize; i ++){
-				if(firstKey.charAt(i) > secondKey.charAt(i)) return 1;
-				if(firstKey.charAt(i) < secondKey.charAt(i)) return -1;
+
+			int minSize = (firstKey.length() < secondKey.length()) ? firstKey.length() : secondKey
+					.length();
+			for (int i = 0; i < minSize; i++) {
+				if (firstKey.charAt(i) > secondKey.charAt(i)) return 1;
+				if (firstKey.charAt(i) < secondKey.charAt(i)) return -1;
 			}
-			if(firstKey.length() < secondKey.length()){
+			if (firstKey.length() < secondKey.length()) {
 				return -1;
-			}else if(firstKey.length() > secondKey.length()){
+			} else if (firstKey.length() > secondKey.length()) {
 				return 1;
-			}else{
+			} else {
 				return 0;
 			}
 		}
 	};
-	
+
 	private int head;
 	private int tail;
-	
+
 	public DatMaker() {
-		datSize = 1;
-		dat = new Vector<Entry>();
+		this.datSize = 1;
+		this.dat = new Vector<>();
 		Entry entry = new Entry();
 		entry.base = 1;
 		entry.check = -1;
-		dat.add(entry);
-		head = 0;
-		tail = 0;
+		this.dat.add(entry);
+		this.head = 0;
+		this.tail = 0;
 	}
-	
-	
+
+
 	/**
 	 * <p>Title:use</p>
 	 * <p>Description: use [ind] as an entry<p>
+	 *
 	 * @param ind
 	 */
-	public void use(int ind){
-		if(dat.get(ind).check >= 0) System.out.println("cell reused!!");
-		if(dat.get(ind).base == 1){
-			head = dat.get(ind).check;
-		}else{
-			dat.get(-dat.get(ind).base).check = dat.get(ind).check;
+	public void use(int ind) {
+		if (this.dat.get(ind).check >= 0) System.out.println("cell reused!!");
+		if (this.dat.get(ind).base == 1) {
+			this.head = this.dat.get(ind).check;
+		} else {
+			this.dat.get(-this.dat.get(ind).base).check = this.dat.get(ind).check;
 		}
-		if(dat.get(ind).check == -datSize){
-			tail = dat.get(ind).base;
-		}else{
-			dat.get(-dat.get(ind).check).base = dat.get(ind).base;
+		if (this.dat.get(ind).check == -this.datSize) {
+			this.tail = this.dat.get(ind).base;
+		} else {
+			this.dat.get(-this.dat.get(ind).check).base = this.dat.get(ind).base;
 		}
-		dat.get(ind).check = ind;
+		this.dat.get(ind).check = ind;
 	}
-	
-	public void extend(){
-		int oldSize = datSize;
-		datSize *= 2;
-		for(int i = 0; i < oldSize; i ++){
+
+	public void extend() {
+		int oldSize = this.datSize;
+		this.datSize *= 2;
+		for (int i = 0; i < oldSize; i++) {
 			Entry entry = new Entry();
-			entry.base = - (oldSize + i - 1);
-			entry.check = - (oldSize + i + 1);
-			dat.add(entry);
+			entry.base = -(oldSize + i - 1);
+			entry.check = -(oldSize + i + 1);
+			this.dat.add(entry);
 		}
-		dat.get(oldSize).base = tail;
-		if(-tail > 0) dat.get(-tail).check = - oldSize;
-		tail = - (oldSize * 2 - 1);
+		this.dat.get(oldSize).base = this.tail;
+		if (-this.tail > 0) this.dat.get(-this.tail).check = -oldSize;
+		this.tail = -(oldSize * 2 - 1);
 	}
-	
-	public void shrink(){
-		int last = datSize - 1;
-		while(dat.get(last).check < 0){
-			dat.remove(last);
-			last --;
+
+	public void shrink() {
+		int last = this.datSize - 1;
+		while (this.dat.get(last).check < 0) {
+			this.dat.remove(last);
+			last--;
 		}
-		datSize = last + 1;
+		this.datSize = last + 1;
 	}
-	
-	public int alloc(Vector<Integer> offsets){
+
+	public int alloc(Vector<Integer> offsets) {
 		int size = offsets.size();
-		int base = - head;
-		while(true){
-			if(base == datSize) extend();
-			if(size != 0){
-				while((base + offsets.get(size - 1)) >= datSize){
+		int base = -this.head;
+		while (true) {
+			if (base == this.datSize) extend();
+			if (size != 0) {
+				while ((base + offsets.get(size - 1)) >= this.datSize) {
 					extend();
 				}
 			}
 			boolean flag = true;
-			if(dat.get(base).check >= 0){
+			if (this.dat.get(base).check >= 0) {
 				flag = false;
-			}else{
-				for(int i = 0 ; i < size; i ++){
-					if(dat.get(base + offsets.get(i)).check >= 0){// used
+			} else {
+				for (int i = 0; i < size; i++) {
+					if (this.dat.get(base + offsets.get(i)).check >= 0) {// used
 						flag = false;
 						break;
 					}
 				}
 			}
-			if(flag){
+			if (flag) {
 				use(base);
-				for(int i = 0; i < size; i ++){
+				for (int i = 0; i < size; i++) {
 					use(base + offsets.get(i));
 				}
 				return base;//got it and return it
 			}
-			if(dat.get(base).check == -datSize){
+			if (this.dat.get(base).check == -this.datSize) {
 				extend();
 			}
-			base = -dat.get(base).check;
+			base = -this.dat.get(base).check;
 		}
 	}
-	
-	public void genChildren(Vector<KeyValue> lexicon, int start, String prefix, Vector<Integer> children){
+
+	public void genChildren(
+			Vector<KeyValue> lexicon, int start, String prefix,
+			Vector<Integer> children) {
 		children.clear();
 		int l = prefix.length();
-		for(int ind = start; ind < lexicon.size(); ind ++){
+		for (int ind = start; ind < lexicon.size(); ind++) {
 			String word = lexicon.get(ind).key;
-			if(word.length() < l){
+			if (word.length() < l) {
 				return;
 			}
-			for(int i = 0; i < l; i ++){
-				if(word.charAt(i) != prefix.charAt(i)){
+			for (int i = 0; i < l; i++) {
+				if (word.charAt(i) != prefix.charAt(i)) {
 					return;
 				}
 			}
-			if(word.length() > l){
-				if(children.isEmpty() || (((int)word.charAt(l)) != children.lastElement())){
-					children.add((int)word.charAt(l));
+			if (word.length() > l) {
+				if (children.isEmpty() || (((int) word.charAt(
+						l)) != children.lastElement())) {
+					children.add((int) word.charAt(l));
 				}
 			}
 		}
 	}
-	
-	public int assign(int check, Vector<Integer> offsets, boolean isWord){
+
+	public int assign(int check, Vector<Integer> offsets, boolean isWord) {
 		int base = alloc(offsets);
-		dat.get(base).base = 0;
-		if(isWord){
-			dat.get(base).check = check;
-		}else{
-			dat.get(base).check = base;
+		this.dat.get(base).base = 0;
+		if (isWord) {
+			this.dat.get(base).check = check;
+		} else {
+			this.dat.get(base).check = base;
 		}
-		
-		for(int i = 0; i < offsets.size(); i ++){
-			dat.get(base + offsets.get(i)).base = 0;
-			dat.get(base + offsets.get(i)).check = check;
+
+		for (int i = 0; i < offsets.size(); i++) {
+			this.dat.get(base + offsets.get(i)).base = 0;
+			this.dat.get(base + offsets.get(i)).check = check;
 		}
-		dat.get(check).base = base;
-		
+		this.dat.get(check).base = base;
+
 		return base;
 	}
-	
-	public void makeDat(Vector<KeyValue> lexicon){
+
+	public void makeDat(Vector<KeyValue> lexicon) {
 		Collections.sort(lexicon, compareWords);
 		int size = lexicon.size();
 		String prefix = "";
-		Vector<Integer> children = new Vector<Integer>();
+		Vector<Integer> children = new Vector<>();
 		genChildren(lexicon, 0, prefix, children);
 		int base = assign(0, children, true);
-		dat.get(0).base = base;
-		for(int i = 0; i < size; i ++){
+		this.dat.get(0).base = base;
+		for (int i = 0; i < size; i++) {
 			String word = lexicon.get(i).key;
 			int off = getInfo(word);
-			if(off <= 0){
+			if (off <= 0) {
 				off = word.length();
 			}
-			for(int offset = off; offset <= word.length(); offset ++){
+			for (int offset = off; offset <= word.length(); offset++) {
 				prefix = word.substring(0, offset);
-				int pBase = - getInfo(prefix);
+				int pBase = -getInfo(prefix);
 				genChildren(lexicon, i, prefix, children);
 				base = assign(pBase, children, (offset == word.length()));
 			}
 			off = -getInfo(word);
-			dat.get(dat.get(off).base).base = lexicon.get(i).value;
-			if((i != 0) && (i % 100000 == 0)){
-				System.out.println(((double)i/(double)size));
+			this.dat.get(this.dat.get(off).base).base = lexicon.get(i).value;
+			if ((i != 0) && (i % 100000 == 0)) {
+				System.out.println(((double) i / (double) size));
 			}
 		}
 	}
-	
-	public static void main(String[] args) throws IOException{
+
+	public static void main(String[] args) throws IOException {
 		DatMaker dm = new DatMaker();
-		Vector<KeyValue> lexicon = new Vector<KeyValue>();
-		
+		Vector<KeyValue> lexicon = new Vector<>();
+
 		String filename = "res/pun.txt";
-		BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(filename),"UTF8"));
+		BufferedReader in = new BufferedReader(
+				new InputStreamReader(new FileInputStream(filename), "UTF8"));
 		String line = "";
 		int id = 0;
-		while((line = in.readLine()) != null){
-			if(line.equals("")){
+		while ((line = in.readLine()) != null) {
+			if (line.equals("")) {
 				continue;
 			}
-			
+
 			lexicon.add(new KeyValue(line.trim(), id));
-			id ++;
+			id++;
 		}
 		in.close();
-		System.out.println(lexicon.size()+" words are loaded.");
+		System.out.println(lexicon.size() + " words are loaded.");
 		dm.makeDat(lexicon);
 		dm.shrink();
-		System.out.println("size of DAT "+dm.getDatSize());
+		System.out.println("size of DAT " + dm.getDatSize());
 		dm.save("res/javaPun.dat");
 	}
 }

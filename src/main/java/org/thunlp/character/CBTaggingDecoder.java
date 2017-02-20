@@ -334,8 +334,8 @@ public class CBTaggingDecoder {
 //	        System.out.printf("%d ",values[i]);
 //	    }
 //		System.out.println();
-		putValues();//检索出特征值并初始化放在values数组里
-		dp();//动态规划搜索最优解放在result数组里
+		putValues();// calculate eigenvalue and initialize and store them in values
+		dp();// DP search for the best answer and store it in result
 
 		for (int i = 0; i < (int) raw.length(); i++) {
 			this.allowedLabelLists[i] = null;
@@ -351,12 +351,13 @@ public class CBTaggingDecoder {
 				}
 //	            System.out.println(ts.lastElement().word);
 				offset = i + 1;
-				if ((this.labelInfo[this.result[i]] + 1) != null) { //输出标签（如果有的话）
+				if ((this.labelInfo[this.result[i]] + 1) != null) { // output tags if any
 					ts.get(ts.size() - 1).tag = this.labelInfo[this.result[i]].substring(
 							1);
 //	                System.out.printf("%s\n",labelInfo[result[i]]+1);
 				}
-				//if((i+1)<len)putchar(' ');//在分词位置输出空格
+				//if((i+1)<len)putchar(' ');// output a whitespace at the position of
+				// the segmentation
 			}
 		}
 		return 1;
