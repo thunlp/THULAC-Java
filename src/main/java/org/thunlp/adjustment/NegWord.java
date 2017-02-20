@@ -22,7 +22,8 @@ public class NegWord implements IAdjustPass {
 			TaggedWord tagged = sentence.get(i);
 			if (this.neg_dat.match(tagged.word) != -1) {
 				TaggedWord newWord = new TaggedWord(tagged.separator);
-				newWord.word = StringUtil.toString(tagged.word.codePointAt(1));
+				newWord.word = StringUtil.toString(
+						tagged.word.codePointAt(tagged.word.offsetByCodePoints(0, 1)));
 				newWord.tag = "v";
 				sentence.add(i + 1, newWord);
 				tagged.word = StringUtil.toString(tagged.word.codePointAt(0));

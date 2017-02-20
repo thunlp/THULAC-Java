@@ -1,2 +1,12 @@
 apply plugin: 'idea'
 apply plugin: 'java'
+
+repositories {
+	mavenLocal()
+	jcenter()
+	mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.+'
+}
