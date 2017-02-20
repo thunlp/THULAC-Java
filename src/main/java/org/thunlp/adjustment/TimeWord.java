@@ -25,7 +25,7 @@ public class TimeWord implements IAdjustPass {
 	private boolean isArabicNum(String word) {
 		int len = word.codePointCount(0, word.length());
 		for (int i = 0; i < len; i++)
-			if (ARABIC_NUMBER_CODE_POINTS.indexOf(word.codePointAt(i)) != -1)
+			if (ARABIC_NUMBER_CODE_POINTS.indexOf(word.codePointAt(i)) == -1)
 				return false;
 		return true;
 	}
@@ -50,23 +50,17 @@ public class TimeWord implements IAdjustPass {
 
 	@Override
 	public void adjust(List<TaggedWord> sentence) {
-		processTimeWords(sentence);
-		processHttpWords(sentence);
-		processMailAddress(sentence);
-	}
-
-	public void adjustDouble(List<TaggedWord> sentence) {
-		processTimeWords(sentence);
-		processDoubleWords(sentence);
-		processHttpWords(sentence);
-		processMailAddress(sentence);
+		this.processTimeWords(sentence);
+		this.processDoubleWords(sentence);
+		this.processHttpWords(sentence);
+		this.processMailAddress(sentence);
 	}
 
 	private void processDoubleWords(List<TaggedWord> sentence) {
 		TaggedWord tagged, last = sentence.get(sentence.size() - 1);
 		for (int i = sentence.size() - 2; i >= 0; i--) {
 			tagged = sentence.get(i);
-			if (isDoubleWord(tagged.word, last.word)) {
+			if (this.isDoubleWord(tagged.word, last.word)) {
 				tagged.word += last.word;
 				sentence.remove(i + 1);
 			}
@@ -78,9 +72,9 @@ public class TimeWord implements IAdjustPass {
 		boolean hasTimeWord = false;
 		for (int i = sentence.size() - 1; i >= 0; i--) {
 			TaggedWord tagged = sentence.get(i);
-			if (isTimeWord(tagged.word)) hasTimeWord = true;
+			if (this.isTimeWord(tagged.word)) hasTimeWord = true;
 			else if (hasTimeWord) {
-				if (isArabicNum(tagged.word)) {
+				if (this.isArabicNum(tagged.word)) {
 					tagged.word += sentence.remove(i + 1).word;
 					tagged.tag = "t";
 				} else hasTimeWord = false;
