@@ -6,12 +6,12 @@ import org.thunlp.base.TaggedWord;
 import java.io.IOException;
 import java.util.List;
 
-public class VerbWord implements IAdjustPass {
+public class VerbPass implements IAdjustPass {
 	private Dat vM_dat;
 	private Dat vD_dat;
 	private String tag;
 
-	public VerbWord(String filename, String filename2) throws IOException {
+	public VerbPass(String filename, String filename2) throws IOException {
 		this.vM_dat = new Dat(filename);
 		this.vD_dat = new Dat(filename2);
 		this.tag = "v";

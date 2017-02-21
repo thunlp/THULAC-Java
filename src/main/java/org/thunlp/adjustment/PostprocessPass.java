@@ -12,11 +12,12 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Vector;
 
-public class Postprocesser implements IAdjustPass {
+public class PostprocessPass implements IAdjustPass {
 	private Dat p_dat;
 	private String tag;
 
-	public Postprocesser(String filename, String tag, boolean isTxt) throws IOException {
+	public PostprocessPass(String filename, String tag, boolean isTxt) throws
+			IOException {
 		this.tag = tag;
 		if (isTxt) {
 			BufferedReader buf = new BufferedReader(

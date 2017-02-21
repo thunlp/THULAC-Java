@@ -85,26 +85,26 @@ public class Thulac {
 		cwsTaggingDecoder.setLabelTrans();
 
 		// preprocess
-		Preprocesser preprocesser = new Preprocesser();
-		if (useT2S) preprocesser.loadT2SMap(modelDir + "t2s.dat");
+		Preprocessor preprocessor = new Preprocessor();
+		if (useT2S) preprocessor.loadT2SMap(modelDir + "t2s.dat");
 
 		// adjustment passes
 		List<IAdjustPass> passes = new ArrayList<>();
-		passes.add(new Postprocesser(modelDir + "ns.dat", "ns", false)); // nsDict
-		passes.add(new Postprocesser(modelDir + "idiom.dat", "i", false)); // idiomDict
-		passes.add(new Punctuation(modelDir + "singlepun.dat")); // punctuation
-		passes.add(new TimeWord()); // timeword
-		passes.add(new NegWord(modelDir + "neg.dat")); // negword
-		if (userDict != null) passes.add(new Postprocesser(userDict, "uw", true));
+		passes.add(new PostprocessPass(modelDir + "ns.dat", "ns", false)); // nsDict
+		passes.add(new PostprocessPass(modelDir + "idiom.dat", "i", false)); // idiomDict
+		passes.add(new PunctuationPass(modelDir + "singlepun.dat")); // punctuation
+		passes.add(new TimeWordPass()); // timeword
+		passes.add(new NegWordPass(modelDir + "neg.dat")); // negword
+		if (userDict != null) passes.add(new PostprocessPass(userDict, "uw", true));
 		if (useFilter) // filter
-			passes.add(new Filter(modelDir + "xu.dat", modelDir + "time.dat"));
+			passes.add(new FilterPass(modelDir + "xu.dat", modelDir + "time.dat"));
 
 		// main loop
 		for (List<String> vec = getRaw(in); vec != null; vec = getRaw(in)) {
 			for (String raw : vec) {
 				// preprocess
-				raw = preprocesser.cleanup(raw, pocGraph);
-				if (useT2S) raw = preprocesser.convertT2S(raw);
+				raw = preprocessor.cleanup(raw, pocGraph);
+				if (useT2S) raw = preprocessor.convertT2S(raw);
 				if (raw.isEmpty()) continue;
 
 				// segmentation

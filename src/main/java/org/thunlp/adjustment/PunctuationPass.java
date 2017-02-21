@@ -7,10 +7,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
-public class Punctuation implements IAdjustPass {
+public class PunctuationPass implements IAdjustPass {
 	private Dat p_dat;
 
-	public Punctuation(String filename) throws IOException {
+	public PunctuationPass(String filename) throws IOException {
 		this.p_dat = new Dat(filename);
 	}
 

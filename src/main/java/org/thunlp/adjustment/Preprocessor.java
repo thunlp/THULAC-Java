@@ -9,7 +9,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 
-public class Preprocesser {
+public class Preprocessor {
 	private static final String OTHER_CODE_POINTS = StringUtil.toString(65292, 12290,
 			65311, 65281, 65306, 65307, 8216, 8217, 8220, 8221, 12304, 12305,
 			12289, 12298, 12299, 126, 183, 64, 124, 35, 65509, 37, 8230, 38, 42, 65288,
@@ -27,7 +27,7 @@ public class Preprocesser {
 
 	private HashMap<Integer, Integer> t2sMap;
 
-	public Preprocesser() {
+	public Preprocessor() {
 		this.t2sMap = new HashMap<>();
 	}
 

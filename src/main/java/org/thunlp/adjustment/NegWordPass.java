@@ -7,10 +7,10 @@ import org.thunlp.util.StringUtil;
 import java.io.IOException;
 import java.util.List;
 
-public class NegWord implements IAdjustPass {
+public class NegWordPass implements IAdjustPass {
 	private Dat neg_dat;
 
-	public NegWord(String filename) throws IOException {
+	public NegWordPass(String filename) throws IOException {
 		this.neg_dat = new Dat(filename);
 	}
 
