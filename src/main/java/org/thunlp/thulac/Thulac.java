@@ -86,7 +86,7 @@ public class Thulac {
 
 		// preprocess
 		Preprocesser preprocesser = new Preprocesser();
-		preprocesser.setT2SMap(modelDir + "t2s.dat");
+		if (useT2S) preprocesser.loadT2SMap(modelDir + "t2s.dat");
 
 		// adjustment passes
 		List<IAdjustPass> passes = new ArrayList<>();
@@ -103,8 +103,8 @@ public class Thulac {
 		for (List<String> vec = getRaw(in); vec != null; vec = getRaw(in)) {
 			for (String raw : vec) {
 				// preprocess
-				raw = preprocesser.clean(raw, pocGraph);
-				if (useT2S) raw = preprocesser.T2S(raw);
+				raw = preprocesser.cleanup(raw, pocGraph);
+				if (useT2S) raw = preprocesser.convertT2S(raw);
 				if (raw.isEmpty()) continue;
 
 				// segmentation
