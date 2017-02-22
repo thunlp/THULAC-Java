@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -40,7 +41,7 @@ public class PostprocessPass implements IAdjustPass {
 			dm.makeDat(lexicon);
 			dm.shrink();
 
-			this.p_dat = new Dat(dm.datSize, dm.dat);
+			this.p_dat = new Dat(dm);
 		} else this.p_dat = new Dat(filename);
 	}
 
@@ -48,7 +49,7 @@ public class PostprocessPass implements IAdjustPass {
 	public void adjust(List<TaggedWord> sentence) {
 		if (this.p_dat == null) return;
 
-		Vector<String> tmp = new Vector<>();
+		List<String> tmp = new ArrayList<>();
 		for (int i = 0; i < sentence.size(); i++) {
 			TaggedWord tagged = sentence.get(i);
 			StringBuilder sb = new StringBuilder(tagged.word);

@@ -1,141 +1,76 @@
 package org.thunlp.base;
 
+import org.thunlp.util.StringUtil;
+
 import java.io.*;
-import java.util.Vector;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Dat {
+	private static class DataInputStream extends FilterInputStream {
+		public DataInputStream(InputStream in) {
+			super(in);
+		}
 
-	public Vector<Entry> dat;
-	public int datSize;
+		@Override
+		public final int read(byte b[]) throws IOException {
+			return this.in.read(b, 0, b.length);
+		}
 
-	public Dat() {
-		this.dat = new Vector<>();
-		this.datSize = 0;
+		@Override
+		public final int read(byte b[], int off, int len) throws IOException {
+			return this.in.read(b, off, len);
+		}
+
+		public final int readInt() throws IOException {
+			int ch1 = this.in.read();
+			int ch2 = this.in.read();
+			int ch3 = this.in.read();
+			int ch4 = this.in.read();
+			return (ch4 << 24) | (ch3 << 16) | (ch2 << 8) | ch1;
+		}
 	}
 
-	public Dat(int datSize, Vector<Entry> olddat) {
-		this.datSize = datSize;
-		this.dat = new Vector<>();
-		for (int i = 0; i < datSize; i++) {
-			this.dat.add(new Entry());
-			this.dat.get(i).base = olddat.get(i).base;
-			this.dat.get(i).check = olddat.get(i).check;
-		}
+	public List<Entry> dat;
+	public int datSize;
+
+	protected Dat(int size) {
+		if (size == 0) this.dat = new ArrayList<>();
+		else this.dat = new ArrayList<>(size);
+		this.datSize = size;
+	}
+
+	public Dat(Dat old) {
+		this(old.datSize);
+		for (Entry entry : old.dat) this.dat.add(new Entry(entry.base, entry.check));
 	}
 
 	public Dat(String filename) throws IOException {
-		File file = new File(filename);
-		this.datSize = (int) (file.length() / 8);
-		//System.out.println(datSize);
+		this((int) (Files.size(Paths.get(filename)) >> 3));
 
-		FileInputStream in = new FileInputStream(file);
-		byte[] tempbytes = new byte[8 * this.datSize];
-		this.dat = new Vector<>();
-		in.read(tempbytes);
+		DataInputStream in = new DataInputStream(
+				new BufferedInputStream(new FileInputStream(filename)));
 		for (int i = 0; i < this.datSize; i++) {
-			Entry entry = new Entry();
-			entry.base = bytesToInt(tempbytes, 8 * i);
-
-			this.dat.add(entry);
-			this.dat.get(i).check = bytesToInt(tempbytes, 8 * i + 4);
+			int base = in.readInt();
+			int check = in.readInt();
+			this.dat.add(new Entry(base, check));
 		}
-
 		in.close();
-	}
-
-	public static int bytesToInt(byte[] bb, int index) {
-		return (int) (((((int) bb[index + 3] & 0xff) << 24)
-				| (((int) bb[index + 2] & 0xff) << 16)
-				| (((int) bb[index + 1] & 0xff) << 8) | (((int) bb[index + 0] & 0xff) << 0)));
-	}
-
-	public static byte[] intToBytes(int n) {
-		byte[] b = new byte[4];
-		for (int i = 0; i < 4; i++) {
-			b[i] = (byte) (n >> (8 * i));
-		}
-		return b;
-	}
-
-	public void save(String filename) throws IOException {
-		FileOutputStream out = new FileOutputStream(filename);
-		for (Entry e : this.dat) {
-			out.write(intToBytes(e.base));
-		}
-		out.flush();
-		for (Entry e : this.dat) {
-			out.write(intToBytes(e.check));
-		}
-		out.flush();
-		out.close();
-	}
-
-	public void print(String output) throws IOException {
-		BufferedWriter out = new BufferedWriter(
-				new OutputStreamWriter(new FileOutputStream(output), "UTF8"));
-		for (int i = 0; i < this.datSize; i++) {
-			out.write("" + this.dat.get(i).base);
-			out.write(" " + this.dat.get(i).check);
-			out.newLine();
-			out.flush();
-		}
-		out.close();
-	}
-
-	public int getIndex(int base, int character) {
-		int ind = this.dat.get(base).base + character;
-		if ((ind >= this.datSize) || this.dat.get(ind).check != base) return -1;
-		return ind;
-	}
-
-	public boolean search(String sentence, Vector<Integer> bs, Vector<Integer> es) {
-		bs.clear();
-		es.clear();
-		boolean empty = true;
-		for (int offset = 0; offset < sentence.length(); offset++) {
-			int preBase = 0;
-			int preInd = 0;
-			int ind = 0;
-			for (int i = offset; i < sentence.length(); i++) {
-				ind = preBase + sentence.charAt(i);
-				if (ind < 0 || ind >= this.datSize || this.dat.get(ind).check != preInd)
-					break;
-				preInd = ind;
-				preBase = this.dat.get(ind).base;
-				ind = preBase;
-				if (!(ind < 0 || ind >= this.datSize || this.dat.get(
-						ind).check != preInd)) {
-					bs.add(offset);
-					es.add(i + 1);
-					if (empty) {
-						empty = false;
-					}
-				}
-			}
-		}
-		return !empty;
 	}
 
 	public int match(String word) {
 		int ind = 0;
 		int base = 0;
-		for (int i = 0; i < word.length(); i++) {
-			ind = this.dat.get(ind).base + word.charAt(i);
-			if ((ind >= this.datSize) || (this.dat.get(ind).check != base)) return -1;
+		int[] codePoints = StringUtil.toCodePoints(word);
+		for (int c : codePoints) {
+			ind = this.dat.get(ind).base + c;
+			if (ind >= this.datSize || this.dat.get(ind).check != base) return -1;
 			base = ind;
 		}
 		ind = this.dat.get(base).base;
-		if ((ind < this.datSize) && (this.dat.get(ind).check == base)) {
-			return ind;
-		}
-		return -1;
-	}
-
-	public void update(String word, int value) {
-		int base = match(word);
-		if (base >= 0) {
-			this.dat.get(base).base = value;
-		}
+		return ind < this.datSize && this.dat.get(ind).check == base ? ind : -1;
 	}
 
 	public int getInfo(String prefix) {
@@ -143,7 +78,7 @@ public class Dat {
 		int base = 0;
 		for (int i = 0; i < prefix.length(); i++) {
 			ind = this.dat.get(ind).base + prefix.charAt(i);
-			if ((ind >= this.datSize) || this.dat.get(ind).check != base) return i;
+			if (ind >= this.datSize || this.dat.get(ind).check != base) return i;
 			base = ind;
 		}
 		return -base;
@@ -153,25 +88,7 @@ public class Dat {
 		return this.datSize;
 	}
 
-	public Vector<Entry> getDat() {
+	public List<Entry> getDat() {
 		return this.dat;
 	}
-
-	public static void main(String[] args) throws IOException {
-		Dat dat = new Dat("models/cws_dat.bin");
-//		dat.print("javaoutncws.txt");
-		System.out.println(dat.getDatSize());
-		/*
-		for(int i = 0; i < 6; i ++){
-			String test = testStrings[i];
-			System.out.println(test);
-			System.out.println(dat.match(test));
-			System.out.println(dat.getInfo(test));
-		}
-		*/
-
-		//Dat dat = new Dat("res/javaPun.dat");
-		//dat.print("res/javaoutput3.txt");
-	}
-
 }
