@@ -31,8 +31,7 @@ public class TimeWordPass implements IAdjustPass {
 	}
 
 	private boolean isTimeWord(String word) {
-		return !(word.length() == 0 || word.length() > 1) &&
-				TIME_WORD_CODE_POINTS.indexOf(word.charAt(0)) != -1;
+		return word.length() == 1 && TIME_WORD_CODE_POINTS.indexOf(word.charAt(0)) != -1;
 	}
 
 	private boolean isDoubleWord(String word, String postWord) {
