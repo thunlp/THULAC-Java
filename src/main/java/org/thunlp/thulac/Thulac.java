@@ -93,8 +93,8 @@ public class Thulac {
 		passes.add(new PostprocessPass(modelDir + "ns.dat", "ns", false)); // nsDict
 		passes.add(new PostprocessPass(modelDir + "idiom.dat", "i", false)); // idiomDict
 		passes.add(new PunctuationPass(modelDir + "singlepun.dat")); // punctuation
-		passes.add(new TimeWordPass()); // timeword
-		passes.add(new NegWordPass(modelDir + "neg.dat")); // negword
+		passes.add(new TimeWordPass()); // time word
+		passes.add(new NegWordPass(modelDir + "neg.dat")); // neg word
 		if (userDict != null) passes.add(new PostprocessPass(userDict, "uw", true));
 		if (useFilter) // filter
 			passes.add(new FilterPass(modelDir + "xu.dat", modelDir + "time.dat"));
@@ -126,7 +126,7 @@ public class Thulac {
 
 	private static final int maxLength = 20000;
 	private static final Pattern cutoffPattern =
-			Pattern.compile(".{0," + (maxLength - 1) + "}([。？！；;!?]|$)");
+			Pattern.compile(".*([\u3002\uff1f\uff01\uff1b;!?]|$)");
 
 	private static List<String> getRaw(Scanner scanner) {
 		if (!scanner.hasNextLine()) return null;

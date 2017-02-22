@@ -42,11 +42,6 @@ public class Dat {
 		this.datSize = size;
 	}
 
-	public Dat(Dat old) {
-		this(old.datSize);
-		for (Entry entry : old.dat) this.dat.add(new Entry(entry.base, entry.check));
-	}
-
 	public Dat(String filename) throws IOException {
 		this((int) (Files.size(Paths.get(filename)) >> 3));
 

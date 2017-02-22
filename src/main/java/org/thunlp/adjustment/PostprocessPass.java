@@ -24,24 +24,19 @@ public class PostprocessPass implements IAdjustPass {
 			BufferedReader buf = new BufferedReader(
 					new InputStreamReader(new FileInputStream(filename)));
 			Vector<KeyValue> lexicon = new Vector<>();
-			lexicon.add(new KeyValue());
 			String str;
 			int id = 0;
 			while ((str = buf.readLine()) != null) {
 				if (str.length() == 0) continue;
 				if (str.endsWith("\r")) str = str.substring(0, str.length() - 1);
-				lexicon.lastElement().key = str;
-				lexicon.lastElement().value = id;
-
-				// add new element
-				lexicon.add(new KeyValue());
-				id += 1;
+				lexicon.add(new KeyValue(str, id++));
 			}
+			lexicon.add(new KeyValue());
+
 			DatMaker dm = new DatMaker();
 			dm.makeDat(lexicon);
 			dm.shrink();
-
-			this.p_dat = new Dat(dm);
+			this.p_dat = dm;
 		} else this.p_dat = new Dat(filename);
 	}
 

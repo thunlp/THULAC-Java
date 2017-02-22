@@ -10,9 +10,7 @@ public class KeyValue {
 	}
 
 	public KeyValue(String key, int value) {
-		super();
 		this.key = key;
 		this.value = value;
 	}
-
 }
