@@ -24,16 +24,60 @@ THULAC（THU Lexical Analyzer for Chinese）由清华大学自然语言处理与
 ##编译和安装		
 * java版
 
-		可直接按照分词程序命令格式运行可执行的jar包
+		1、可直接按照分词程序命令格式运行可执行的jar包
+		2、可引入thulac.Thulac调用接口
 		
 ##使用方式
 ###1.分词和词性标注程序
-####1.1.命令格式
-* java版
+####1.1.接口方式
 
+	```
+	代码示例1
+	package xxx;
+	import thulac.Thulac;
+	import java.io.*;
+	public class demo {
+	    public static void main(String[] args) throws IOException {
+	        Thulac lac = new Thulac("");
+	        String cutted = lac.cut2string("我爱北京天安门");
+	        System.out.println(cutted);
+	    }
+	}
+	```
+	
+	```
+	代码示例2
+	Thulac lac = new Thulac("-seg_only");
+	lac.cut_f("input.txt", "output.txt")
+	```
+	
+#####1.1.1接口参数
+
+* `Thulac(参数) `初始化程序，进行自定义设置
+	参数型如"-seg_only model_dir dir -t2s"
+
+	```
+	-t2s			    将句子从繁体转化为简体
+	-seg_only		    只进行分词，不进行词性标注
+	-deli delimeter		设置词与词性间的分隔符，默认为下划线_
+	-filter				使用过滤器去除一些没有意义的词语，例如“可以”。
+	-user userword.txt	设置用户词典，用户词典中的词会被打上uw标签。词典中每一个词一行，UTF8编码(python版暂无)
+	-model_dir dir		设置模型文件所在文件夹，默认为models/
+	```
+	
+* `cut(文本)` 对一句话进行分词，返回一个Vector<Vector<String>>型二维数组([[word, tag]..])
+
+* `cut2string(文本)` 对文件进行分词，返回分好词的文本，词之间以空格隔开
+
+* `cut_f(输入文件, 输出文件)` 对文件进行分词
+
+* `run()` 命令行交互式分词(屏幕输入、屏幕输出)
+
+
+####1.2.jar方式
 	* java -jar THULAC_lite_java_run.jar [-t2s] [-seg_only] [-deli delimeter] [-user userword.txt]   从命令行输入输出
 	* java -jar THULAC_lite_java_run.jar [-t2s] [-seg_only] [-deli delimeter] [-user userword.txt] -input input_file -output output_file   从文本文件输入输出（注意均为UTF8文本）
-####1.2.通用参数
+####1.2.1通用参数
 	-t2s			    将句子从繁体转化为简体
 	-seg_only		    只进行分词，不进行词性标注
 	-deli delimeter		设置词与词性间的分隔符，默认为下划线_
@@ -41,7 +85,7 @@ THULAC（THU Lexical Analyzer for Chinese）由清华大学自然语言处理与
 	-user userword.txt	设置用户词典，用户词典中的词会被打上uw标签。词典中每一个词一行，UTF8编码(python版暂无)
 	-model_dir dir		设置模型文件所在文件夹，默认为models/
 	
-####1.3.Java版特有的参数
+####1.2.2Java版特有的参数
 
 	-input input_file	设置从文件读入，默认为命令行输入
 	-output output_file	设置输出到文件中，默认为命令行输出
