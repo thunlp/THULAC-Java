@@ -2,37 +2,16 @@ package org.thunlp.base;
 
 import org.thunlp.util.StringUtil;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Dat {
-	private static class DataInputStream extends FilterInputStream {
-		public DataInputStream(InputStream in) {
-			super(in);
-		}
-
-		@Override
-		public final int read(byte b[]) throws IOException {
-			return this.in.read(b, 0, b.length);
-		}
-
-		@Override
-		public final int read(byte b[], int off, int len) throws IOException {
-			return this.in.read(b, off, len);
-		}
-
-		public final int readInt() throws IOException {
-			int ch1 = this.in.read();
-			int ch2 = this.in.read();
-			int ch3 = this.in.read();
-			int ch4 = this.in.read();
-			return (ch4 << 24) | (ch3 << 16) | (ch2 << 8) | ch1;
-		}
-	}
-
 	public List<Entry> dat;
 	public int datSize;
 
@@ -45,14 +24,21 @@ public class Dat {
 	public Dat(String filename) throws IOException {
 		this((int) (Files.size(Paths.get(filename)) >> 3));
 
-		DataInputStream in = new DataInputStream(
-				new BufferedInputStream(new FileInputStream(filename)));
+		InputStream in = new BufferedInputStream(new FileInputStream(filename));
 		for (int i = 0; i < this.datSize; i++) {
-			int base = in.readInt();
-			int check = in.readInt();
+			int base = this.readInt(in);
+			int check = this.readInt(in);
 			this.dat.add(new Entry(base, check));
 		}
 		in.close();
+	}
+
+	private int readInt(InputStream in) throws IOException {
+		int ch1 = in.read();
+		int ch2 = in.read();
+		int ch3 = in.read();
+		int ch4 = in.read();
+		return (ch4 << 24) | (ch3 << 16) | (ch2 << 8) | ch1;
 	}
 
 	public int match(String word) {
