@@ -1,5 +1,9 @@
 package org.thunlp.base;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Comparator;
 import java.util.Vector;
 
@@ -10,6 +14,25 @@ public class DatMaker extends Dat {
 			return first.key.compareTo(second.key);
 		}
 	};
+
+	public static DatMaker readFromTxtFile(String filename) throws IOException {
+		BufferedReader buf = new BufferedReader(
+				new InputStreamReader(new FileInputStream(filename)));
+		Vector<KeyValue> lexicon = new Vector<>();
+		String str;
+		int id = 0;
+		while ((str = buf.readLine()) != null) {
+			if (str.length() == 0) continue;
+			if (str.endsWith("\r")) str = str.substring(0, str.length() - 1);
+			lexicon.add(new KeyValue(str, id++));
+		}
+		lexicon.add(new KeyValue());
+
+		DatMaker dm = new DatMaker();
+		dm.makeDat(lexicon);
+		dm.shrink();
+		return dm;
+	}
 
 	private int head;
 	private int tail;

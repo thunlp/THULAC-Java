@@ -2,16 +2,11 @@ package org.thunlp.adjustment;
 
 import org.thunlp.base.Dat;
 import org.thunlp.base.DatMaker;
-import org.thunlp.base.KeyValue;
 import org.thunlp.base.TaggedWord;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 public class PostprocessPass implements IAdjustPass {
 	private Dat p_dat;
@@ -20,24 +15,8 @@ public class PostprocessPass implements IAdjustPass {
 	public PostprocessPass(String filename, String tag, boolean isTxt) throws
 			IOException {
 		this.tag = tag;
-		if (isTxt) {
-			BufferedReader buf = new BufferedReader(
-					new InputStreamReader(new FileInputStream(filename)));
-			Vector<KeyValue> lexicon = new Vector<>();
-			String str;
-			int id = 0;
-			while ((str = buf.readLine()) != null) {
-				if (str.length() == 0) continue;
-				if (str.endsWith("\r")) str = str.substring(0, str.length() - 1);
-				lexicon.add(new KeyValue(str, id++));
-			}
-			lexicon.add(new KeyValue());
-
-			DatMaker dm = new DatMaker();
-			dm.makeDat(lexicon);
-			dm.shrink();
-			this.p_dat = dm;
-		} else this.p_dat = new Dat(filename);
+		if (isTxt) this.p_dat = DatMaker.readFromTxtFile(filename);
+		else this.p_dat = new Dat(filename);
 	}
 
 	@Override
