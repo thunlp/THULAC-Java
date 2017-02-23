@@ -35,7 +35,6 @@ public class Dat {
 		bb.clear();
 		this.datSize = (int) (channel.size() >> 3);
 		this.dat = new int[this.datSize << 1];
-		System.out.println("File size: " + channel.size() / 4);
 		int len, offset = 0;
 		while ((len = channel.read(bb)) != -1) {
 			bb.flip();

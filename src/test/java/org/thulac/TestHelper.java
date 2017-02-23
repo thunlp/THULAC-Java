@@ -4,6 +4,8 @@ import org.thunlp.thulac.Thulac;
 import org.thunlp.util.StringUtil;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,7 +45,7 @@ public class TestHelper {
 	}
 
 	private static List<String> getLines(String fileName) throws IOException {
-		return FileHelper.getLines(fileName).stream()
+		return Files.lines(Paths.get(fileName))
 				.map(String::trim)
 				.filter(line -> !line.isEmpty())
 				.collect(Collectors.toList());

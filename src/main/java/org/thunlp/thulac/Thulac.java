@@ -6,8 +6,10 @@ import org.thunlp.base.TaggedWord;
 import org.thunlp.character.CBTaggingDecoder;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -29,7 +31,7 @@ public class Thulac {
 
 		// IO
 		Scanner in = null;
-		PrintStream out = System.out;
+		FileChannel out = null;
 
 		// process input args
 		for (int c = 0; c < args.length; ++c)
@@ -58,7 +60,7 @@ public class Thulac {
 					in = new Scanner(new File(args[++c]), "UTF-8");
 					break;
 				case "-output":
-					out = new PrintStream(args[++c]);
+					out = new FileOutputStream(args[++c]).getChannel();
 					break;
 			}
 		if (in == null) in = new Scanner(System.in);
@@ -74,7 +76,7 @@ public class Thulac {
 	public static void run(
 			String modelDir, char separator,
 			boolean useT2S, boolean segOnly, boolean useFilter,
-			String userDict, Scanner in, PrintStream out) throws IOException {
+			String userDict, Scanner in, FileChannel out) throws IOException {
 		// segmentation
 		POCGraph pocGraph = new POCGraph();
 		CBTaggingDecoder cwsTaggingDecoder = new CBTaggingDecoder();
@@ -102,6 +104,7 @@ public class Thulac {
 
 		// main loop
 		for (List<String> vec = getRaw(in); vec != null; vec = getRaw(in)) {
+			StringBuilder outBuf = new StringBuilder();
 			for (String raw : vec) {
 				// preprocess
 				raw = preprocessor.cleanup(raw, pocGraph);
@@ -116,12 +119,17 @@ public class Thulac {
 				for (IAdjustPass pass : passes) pass.adjust(tagged);
 
 				for (TaggedWord word : tagged) {
-					if (segOnly) out.print(word.word);
-					else out.print(word);
-					out.print(' ');
+					if (segOnly) outBuf.append(word.word);
+					else outBuf.append(word);
+					outBuf.append(" ");
 				}
 			}
-			out.println();
+			outBuf.append("\n");
+			if (out == null) System.out.print(outBuf.toString());
+			else {
+				ByteBuffer buffer = ByteBuffer.wrap(outBuf.toString().getBytes());
+				out.write(buffer);
+			}
 		}
 	}
 
