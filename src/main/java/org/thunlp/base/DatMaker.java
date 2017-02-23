@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 import java.util.Comparator;
 import java.util.Vector;
 
-public class DatMaker2 extends Dat2 {
+public class DatMaker extends Dat {
 	public static Comparator<KeyValue> KEY_VALUE_COMPARATOR = new Comparator<KeyValue>() {
 		@Override
 		public int compare(KeyValue first, KeyValue second) {
@@ -15,7 +15,7 @@ public class DatMaker2 extends Dat2 {
 		}
 	};
 
-	public static DatMaker2 readFromTxtFile(String filename) throws IOException {
+	public static DatMaker readFromTxtFile(String filename) throws IOException {
 		BufferedReader buf = new BufferedReader(
 				new InputStreamReader(new FileInputStream(filename)));
 		Vector<KeyValue> lexicon = new Vector<>();
@@ -28,7 +28,7 @@ public class DatMaker2 extends Dat2 {
 		}
 		lexicon.add(new KeyValue());
 
-		DatMaker2 dm = new DatMaker2();
+		DatMaker dm = new DatMaker();
 		dm.makeDat(lexicon);
 		dm.shrink();
 		return dm;
@@ -37,7 +37,7 @@ public class DatMaker2 extends Dat2 {
 	private int head;
 	private int tail;
 
-	public DatMaker2() {
+	public DatMaker() {
 		super(1);
 		this.dat[0] = 1;
 		this.dat[1] = -1;

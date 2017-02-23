@@ -1,7 +1,7 @@
 package org.thunlp.adjustment;
 
-import org.thunlp.base.Dat2;
-import org.thunlp.base.DatMaker2;
+import org.thunlp.base.Dat;
+import org.thunlp.base.DatMaker;
 import org.thunlp.base.TaggedWord;
 
 import java.io.IOException;
@@ -9,14 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PostprocessPass implements IAdjustPass {
-	private Dat2 p_dat;
+	private Dat p_dat;
 	private String tag;
 
 	public PostprocessPass(String filename, String tag, boolean isTxt) throws
 			IOException {
 		this.tag = tag;
-		if (isTxt) this.p_dat = DatMaker2.readFromTxtFile(filename);
-		else this.p_dat = new Dat2(filename);
+		if (isTxt) this.p_dat = DatMaker.readFromTxtFile(filename);
+		else this.p_dat = new Dat(filename);
 	}
 
 	@Override

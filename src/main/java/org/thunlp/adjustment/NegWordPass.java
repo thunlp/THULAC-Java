@@ -1,6 +1,6 @@
 package org.thunlp.adjustment;
 
-import org.thunlp.base.Dat2;
+import org.thunlp.base.Dat;
 import org.thunlp.base.TaggedWord;
 import org.thunlp.util.StringUtil;
 
@@ -8,10 +8,10 @@ import java.io.IOException;
 import java.util.List;
 
 public class NegWordPass implements IAdjustPass {
-	private Dat2 neg_dat;
+	private Dat neg_dat;
 
 	public NegWordPass(String filename) throws IOException {
-		this.neg_dat = new Dat2(filename);
+		this.neg_dat = new Dat(filename);
 	}
 
 	@Override

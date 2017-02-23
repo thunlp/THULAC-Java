@@ -1,6 +1,6 @@
 package org.thunlp.adjustment;
 
-import org.thunlp.base.Dat2;
+import org.thunlp.base.Dat;
 import org.thunlp.base.TaggedWord;
 import org.thunlp.util.StringUtil;
 
@@ -20,12 +20,12 @@ public class FilterPass implements IAdjustPass {
 			StringUtil.toString(12295, 19968, 20108, 19977, 22235,
 					20116, 20845, 19971, 20843, 20061);
 
-	private Dat2 xu_dat;
-	private Dat2 time_dat;
+	private Dat xu_dat;
+	private Dat time_dat;
 
 	public FilterPass(String xuWordFile, String timeWordFile) throws IOException {
-		this.xu_dat = new Dat2(xuWordFile);
-		this.time_dat = new Dat2(timeWordFile);
+		this.xu_dat = new Dat(xuWordFile);
+		this.time_dat = new Dat(timeWordFile);
 	}
 
 	@Override

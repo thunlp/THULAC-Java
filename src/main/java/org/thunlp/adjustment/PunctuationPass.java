@@ -1,6 +1,6 @@
 package org.thunlp.adjustment;
 
-import org.thunlp.base.Dat2;
+import org.thunlp.base.Dat;
 import org.thunlp.base.TaggedWord;
 
 import java.io.IOException;
@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.Vector;
 
 public class PunctuationPass implements IAdjustPass {
-	private Dat2 p_dat;
+	private Dat p_dat;
 
 	public PunctuationPass(String filename) throws IOException {
-		this.p_dat = new Dat2(filename);
+		this.p_dat = new Dat(filename);
 	}
 
 	@Override

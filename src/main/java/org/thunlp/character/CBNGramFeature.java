@@ -1,10 +1,10 @@
 package org.thunlp.character;
 
-import org.thunlp.base.Dat2;
+import org.thunlp.base.Dat;
 
 import java.util.Vector;
 
-public class CBNGramFeature2 {
+public class CBNGramFeature {
 	private static final int SENTENCE_BOUNDARY = '#';
 
 	private int separator;
@@ -16,7 +16,7 @@ public class CBNGramFeature2 {
 	private int[] dat;
 	private CBModel model;
 
-	public CBNGramFeature2(Dat2 myDat, CBModel model, int[] values) {
+	public CBNGramFeature(Dat myDat, CBModel model, int[] values) {
 		this.separator = ' ';
 		this.datSize = myDat.getDatSize();
 		this.dat = myDat.getDat();

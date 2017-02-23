@@ -3,7 +3,7 @@ package org.thunlp.thulac;
 import org.thunlp.adjustment.*;
 import org.thunlp.base.POCGraph;
 import org.thunlp.base.TaggedWord;
-import org.thunlp.character.CBTaggingDecoder2;
+import org.thunlp.character.CBTaggingDecoder;
 
 import java.io.File;
 import java.io.IOException;
@@ -77,7 +77,7 @@ public class Thulac {
 			String userDict, Scanner in, PrintStream out) throws IOException {
 		// segmentation
 		POCGraph pocGraph = new POCGraph();
-		CBTaggingDecoder2 cwsTaggingDecoder = new CBTaggingDecoder2();
+		CBTaggingDecoder cwsTaggingDecoder = new CBTaggingDecoder();
 		cwsTaggingDecoder.threshold = segOnly ? 0 : 10000;
 		cwsTaggingDecoder.separator = separator;
 		String prefix = modelDir + (segOnly ? "cws_" : "model_c_");

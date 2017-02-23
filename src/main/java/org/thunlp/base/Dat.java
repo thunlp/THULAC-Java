@@ -11,10 +11,10 @@ import java.nio.channels.FileChannel;
 /**
  *
  */
-public class Dat2 {
+public class Dat {
 	/**
 	 * An int array is used here to avoid the performance lost of endlessly calling
-	 * methods in {@link java.util.Vector}. {@link Dat2} does not manage the size of this
+	 * methods in {@link java.util.Vector}. {@link Dat} does not manage the size of this
 	 * array, access out of the bounds of {@code dat} will throw an
 	 * {@link ArrayIndexOutOfBoundsException}, while applications should extend the
 	 * size of this array by itself if they wish to add new elements.
@@ -22,12 +22,12 @@ public class Dat2 {
 	public int[] dat;
 	public int datSize;
 
-	protected Dat2(int size) {
+	protected Dat(int size) {
 		this.dat = new int[size << 1];
 		this.datSize = size;
 	}
 
-	public Dat2(String filename) throws IOException {
+	public Dat(String filename) throws IOException {
 		FileInputStream fis = new FileInputStream(filename);
 		FileChannel channel = fis.getChannel();
 		ByteBuffer bb = ByteBuffer.allocateDirect(64 * 1024)

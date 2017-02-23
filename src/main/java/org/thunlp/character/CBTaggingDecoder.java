@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Vector;
 
-public class CBTaggingDecoder2 {
+public class CBTaggingDecoder {
 	public char separator;
 	private int maxLength;
 	private int len;
@@ -17,8 +17,8 @@ public class CBTaggingDecoder2 {
 	private int[][] allowedLabelLists;
 	private int[][] pocsToTags;
 
-	private CBNGramFeature2 nGramFeature;
-	private Dat2 dat;
+	private CBNGramFeature nGramFeature;
+	private Dat dat;
 
 	private CBModel model;
 
@@ -34,7 +34,7 @@ public class CBTaggingDecoder2 {
 
 	public int threshold;
 
-	public CBTaggingDecoder2() {
+	public CBTaggingDecoder() {
 		this.separator = '_';
 		this.maxLength = 20000;
 		this.len = 0;
@@ -75,8 +75,8 @@ public class CBTaggingDecoder2 {
 			this.nodes[i].successors = pre;
 		}
 
-		this.dat = new Dat2(datFile);
-		this.nGramFeature = new CBNGramFeature2(this.dat, this.model, this.values);
+		this.dat = new Dat(datFile);
+		this.nGramFeature = new CBNGramFeature(this.dat, this.model, this.values);
 
 		this.labelInfo = new String[10000];
 		Vector<Vector<Integer>> pocTags = new Vector<>();
