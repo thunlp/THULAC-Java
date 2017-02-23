@@ -1,5 +1,7 @@
 package org.thunlp.base;
 
+import org.thunlp.util.StringUtil;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -10,8 +12,20 @@ import java.nio.channels.FileChannel;
  *
  */
 public class Dat2 {
+	/**
+	 * An int array is used here to avoid the performance lost of endlessly calling
+	 * methods in {@link java.util.Vector}. {@link Dat2} does not manage the size of this
+	 * array, access out of the bounds of {@code dat} will throw an
+	 * {@link ArrayIndexOutOfBoundsException}, while applications should extend the
+	 * size of this array by itself if they wish to add new elements.
+	 */
 	public int[] dat;
 	public int datSize;
+
+	protected Dat2(int size) {
+		this.dat = new int[size << 1];
+		this.datSize = size;
+	}
 
 	public Dat2(String filename) throws IOException {
 		FileInputStream fis = new FileInputStream(filename);
@@ -30,5 +44,37 @@ public class Dat2 {
 			bb.clear();
 		}
 		channel.close();
+	}
+
+	public int match(String word) {
+		int ind = 0;
+		int base = 0;
+		int[] codePoints = StringUtil.toCodePoints(word);
+		for (int c : codePoints) {
+			ind = this.dat[ind << 1] + c;
+			if (ind >= this.datSize || this.dat[(ind << 1) + 1] != base) return -1;
+			base = ind;
+		}
+		ind = this.dat[base << 1];
+		return ind < this.datSize && this.dat[(ind << 1) + 1] == base ? ind : -1;
+	}
+
+	public int getInfo(String prefix) {
+		int ind = 0;
+		int base = 0;
+		for (int i = 0; i < prefix.length(); i++) {
+			ind = this.dat[ind << 1] + prefix.charAt(i);
+			if (ind >= this.datSize || this.dat[(ind << 1) + 1] != base) return i;
+			base = ind;
+		}
+		return -base;
+	}
+
+	public int getDatSize() {
+		return this.datSize;
+	}
+
+	public int[] getDat() {
+		return this.dat;
 	}
 }

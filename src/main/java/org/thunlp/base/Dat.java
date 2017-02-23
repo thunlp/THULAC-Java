@@ -8,16 +8,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 public class Dat {
-	public List<Entry> dat;
+	public Vector<Entry> dat;
 	public int datSize;
 
 	protected Dat(int size) {
-		if (size == 0) this.dat = new ArrayList<>();
-		else this.dat = new ArrayList<>(size);
+		if (size == 0) this.dat = new Vector<>();
+		else this.dat = new Vector<>(size);
 		this.datSize = size;
 	}
 

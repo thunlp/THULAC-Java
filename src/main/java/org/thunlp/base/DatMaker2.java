@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 import java.util.Comparator;
 import java.util.Vector;
 
-public class DatMaker extends Dat {
+public class DatMaker2 extends Dat2 {
 	public static Comparator<KeyValue> KEY_VALUE_COMPARATOR = new Comparator<KeyValue>() {
 		@Override
 		public int compare(KeyValue first, KeyValue second) {
@@ -15,7 +15,7 @@ public class DatMaker extends Dat {
 		}
 	};
 
-	public static DatMaker readFromTxtFile(String filename) throws IOException {
+	public static DatMaker2 readFromTxtFile(String filename) throws IOException {
 		BufferedReader buf = new BufferedReader(
 				new InputStreamReader(new FileInputStream(filename)));
 		Vector<KeyValue> lexicon = new Vector<>();
@@ -28,7 +28,7 @@ public class DatMaker extends Dat {
 		}
 		lexicon.add(new KeyValue());
 
-		DatMaker dm = new DatMaker();
+		DatMaker2 dm = new DatMaker2();
 		dm.makeDat(lexicon);
 		dm.shrink();
 		return dm;
@@ -37,9 +37,10 @@ public class DatMaker extends Dat {
 	private int head;
 	private int tail;
 
-	public DatMaker() {
+	public DatMaker2() {
 		super(1);
-		this.dat.add(new Entry(1, -1));
+		this.dat[0] = 1;
+		this.dat[1] = -1;
 		this.head = this.tail = 0;
 	}
 
@@ -47,22 +48,28 @@ public class DatMaker extends Dat {
 	 * Use {@code dat[ind]} as an entry.
 	 */
 	public void use(int ind) {
-		Entry entry = this.dat.get(ind);
-		if (entry.check >= 0) System.out.println("cell reused!!");
-		if (entry.base == 1) this.head = entry.check;
-		else this.dat.get(-entry.base).check = entry.check;
-		if (entry.check == -this.datSize) this.tail = entry.base;
-		else this.dat.get(-entry.check).base = entry.base;
-		entry.check = ind;
+		int base = this.dat[ind << 1], check = this.dat[(ind << 1) + 1];
+		if (check >= 0) System.out.println("cell reused!!");
+		if (base == 1) this.head = check;
+		else this.dat[((-base) << 1) + 1] = check;
+		if (check == -this.datSize) this.tail = base;
+		else this.dat[(-check) << 1] = base;
+		this.dat[(ind << 1) + 1] = ind;
 	}
 
 	public void extend() {
 		int oldSize = this.datSize;
 		this.datSize *= 2;
-		for (int i = 0; i < oldSize; i++)
-			this.dat.add(new Entry(-(oldSize + i - 1), -(oldSize + i + 1)));
-		this.dat.get(oldSize).base = this.tail;
-		if (this.tail < 0) this.dat.get(-this.tail).check = -oldSize;
+		int[] newDat = new int[this.dat.length << 1];
+		System.arraycopy(this.dat, 0, newDat, 0, this.dat.length);
+		this.dat = newDat;
+		for (int i = 0; i < oldSize; i++) {
+			int pos = (oldSize + i) << 2;
+			newDat[pos] = (-oldSize + i - 1);
+			newDat[pos + 1] = (-oldSize + i + 1);
+		}
+		this.dat[oldSize << 1] = this.tail;
+		if (this.tail < 0) this.dat[((-this.tail) << 1) + 1] = -oldSize;
 		this.tail = -(oldSize * 2 - 1);
 	}
 
@@ -71,8 +78,8 @@ public class DatMaker extends Dat {
 	 */
 	public void shrink() {
 		int last = this.datSize - 1;
-		for (; this.dat.get(last).check < 0; --last) ;
-		this.dat.setSize(this.datSize = last + 1);
+		for (; this.dat[(last << 1) + 1] < 0; --last) ;
+		this.datSize = last + 1;
 	}
 
 	public int alloc(Vector<Integer> offsets) {
@@ -89,10 +96,10 @@ public class DatMaker extends Dat {
 			}
 
 			boolean flag = true;
-			if (this.dat.get(base).check >= 0) flag = false;
+			if (this.dat[(base << 1) + 1] >= 0) flag = false;
 			else {
 				int i = 0;
-				for (; i < size && this.dat.get(base + offsets.get(i)).check < 0; i++) ;
+				for (; i < size && this.dat[(base + offsets.get(i) << 1) + 1] < 0; i++) ;
 				if (i < size) flag = false;
 			}
 
@@ -102,9 +109,9 @@ public class DatMaker extends Dat {
 				return base; //got it and return it
 			}
 
-			if (this.dat.get(base).check == -this.datSize) this.extend();
+			if (this.dat[(base << 1) + 1] == -this.datSize) this.extend();
 
-			base = -this.dat.get(base).check;
+			base = -this.dat[(base << 1) + 1];
 		}
 	}
 
@@ -137,9 +144,14 @@ public class DatMaker extends Dat {
 
 	public int assign(int check, Vector<Integer> offsets, boolean isWord) {
 		int base = this.alloc(offsets);
-		this.dat.set(base, new Entry(0, isWord ? check : base));
-		for (int offset : offsets) this.dat.set(base + offset, new Entry(0, check));
-		this.dat.get(check).base = base;
+		this.dat[base << 1] = 0;
+		this.dat[(base << 1) + 1] = isWord ? check : base;
+		for (int offset : offsets) {
+			int pos = (base + offset) << 1;
+			this.dat[pos] = 0;
+			this.dat[pos + 1] = check;
+		}
+		this.dat[check << 1] = base;
 		return base;
 	}
 
@@ -149,7 +161,7 @@ public class DatMaker extends Dat {
 		String prefix = "";
 		Vector<Integer> children = new Vector<>();
 		this.genChildren(lexicon, 0, prefix, children);
-		this.dat.get(0).base = this.assign(0, children, true);
+		this.dat[0] = this.assign(0, children, true);
 		for (int i = 0; i < size; i++) {
 			String word = lexicon.get(i).key;
 			int off = this.getInfo(word);
@@ -161,7 +173,7 @@ public class DatMaker extends Dat {
 				this.assign(pBase, children, (offset == word.length()));
 			}
 			off = -this.getInfo(word);
-			this.dat.get(this.dat.get(off).base).base = lexicon.get(i).value;
+			this.dat[this.dat[off << 1] << 1] = lexicon.get(i).value;
 			if (i != 0 && i % 100000 == 0) System.out.println((float) i / size);
 		}
 	}
