@@ -1,5 +1,4 @@
 models/
 .idea/
 tmp/
-/src/test/resources/data_seg.txt
-/src/test/resources/data_input.txt
+/src/test/resources/
