@@ -63,11 +63,12 @@ public class Thulac {
 			}
 		if (in == null) in = new Scanner(System.in);
 
-		run(modelDir, separator, useT2S, segOnly, useFilter, userDict, in, out);
-
-		// finally
-		in.close();
-		out.close();
+		try {
+			run(modelDir, separator, useT2S, segOnly, useFilter, userDict, in, out);
+		} finally {
+			in.close();
+			out.close();
+		}
 	}
 
 	public static void run(
