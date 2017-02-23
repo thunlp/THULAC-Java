@@ -1,19 +1,19 @@
 package org.thunlp.adjustment;
 
-import org.thunlp.base.Dat;
+import org.thunlp.base.Dat2;
 import org.thunlp.base.TaggedWord;
 
 import java.io.IOException;
 import java.util.List;
 
 public class VerbPass implements IAdjustPass {
-	private Dat vM_dat;
-	private Dat vD_dat;
+	private Dat2 vM_dat;
+	private Dat2 vD_dat;
 	private String tag;
 
 	public VerbPass(String filename, String filename2) throws IOException {
-		this.vM_dat = new Dat(filename);
-		this.vD_dat = new Dat(filename2);
+		this.vM_dat = new Dat2(filename);
+		this.vD_dat = new Dat2(filename2);
 		this.tag = "v";
 	}
 
