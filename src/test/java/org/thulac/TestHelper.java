@@ -1,6 +1,5 @@
 package org.thulac;
 
-import org.junit.Test;
 import org.thunlp.thulac.Thulac;
 import org.thunlp.util.StringUtil;
 
@@ -15,21 +14,15 @@ import static org.junit.Assert.assertTrue;
 /**
  *
  */
-public class GeneralTest {
-	@Test
-	public void test() throws IOException {
-		String srcDir = "src/test/resources/";
-		String tmpDir = "tmp/";
+public class TestHelper {
+	public static void testSuite(String inputFile, String compareFile, String outputFile)
+			throws IOException {
+		run(inputFile, outputFile, true);
+		compare(inputFile, compareFile, outputFile);
+	}
 
-		String inputFile = srcDir + "data_input.txt";
-		String compareFile = srcDir + "data_seg.txt";
-		String outputFile = tmpDir + "output.txt";
-
-		long startTime = System.currentTimeMillis();
-		String[] args = {"-seg_only", "-input", inputFile, "-output", outputFile};
-		Thulac.main(args);
-		long time = System.currentTimeMillis() - startTime;
-
+	public static void compare(String inputFile, String compareFile, String outputFile)
+			throws IOException {
 		List<String> input = getLines(inputFile);
 		List<String> output = getLines(outputFile);
 		List<String> compare = getLines(compareFile);
@@ -45,13 +38,13 @@ public class GeneralTest {
 			matches += outputLine.stream().filter(compareLine::contains).count();
 		}
 
-		System.out.printf("Result: %d total, %d segments, %d matches, %.2f%% accuracy\n" +
-						"Time elapsed: %dms\n",
-				total, segments, matches, 100f * matches / total, time);
+		System.out.printf("Result: %d total, %d segments, %d matches, %.2f%% accuracy\n",
+				total, segments, matches, 100f * matches / total);
 	}
 
 	private static List<String> getLines(String fileName) throws IOException {
 		return FileHelper.getLines(fileName).stream()
+				.map(String::trim)
 				.filter(line -> !line.isEmpty())
 				.collect(Collectors.toList());
 	}
@@ -80,19 +73,40 @@ public class GeneralTest {
 			if (cp2[pointer] == c) continue;
 			segments.add(i);
 			for (; pointer < len2 && cp2[pointer] != c; ++pointer) ;
-			if (pointer == len2)
-				throw new AssertionError(
-						new StringBuilder("Character '").appendCodePoint(c)
-								.append("' not found in result string!\n")
-								.append("Input: ").append(input)
-								.append("Result:").append(result).toString());
+			if (pointer == len2) throw new AssertionError(
+					new StringBuilder("Character '").appendCodePoint(c)
+							.append("' not found in result string!\n")
+							.append("Input: ").append(input)
+							.append("Result: ").append(result).toString());
 		}
 		if (i != len1) throw new AssertionError(
 				new StringBuilder("Character '").appendCodePoint(cp1[i])
 						.append("' not found in result string!\n")
 						.append("Input: ").append(input)
-						.append("Result:").append(result).toString());
+						.append("Result: ").append(result).toString());
 
 		return segments;
+	}
+
+	public static void run(String inputFile, String outputFile, boolean segOnly)
+			throws IOException {
+		String[] args = {segOnly ? "-seg_only" : "", "-input", inputFile, "-output", outputFile};
+
+		long time = -System.currentTimeMillis();
+		Thulac.main(args);
+		time += System.currentTimeMillis();
+
+		System.out.printf("Time elapsed: %dms\n", time);
+	}
+
+	private static final String RESOURCE_FORMAT = "src/test/resources/%s";
+	private static final String TMP_FORMAT = "tmp/%s";
+
+	public static String resourceAt(String name) {
+		return String.format(RESOURCE_FORMAT, name);
+	}
+
+	public static String tempAt(String name) {
+		return String.format(TMP_FORMAT, name);
 	}
 }
