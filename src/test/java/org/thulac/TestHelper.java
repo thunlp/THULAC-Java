@@ -1,5 +1,7 @@
 package org.thulac;
 
+import org.thunlp.thulac.IInputProvider;
+import org.thunlp.thulac.IOutputHandler;
 import org.thunlp.thulac.Thulac;
 import org.thunlp.util.StringUtil;
 
@@ -21,6 +23,16 @@ public class TestHelper {
 			throws IOException {
 		run(inputFile, outputFile, true);
 		compare(inputFile, compareFile, outputFile);
+	}
+
+	public static void run(String inputFile, String outputFile, boolean segOnly)
+			throws IOException {
+		long time = -System.currentTimeMillis();
+		Thulac.split(IInputProvider.createFromFile(inputFile),
+				IOutputHandler.createFromFile(outputFile), segOnly);
+		time += System.currentTimeMillis();
+
+		System.out.printf("Time elapsed: %dms\n", time);
 	}
 
 	public static void compare(String inputFile, String compareFile, String outputFile)
@@ -88,17 +100,6 @@ public class TestHelper {
 						.append("Result: ").append(result).toString());
 
 		return segments;
-	}
-
-	public static void run(String inputFile, String outputFile, boolean segOnly)
-			throws IOException {
-		String[] args = {segOnly ? "-seg_only" : "", "-input", inputFile, "-output", outputFile};
-
-		long time = -System.currentTimeMillis();
-		Thulac.main(args);
-		time += System.currentTimeMillis();
-
-		System.out.printf("Time elapsed: %dms\n", time);
 	}
 
 	private static final String RESOURCE_FORMAT = "src/test/resources/%s";
