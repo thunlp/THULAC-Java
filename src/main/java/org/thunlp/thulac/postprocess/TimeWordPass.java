@@ -1,11 +1,11 @@
-package org.thunlp.thulac.passes;
+package org.thunlp.thulac.postprocess;
 
 import org.thunlp.thulac.data.TaggedWord;
 import org.thunlp.thulac.util.StringUtil;
 
 import java.util.List;
 
-public class TimeWordPass implements IAdjustPass {
+public class TimeWordPass implements IPostprocessPass {
 	private static final String ARABIC_NUMBER_CODE_POINTS =
 			StringUtil.toString(48, 49, 50, 51, 52, 53, 54, 55, 56, 57,
 					65296, 65297, 65298, 65299, 65300, 65301, 65302, 65303, 65304, 65305);
@@ -48,7 +48,7 @@ public class TimeWordPass implements IAdjustPass {
 	}
 
 	@Override
-	public void adjust(List<TaggedWord> sentence) {
+	public void process(List<TaggedWord> sentence) {
 		this.processTimeWords(sentence);
 		this.processDoubleWords(sentence);
 		this.processHttpWords(sentence);

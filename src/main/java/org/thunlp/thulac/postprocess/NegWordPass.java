@@ -1,4 +1,4 @@
-package org.thunlp.thulac.passes;
+package org.thunlp.thulac.postprocess;
 
 import org.thunlp.thulac.data.Dat;
 import org.thunlp.thulac.data.TaggedWord;
@@ -7,7 +7,7 @@ import org.thunlp.thulac.util.StringUtil;
 import java.io.IOException;
 import java.util.List;
 
-public class NegWordPass implements IAdjustPass {
+public class NegWordPass implements IPostprocessPass {
 	private Dat neg_dat;
 
 	public NegWordPass(String filename) throws IOException {
@@ -15,7 +15,7 @@ public class NegWordPass implements IAdjustPass {
 	}
 
 	@Override
-	public void adjust(List<TaggedWord> sentence) {
+	public void process(List<TaggedWord> sentence) {
 		if (this.neg_dat == null) return;
 
 		for (int i = sentence.size() - 1; i >= 0; --i) {

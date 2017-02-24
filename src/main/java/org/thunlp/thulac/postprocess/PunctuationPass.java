@@ -1,4 +1,4 @@
-package org.thunlp.thulac.passes;
+package org.thunlp.thulac.postprocess;
 
 import org.thunlp.thulac.data.Dat;
 import org.thunlp.thulac.data.TaggedWord;
@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
-public class PunctuationPass implements IAdjustPass {
+public class PunctuationPass implements IPostprocessPass {
 	private Dat p_dat;
 
 	public PunctuationPass(String filename) throws IOException {
@@ -15,7 +15,7 @@ public class PunctuationPass implements IAdjustPass {
 	}
 
 	@Override
-	public void adjust(List<TaggedWord> sentence) {
+	public void process(List<TaggedWord> sentence) {
 		if (this.p_dat == null) return;
 
 		Vector<String> tmp = new Vector<>();

@@ -1,15 +1,9 @@
-package org.thunlp.thulac;
+package org.thunlp.thulac.preprocess;
 
 import org.thunlp.thulac.data.POCGraph;
 import org.thunlp.thulac.util.StringUtil;
 
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.HashMap;
-
-public class Preprocessor {
+public class PreprocessPass implements IPreprocessPass {
 	private static final String OTHER_CODE_POINTS = StringUtil.toString(65292, 12290,
 			65311, 65281, 65306, 65307, 8216, 8217, 8220, 8221, 12304, 12305,
 			12289, 12298, 12299, 126, 183, 64, 124, 35, 65509, 37, 8230, 38, 42, 65288,
@@ -25,17 +19,11 @@ public class Preprocessor {
 			63, 9700, 9734, 9733, 8230, 39, 33, 42, 43, 62, 40, 41, 59, 61);
 	private static final String WHITESPACE_CODE_POINTS = StringUtil.toString(32, 12288);
 
-	private HashMap<Integer, Integer> t2sMap;
-
-	public Preprocessor() {
-		this.t2sMap = new HashMap<>();
-	}
-
-	public boolean isSinglePunctuation(int c) {
+	private boolean isSinglePunctuation(int c) {
 		return SINGLE_PUNCTUATION_CODE_POINTS.indexOf(c) != -1;
 	}
 
-	public String cleanup(String sentence, POCGraph graph) {
+	private String cleanup(String sentence, POCGraph graph) {
 		StringBuilder cleaned = new StringBuilder();
 		graph.clear();
 		boolean spaceFlag = false, otherFlag = false,
@@ -111,29 +99,8 @@ public class Preprocessor {
 		return cleaned.toString();
 	}
 
-	public void loadT2SMap(String filename) throws IOException {
-		File mapFile = new File(filename);
-		int recordCount = (int) (mapFile.length() >> 3);
-		DataInputStream input = new DataInputStream(new FileInputStream(mapFile));
-		int[] traditional = new int[recordCount];
-		for (int i = 0; i < recordCount; ++i) traditional[i] = input.readInt();
-		for (int i = 0; i < recordCount; ++i) {
-			int simplified = input.readInt();
-			this.t2sMap.put(traditional[i], simplified);
-		}
-		input.close();
-	}
-
-	private int getSimplifiedCodePoint(int c) {
-		if (this.t2sMap.containsKey(c)) return this.t2sMap.get(c);
-		return c;
-	}
-
-	public String convertT2S(String sentence) {
-		int[] codePoints = StringUtil.toCodePoints(sentence);
-		StringBuilder sb = new StringBuilder();
-		for (int codePoint : codePoints)
-			sb.appendCodePoint(this.getSimplifiedCodePoint(codePoint));
-		return sb.toString();
+	@Override
+	public String process(String raw, POCGraph graph) {
+		return this.cleanup(raw, graph);
 	}
 }

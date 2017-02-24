@@ -1,4 +1,4 @@
-package org.thunlp.thulac.passes;
+package org.thunlp.thulac.postprocess;
 
 import org.thunlp.thulac.data.Dat;
 import org.thunlp.thulac.data.TaggedWord;
@@ -6,7 +6,7 @@ import org.thunlp.thulac.data.TaggedWord;
 import java.io.IOException;
 import java.util.List;
 
-public class VerbPass implements IAdjustPass {
+public class VerbPass implements IPostprocessPass {
 	private Dat vM_dat;
 	private Dat vD_dat;
 	private String tag;
@@ -18,7 +18,7 @@ public class VerbPass implements IAdjustPass {
 	}
 
 	@Override
-	public void adjust(List<TaggedWord> sentence) {
+	public void process(List<TaggedWord> sentence) {
 		if ((this.vM_dat == null) || (this.vD_dat == null)) return;
 
 		TaggedWord tagged = sentence.get(0), next;

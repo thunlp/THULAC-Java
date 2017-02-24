@@ -3,7 +3,10 @@ package org.thunlp.thulac;
 import org.thunlp.thulac.cb.CBTaggingDecoder;
 import org.thunlp.thulac.data.POCGraph;
 import org.thunlp.thulac.data.TaggedWord;
-import org.thunlp.thulac.passes.*;
+import org.thunlp.thulac.postprocess.*;
+import org.thunlp.thulac.preprocess.IPreprocessPass;
+import org.thunlp.thulac.preprocess.PreprocessPass;
+import org.thunlp.thulac.preprocess.ConvertT2SPass;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -65,45 +68,44 @@ public class Thulac {
 			output.onProgramStart();
 
 			// segmentation
-			POCGraph pocGraph = new POCGraph();
-			CBTaggingDecoder cwsTaggingDecoder = new CBTaggingDecoder();
-			cwsTaggingDecoder.threshold = segOnly ? 0 : 10000;
-			cwsTaggingDecoder.separator = separator;
+			POCGraph graph = new POCGraph();
+			CBTaggingDecoder taggingDecoder = new CBTaggingDecoder();
+			taggingDecoder.threshold = segOnly ? 0 : 10000;
+			taggingDecoder.separator = separator;
 			String prefix = modelDir + (segOnly ? "cws_" : "model_c_");
-			cwsTaggingDecoder.init(prefix + "model.bin", prefix + "dat.bin",
+			taggingDecoder.init(prefix + "model.bin", prefix + "dat.bin",
 					prefix + "label.txt");
-			cwsTaggingDecoder.setLabelTrans();
+			taggingDecoder.setLabelTrans();
 
-			// preprocessor
-			Preprocessor preprocessor = new Preprocessor();
-			if (useT2S) preprocessor.loadT2SMap(modelDir + "t2s.dat");
+			// preprocess passes
+			List<IPreprocessPass> pre = new ArrayList<>();
+			pre.add(new PreprocessPass());
+			if (useT2S) pre.add(new ConvertT2SPass(modelDir + "t2s.dat"));
 
-			// adjustment passes
-			List<IAdjustPass> passes = new ArrayList<>();
-			passes.add(new PostprocessPass(modelDir + "ns.dat", "ns", false));
-			passes.add(new PostprocessPass(modelDir + "idiom.dat", "i", false));
-			passes.add(new PunctuationPass(modelDir + "singlepun.dat"));
-			passes.add(new TimeWordPass());
-			passes.add(new NegWordPass(modelDir + "neg.dat"));
-			if (userDict != null) passes.add(new PostprocessPass(userDict, "uw", true));
-			if (useFilter) // filter
-				passes.add(new FilterPass(modelDir + "xu.dat", modelDir + "time.dat"));
+			// postprocess passes
+			List<IPostprocessPass> post = new ArrayList<>();
+			post.add(new PostprocessPass(modelDir + "ns.dat", "ns", false));
+			post.add(new PostprocessPass(modelDir + "idiom.dat", "i", false));
+			post.add(new PunctuationPass(modelDir + "singlepun.dat"));
+			post.add(new TimeWordPass());
+			post.add(new NegWordPass(modelDir + "neg.dat"));
+			if (userDict != null) post.add(new PostprocessPass(userDict, "uw", true));
+			if (useFilter)
+				post.add(new FilterPass(modelDir + "xu.dat", modelDir + "time.dat"));
 
 			// main loop
-			for (List<String> vec = input.provideInput(); vec != null; vec = input.provideInput()) {
+			for (
+					List<String> lineSegments = input.provideInput();
+					lineSegments != null;
+					lineSegments = input.provideInput()) {
 				output.handleLineStart();
-				for (String raw : vec) {
-					// preprocess
-					raw = preprocessor.cleanup(raw, pocGraph);
-					if (useT2S) raw = preprocessor.convertT2S(raw);
-					if (raw.isEmpty()) continue;
+				for (String raw : lineSegments) {
+					for (IPreprocessPass pass : pre) raw = pass.process(raw, graph);
 
-					// segmentation
 					List<TaggedWord> tagged = new Vector<>();
-					cwsTaggingDecoder.segment(raw, pocGraph, tagged);
+					taggingDecoder.segment(raw, graph, tagged);
 
-					// adjustment passes
-					for (IAdjustPass pass : passes) pass.adjust(tagged);
+					for (IPostprocessPass pass : post) pass.process(tagged);
 
 					output.handleLineSegment(tagged, segOnly);
 				}

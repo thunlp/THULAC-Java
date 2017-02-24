@@ -1,4 +1,4 @@
-package org.thunlp.thulac.passes;
+package org.thunlp.thulac.postprocess;
 
 import org.thunlp.thulac.data.Dat;
 import org.thunlp.thulac.data.DatMaker;
@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PostprocessPass implements IAdjustPass {
+public class PostprocessPass implements IPostprocessPass {
 	private Dat p_dat;
 	private String tag;
 
@@ -20,7 +20,7 @@ public class PostprocessPass implements IAdjustPass {
 	}
 
 	@Override
-	public void adjust(List<TaggedWord> sentence) {
+	public void process(List<TaggedWord> sentence) {
 		if (this.p_dat == null) return;
 
 		List<String> tmp = new ArrayList<>();

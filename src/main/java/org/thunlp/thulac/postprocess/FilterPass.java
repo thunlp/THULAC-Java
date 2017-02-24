@@ -1,4 +1,4 @@
-package org.thunlp.thulac.passes;
+package org.thunlp.thulac.postprocess;
 
 import org.thunlp.thulac.data.Dat;
 import org.thunlp.thulac.data.TaggedWord;
@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class FilterPass implements IAdjustPass {
+public class FilterPass implements IPostprocessPass {
 	private static final Set<String> ALLOWED_TAGS = new HashSet<>(Arrays.asList(
 			"n", "np", "ns", "ni", "nz", "v", "a", "id", "t", "uw"));
 	private static final String ARABIC_NUMBER_CODE_POINTS =
@@ -29,7 +29,7 @@ public class FilterPass implements IAdjustPass {
 	}
 
 	@Override
-	public void adjust(List<TaggedWord> sentence) {
+	public void process(List<TaggedWord> sentence) {
 		if (this.xu_dat == null || this.time_dat == null) return;
 
 		for (int i = sentence.size() - 1; i >= 0; --i) {
