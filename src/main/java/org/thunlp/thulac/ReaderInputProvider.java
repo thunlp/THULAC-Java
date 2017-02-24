@@ -1,5 +1,7 @@
 package org.thunlp.thulac;
 
+import org.thunlp.util.InputProviderUtil;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.List;
@@ -19,7 +21,7 @@ public class ReaderInputProvider implements IInputProvider {
 	public List<String> provideInput() throws IOException {
 		String line = this.reader.readLine();
 		if (line == null) return null;
-		return InputProviderHelper.getLineSegments(line);
+		return InputProviderUtil.getLineSegments(line);
 	}
 
 	@Override

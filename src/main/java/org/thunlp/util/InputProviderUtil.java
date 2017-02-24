@@ -1,4 +1,4 @@
-package org.thunlp.thulac;
+package org.thunlp.util;
 
 import java.util.List;
 import java.util.Vector;
@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 /**
  *
  */
-public class InputProviderHelper {
+public class InputProviderUtil {
 	private static final int MAX_LENGTH = 20000;
 	private static final Pattern SPLIT_PATTERN =
 			Pattern.compile(".*([\u3002\uff1f\uff01\uff1b;!?]|$)");
