@@ -1,9 +1,9 @@
 package org.thunlp.thulac;
 
-import org.thunlp.adjustment.*;
-import org.thunlp.base.POCGraph;
-import org.thunlp.base.TaggedWord;
-import org.thunlp.character.CBTaggingDecoder;
+import org.thunlp.thulac.cb.CBTaggingDecoder;
+import org.thunlp.thulac.data.POCGraph;
+import org.thunlp.thulac.data.TaggedWord;
+import org.thunlp.thulac.passes.*;
 
 import java.io.IOException;
 import java.util.ArrayList;

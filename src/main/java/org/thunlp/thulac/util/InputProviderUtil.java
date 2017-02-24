@@ -1,4 +1,4 @@
-package org.thunlp.util;
+package org.thunlp.thulac.util;
 
 import java.util.List;
 import java.util.Vector;

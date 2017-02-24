@@ -1,4 +1,4 @@
-package org.thunlp.base;
+package org.thunlp.thulac.data;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;

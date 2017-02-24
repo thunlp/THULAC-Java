@@ -1,6 +1,6 @@
-package org.thunlp.character;
+package org.thunlp.thulac.cb;
 
-import org.thunlp.base.Dat;
+import org.thunlp.thulac.data.Dat;
 
 import java.util.Vector;
 

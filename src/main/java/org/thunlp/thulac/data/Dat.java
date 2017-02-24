@@ -1,6 +1,6 @@
-package org.thunlp.base;
+package org.thunlp.thulac.data;
 
-import org.thunlp.util.StringUtil;
+import org.thunlp.thulac.util.StringUtil;
 
 import java.io.FileInputStream;
 import java.io.IOException;

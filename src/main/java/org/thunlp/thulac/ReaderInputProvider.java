@@ -1,6 +1,6 @@
 package org.thunlp.thulac;
 
-import org.thunlp.util.InputProviderUtil;
+import org.thunlp.thulac.util.InputProviderUtil;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -1,6 +1,6 @@
 package org.thunlp.thulac;
 
-import org.thunlp.base.TaggedWord;
+import org.thunlp.thulac.data.TaggedWord;
 
 import java.io.BufferedWriter;
 import java.io.IOException;

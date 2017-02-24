@@ -1,29 +1,24 @@
-package org.thunlp.adjustment;
+package org.thunlp.thulac.passes;
 
-import org.thunlp.base.Dat;
-import org.thunlp.base.DatMaker;
-import org.thunlp.base.TaggedWord;
+import org.thunlp.thulac.data.Dat;
+import org.thunlp.thulac.data.TaggedWord;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
-public class PostprocessPass implements IAdjustPass {
+public class PunctuationPass implements IAdjustPass {
 	private Dat p_dat;
-	private String tag;
 
-	public PostprocessPass(String filename, String tag, boolean isTxt) throws
-			IOException {
-		this.tag = tag;
-		if (isTxt) this.p_dat = DatMaker.readFromTxtFile(filename);
-		else this.p_dat = new Dat(filename);
+	public PunctuationPass(String filename) throws IOException {
+		this.p_dat = new Dat(filename);
 	}
 
 	@Override
 	public void adjust(List<TaggedWord> sentence) {
 		if (this.p_dat == null) return;
 
-		List<String> tmp = new ArrayList<>();
+		Vector<String> tmp = new Vector<>();
 		for (int i = 0; i < sentence.size(); i++) {
 			TaggedWord tagged = sentence.get(i);
 			StringBuilder sb = new StringBuilder(tagged.word);
@@ -37,15 +32,15 @@ public class PostprocessPass implements IAdjustPass {
 			}
 
 			int k = tmp.size() - 1;
-			for (; k >= 0 && this.p_dat.match(tmp.get(k)) == -1; k--) ;
+			for (; k >= 0 && this.p_dat.match(tmp.get(k)) != -1; k--) ;
 			if (k >= 0) {
 				sb.setLength(0);
 				for (int j = i; j < i + k + 2; j++) sb.append(sentence.get(j).word);
 				tagged.word = sb.toString();
-				tagged.tag = this.tag;
+				tagged.tag = "w";
 
 				for (int j = i + k + 1; j > i; j--) sentence.remove(j);
-			}
+			} else if (this.p_dat.match(tagged.word) != -1) tagged.tag = "w";
 		}
 	}
 }

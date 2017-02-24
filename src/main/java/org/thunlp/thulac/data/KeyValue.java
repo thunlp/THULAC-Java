@@ -1,4 +1,4 @@
-package org.thunlp.base;
+package org.thunlp.thulac.data;
 
 public class KeyValue {
 	public String key;

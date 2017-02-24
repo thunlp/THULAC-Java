@@ -3,7 +3,7 @@ package org.thulac;
 import org.thunlp.thulac.IInputProvider;
 import org.thunlp.thulac.IOutputHandler;
 import org.thunlp.thulac.Thulac;
-import org.thunlp.util.StringUtil;
+import org.thunlp.thulac.util.StringUtil;
 
 import java.io.IOException;
 import java.nio.file.Files;

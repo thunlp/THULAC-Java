@@ -1,6 +1,6 @@
-package org.thunlp.adjustment;
+package org.thunlp.thulac.passes;
 
-import org.thunlp.base.TaggedWord;
+import org.thunlp.thulac.data.TaggedWord;
 
 import java.util.List;
 

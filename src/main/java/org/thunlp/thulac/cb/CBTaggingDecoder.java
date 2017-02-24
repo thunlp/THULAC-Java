@@ -1,6 +1,6 @@
-package org.thunlp.character;
+package org.thunlp.thulac.cb;
 
-import org.thunlp.base.*;
+import org.thunlp.thulac.data.*;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;

@@ -1,7 +1,7 @@
-package org.thunlp.adjustment;
+package org.thunlp.thulac;
 
-import org.thunlp.base.POCGraph;
-import org.thunlp.util.StringUtil;
+import org.thunlp.thulac.data.POCGraph;
+import org.thunlp.thulac.util.StringUtil;
 
 import java.io.DataInputStream;
 import java.io.File;

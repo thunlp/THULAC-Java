@@ -1,7 +1,7 @@
-package org.thunlp.adjustment;
+package org.thunlp.thulac.passes;
 
-import org.thunlp.base.Dat;
-import org.thunlp.base.TaggedWord;
+import org.thunlp.thulac.data.Dat;
+import org.thunlp.thulac.data.TaggedWord;
 
 import java.io.IOException;
 import java.util.List;

@@ -1,4 +1,8 @@
-package org.thunlp.thulac;
+package org.thunlp.thulac.main;
+
+import org.thunlp.thulac.IInputProvider;
+import org.thunlp.thulac.IOutputHandler;
+import org.thunlp.thulac.Thulac;
 
 import java.io.IOException;
 
