@@ -4,9 +4,9 @@ import org.thunlp.thulac.cb.CBTaggingDecoder;
 import org.thunlp.thulac.data.POCGraph;
 import org.thunlp.thulac.data.TaggedWord;
 import org.thunlp.thulac.postprocess.*;
+import org.thunlp.thulac.preprocess.ConvertT2SPass;
 import org.thunlp.thulac.preprocess.IPreprocessPass;
 import org.thunlp.thulac.preprocess.PreprocessPass;
-import org.thunlp.thulac.preprocess.ConvertT2SPass;
 
 import java.io.IOException;
 import java.util.ArrayList;

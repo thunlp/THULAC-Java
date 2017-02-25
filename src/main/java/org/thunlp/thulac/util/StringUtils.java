@@ -3,7 +3,7 @@ package org.thunlp.thulac.util;
 /**
  *
  */
-public class StringUtil {
+public class StringUtils {
 	public static String toString(int... codePoints) {
 		StringBuilder sb = new StringBuilder();
 		for (int codePoint : codePoints) sb.appendCodePoint(codePoint);

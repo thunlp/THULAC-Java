@@ -1,6 +1,6 @@
 package org.thunlp.thulac.data;
 
-import org.thunlp.thulac.util.StringUtil;
+import org.thunlp.thulac.util.StringUtils;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -48,7 +48,7 @@ public class Dat {
 	public int match(String word) {
 		int ind = 0;
 		int base = 0;
-		int[] codePoints = StringUtil.toCodePoints(word);
+		int[] codePoints = StringUtils.toCodePoints(word);
 		for (int c : codePoints) {
 			ind = this.dat[ind << 1] + c;
 			if (ind >= this.datSize || this.dat[(ind << 1) + 1] != base) return -1;

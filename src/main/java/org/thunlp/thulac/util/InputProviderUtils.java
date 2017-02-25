@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 /**
  *
  */
-public class InputProviderUtil {
+public class InputProviderUtils {
 	private static final int MAX_LENGTH = 20000;
 	private static final Pattern SPLIT_PATTERN =
 			Pattern.compile(".*([\u3002\uff1f\uff01\uff1b;!?]|$)");

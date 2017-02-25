@@ -2,7 +2,7 @@ package org.thunlp.thulac.postprocess;
 
 import org.thunlp.thulac.data.Dat;
 import org.thunlp.thulac.data.TaggedWord;
-import org.thunlp.thulac.util.StringUtil;
+import org.thunlp.thulac.util.StringUtils;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -14,10 +14,10 @@ public class FilterPass implements IPostprocessPass {
 	private static final Set<String> ALLOWED_TAGS = new HashSet<>(Arrays.asList(
 			"n", "np", "ns", "ni", "nz", "v", "a", "id", "t", "uw"));
 	private static final String ARABIC_NUMBER_CODE_POINTS =
-			StringUtil.toString(48, 49, 50, 51, 52, 53, 54, 55, 56, 57,
+			StringUtils.toString(48, 49, 50, 51, 52, 53, 54, 55, 56, 57,
 					65296, 65297, 65298, 65299, 65300, 65301, 65302, 65303, 65304, 65305);
 	private static final String CHINESE_NUMBER_CODE_POINTS =
-			StringUtil.toString(12295, 19968, 20108, 19977, 22235,
+			StringUtils.toString(12295, 19968, 20108, 19977, 22235,
 					20116, 20845, 19971, 20843, 20061);
 
 	private Dat xu_dat;

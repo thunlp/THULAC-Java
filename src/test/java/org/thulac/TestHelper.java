@@ -3,7 +3,7 @@ package org.thulac;
 import org.thunlp.thulac.IInputProvider;
 import org.thunlp.thulac.IOutputHandler;
 import org.thunlp.thulac.Thulac;
-import org.thunlp.thulac.util.StringUtil;
+import org.thunlp.thulac.util.StringUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -76,8 +76,8 @@ public class TestHelper {
 	private static List<Integer> extractSegments(
 			String input, String result) {
 		List<Integer> segments = new ArrayList<>();
-		int[] cp1 = StringUtil.toCodePoints(input),
-				cp2 = StringUtil.toCodePoints(result);
+		int[] cp1 = StringUtils.toCodePoints(input),
+				cp2 = StringUtils.toCodePoints(result);
 		int pointer = 0, len1 = cp1.length, len2 = cp2.length;
 		assertTrue("Result shorter than input!", len1 <= len2);
 

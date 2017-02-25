@@ -1,7 +1,7 @@
 package org.thunlp.thulac.preprocess;
 
 import org.thunlp.thulac.data.POCGraph;
-import org.thunlp.thulac.util.StringUtil;
+import org.thunlp.thulac.util.StringUtils;
 
 import java.io.DataInputStream;
 import java.io.File;
@@ -39,7 +39,7 @@ public class ConvertT2SPass implements IPreprocessPass {
 	}
 
 	private String convertT2S(String sentence) {
-		int[] codePoints = StringUtil.toCodePoints(sentence);
+		int[] codePoints = StringUtils.toCodePoints(sentence);
 		StringBuilder sb = new StringBuilder();
 		for (int codePoint : codePoints)
 			sb.appendCodePoint(this.getSimplifiedCodePoint(codePoint));
