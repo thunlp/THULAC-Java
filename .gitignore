@@ -1,4 +1,5 @@
-models/
-.idea/
-tmp/
+models
+.idea
+tmp
 /src/test/resources/
+release

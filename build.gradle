@@ -1,12 +1,29 @@
-apply plugin: 'idea'
 apply plugin: 'java'
 
 repositories {
-	mavenLocal()
-	jcenter()
-	mavenCentral()
+    mavenLocal()
+    jcenter()
+    mavenCentral()
 }
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.+'
+}
+
+jar {
+    version '1.0'
+    manifest {
+        attributes("Main-Class": "org.thunlp.thulac.main.Main")
+    }
+}
+
+task release(dependsOn: 'jar') {
+    copy {
+        from 'build/libs'
+        into 'release'
+    }
+    copy {
+        from 'models'
+        into 'release/models'
+    }
 }
