@@ -22,86 +22,10 @@
 THULAC (THU Lexical Analyzer for Chinese) 是由清华大学自然语言处理与社会人文计算实验室研制推出的一套中文词法分析工具包，具有中文分词和词性标注功能。THULAC具有如下几个特点：
 
 1. 能力强。利用我们集成的目前世界上规模最大的人工分词和词性标注中文语料库（约含5800万字）训练而成，模型标注能力强大。
-<<<<<<< HEAD
-2. 准确率高。该工具包在标准数据集Chinese Treebank（CTB5）上分词的F1值可达97.3％，词性标注的F1值可达到92.9％，与该数据集上最好方法效果相当。
-3. 速度较快。同时进行分词和词性标注速度为300KB/s，每秒可处理约15万字。只进行分词速度可达到1.3MB/s。
-
-##编译和安装		
-* java版
-
-		1、可直接按照分词程序命令格式运行可执行的jar包
-		2、可引入thulac.Thulac调用接口
-		
-##使用方式
-###1.分词和词性标注程序
-####1.1.接口方式
-
-	```
-	代码示例1
-	package xxx;
-	import thulac.Thulac;
-	import java.io.*;
-	public class demo {
-	    public static void main(String[] args) throws IOException {
-	        Thulac lac = new Thulac("");
-	        String cutted = lac.cut2string("我爱北京天安门");
-	        System.out.println(cutted);
-	    }
-	}
-	```
-	
-	```
-	代码示例2
-	Thulac lac = new Thulac("-seg_only");
-	lac.cut_f("input.txt", "output.txt")
-	```
-	
-#####1.1.1接口参数
-
-* `Thulac(参数) `初始化程序，进行自定义设置
-	参数型如"-seg_only model_dir dir -t2s"
-
-	```
-	-t2s			    将句子从繁体转化为简体
-	-seg_only		    只进行分词，不进行词性标注
-	-deli delimeter		设置词与词性间的分隔符，默认为下划线_
-	-filter				使用过滤器去除一些没有意义的词语，例如“可以”。
-	-user userword.txt	设置用户词典，用户词典中的词会被打上uw标签。词典中每一个词一行，UTF8编码(python版暂无)
-	-model_dir dir		设置模型文件所在文件夹，默认为models/
-	```
-	
-* `cut(文本)` 对一句话进行分词，返回一个Vector<Vector<String>>型二维数组([[word, tag]..])
-
-* `cut2string(文本)` 对文件进行分词，返回分好词的文本，词之间以空格隔开
-
-* `cut_f(输入文件, 输出文件)` 对文件进行分词
-
-* `run()` 命令行交互式分词(屏幕输入、屏幕输出)
-
-
-####1.2.jar方式
-	* java -jar THULAC_lite_java_run.jar [-t2s] [-seg_only] [-deli delimeter] [-user userword.txt]   从命令行输入输出
-	* java -jar THULAC_lite_java_run.jar [-t2s] [-seg_only] [-deli delimeter] [-user userword.txt] -input input_file -output output_file   从文本文件输入输出（注意均为UTF8文本）
-####1.2.1通用参数
-	-t2s			    将句子从繁体转化为简体
-	-seg_only		    只进行分词，不进行词性标注
-	-deli delimeter		设置词与词性间的分隔符，默认为下划线_
-	-filter				使用过滤器去除一些没有意义的词语，例如“可以”。
-	-user userword.txt	设置用户词典，用户词典中的词会被打上uw标签。词典中每一个词一行，UTF8编码(python版暂无)
-	-model_dir dir		设置模型文件所在文件夹，默认为models/
-	
-####1.2.2Java版特有的参数
-
-	-input input_file	设置从文件读入，默认为命令行输入
-	-output output_file	设置输出到文件中，默认为命令行输出
-
-###2.获取模型
-
-=======
 1. 准确率高。该工具包在标准数据集Chinese Treebank (CTB5) 上分词的F1值可达97.3％，词性标注的F1值可达到92.9％，与该数据集上最好方法效果相当。
 1. 速度较快。同时进行分词和词性标注速度为300KB/s，每秒可处理约15万字。只进行分词速度可达到1.3MB/s。（该数据取自本库的c++版本，java版本可能速度略慢）
 
-## 编译和安装		
+## 编译和安装
 * **可执行jar包**
 
 本库正在持续开发中，请参阅下文自行编译运行。
@@ -123,9 +47,9 @@ gradle check
 #### 1.1. 命令格式
 ``` bat
 从命令行输入输出：
-java -jar THULAC_lite_java_run.jar [-t2s] [-seg_only] [-deli delimiter] [-user userdict.txt] 
+java -jar THULAC_lite_java_run.jar [-t2s] [-seg_only] [-deli delimiter] [-user userdict.txt]
 从文本文件（UTF-8编码）输入输出：
-java -jar THULAC_lite_java_run.jar [-t2s] [-seg_only] [-deli delimiter] [-user userdict.txt] -input input_file -output output_file   
+java -jar THULAC_lite_java_run.jar [-t2s] [-seg_only] [-deli delimiter] [-user userdict.txt] -input input_file -output output_file
 ```
 
 #### 1.2. 命令参数
@@ -141,7 +65,6 @@ java -jar THULAC_lite_java_run.jar [-t2s] [-seg_only] [-deli delimiter] [-user u
 | -output output_file | 设置输出文件为output_file，默认为命令行输出 |
 
 ### 2. 获取模型
->>>>>>> 9ce41e033992793df70c01ac6b6cafcac12cc3f5
 THULAC需要分词和词性标注模型的支持，获取下载好的模型用户可以登录[thulac.thunlp.org](http://thulac.thunlp.org)网站填写个人信息进行下载，并放到THULAC的根目录即可，或者使用参数`-model_dir dir`指定模型的位置。
 
 ## 代表分词软件的性能对比
@@ -206,7 +129,7 @@ CNKI_journal.txt（51 MB）
 
 ## 更新历史
 | 更新时间 | 更新内容 |
-|:------------|:-------------:| 
+|:------------|:-------------:|
 | 2016-09-29 | 增加THULAC分词so版本。|
 | 2016-03-31 | 增加THULAC分词python版本。|
 | 2016-01-20 | 增加THULAC分词Java版本。|
@@ -217,13 +140,13 @@ CNKI_journal.txt（51 MB）
 1. 如有机构或个人拟将THULAC用于商业目的，请发邮件至thunlp@gmail.com洽谈技术许可协议。
 1. 欢迎对该工具包提出任何宝贵意见和建议。请发邮件至thunlp@gmail.com。
 1. 如果您在THULAC基础上发表论文或取得科研成果，请您在发表论文和申报成果时声明“使用了清华大学THULAC”，并按如下格式引用：
-	
+
 > **中文： 孙茂松, 陈新雄, 张开旭, 郭志芃, 刘知远. THULAC：一个高效的中文词法分析工具包. 2016.**
 > **英文： Maosong Sun, Xinxiong Chen, Kaixu Zhang, Zhipeng Guo, Zhiyuan Liu. THULAC: An Efficient Lexical Analyzer for Chinese. 2016.**
-   
+
 ## 相关论文
 * Zhongguo Li, Maosong Sun. Punctuation as Implicit Annotations for Chinese Word Segmentation. Computational Linguistics, vol. 35, no. 4, pp. 505-512, 2009.
-   
+
 ## 作者
 Maosong Sun （孙茂松，导师）,  Xinxiong Chen（陈新雄，博士生）,  Kaixu Zhang (张开旭，硕士生）,  Zhipeng Guo（郭志芃，本科生）,  Zhiyuan Liu（刘知远，助理教授）.
 
