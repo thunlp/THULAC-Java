@@ -31,6 +31,7 @@ public class FilterPass implements IPostprocessPass {
 	@Override
 	public void process(List<TaggedWord> sentence) {
 		if (this.xu_dat == null || this.time_dat == null) return;
+		if (sentence.isEmpty()) return;
 
 		for (int i = sentence.size() - 1; i >= 0; --i) {
 			String word = sentence.get(i).word;

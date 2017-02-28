@@ -56,7 +56,7 @@ public class TimeWordPass implements IPostprocessPass {
 	}
 
 	private void processDoubleWords(List<TaggedWord> sentence) {
-		if(sentence.size() == 0) {
+		if (sentence.size() == 0) {
 			return;
 		}
 		TaggedWord tagged, last = sentence.get(sentence.size() - 1);
@@ -90,9 +90,7 @@ public class TimeWordPass implements IPostprocessPass {
 	}
 
 	private void processMailAddress(List<TaggedWord> sentence) {
-		if(sentence.size() == 0) {
-			return;
-		}
+		if (sentence.isEmpty()) return;
 		TaggedWord last = sentence.get(0), tagged;
 		for (int i = 1, size = sentence.size(); i < size; i++) {
 			tagged = sentence.get(i);

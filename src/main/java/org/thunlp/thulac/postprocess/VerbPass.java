@@ -19,7 +19,8 @@ public class VerbPass implements IPostprocessPass {
 
 	@Override
 	public void process(List<TaggedWord> sentence) {
-		if ((this.vM_dat == null) || (this.vD_dat == null)) return;
+		if (this.vM_dat == null || this.vD_dat == null) return;
+		if (sentence.isEmpty()) return;
 
 		TaggedWord tagged = sentence.get(0), next;
 		for (int i = 0, max = sentence.size() - 1; i < max; i++) {

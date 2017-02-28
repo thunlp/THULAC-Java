@@ -22,6 +22,7 @@ public class PostprocessPass implements IPostprocessPass {
 	@Override
 	public void process(List<TaggedWord> sentence) {
 		if (this.p_dat == null) return;
+		if (sentence.isEmpty()) return;
 
 		List<String> tmp = new ArrayList<>();
 		for (int i = 0; i < sentence.size(); i++) {
