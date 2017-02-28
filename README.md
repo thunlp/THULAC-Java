@@ -227,6 +227,5 @@ CNKI_journal.txt（51 MB）
 ## 作者
 Maosong Sun （孙茂松，导师）,  Xinxiong Chen（陈新雄，博士生）,  Kaixu Zhang (张开旭，硕士生）,  Zhipeng Guo（郭志芃，本科生）,  Zhiyuan Liu（刘知远，助理教授）.
 
-## 其他协助开发者
+## 致谢
 [std4453](https://www.github.com/std4453)：对此java版本的代码进行优化和添加注释。
-如有意见和建议，请联系 std4453@foxmail.com ，谢谢配合。
