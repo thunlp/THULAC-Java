@@ -1,5 +1,11 @@
 package org.thunlp.thulac.util;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+
 /**
  *
  */
@@ -17,5 +23,11 @@ public class StringUtils {
 		for (int i = 0; i < codePointCount; ++i)
 			codePoints[i] = str.codePointAt(str.offsetByCodePoints(0, i));
 		return codePoints;
+	}
+
+	public static Reader toReader(String str, Charset charset) {
+		if (charset == null) charset = StandardCharsets.UTF_8;
+		return new InputStreamReader(
+				new ByteArrayInputStream(str.getBytes(charset)), charset);
 	}
 }

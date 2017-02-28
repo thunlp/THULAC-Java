@@ -43,10 +43,10 @@ public class Main {
 						modelDir += '/';
 					break;
 				case "-input":
-					input = IInputProvider.createFromFile(args[++c]);
+					input = IInputProvider.createFromFile(args[++c]); // use UTf-8
 					break;
 				case "-output":
-					output = IOutputHandler.createFromFile(args[++c]);
+					output = IOutputHandler.createFromFile(args[++c]); // use UTF-8
 					break;
 			}
 		if (input == null) input = IInputProvider.createDefault();

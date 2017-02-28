@@ -1,8 +1,13 @@
 package org.thunlp.thulac;
 
+import org.thunlp.thulac.util.StringUtils;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.charset.UnsupportedCharsetException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -16,29 +21,90 @@ import java.util.List;
 public interface IInputProvider extends IProgramStateListener {
 	/**
 	 * Creates an instance of {@link IInputProvider} which retrieves input from
-	 * {@link System#in}.
+	 * {@link System#in}, using the default charset as the input encoding.
 	 *
 	 * @return The {@link IInputProvider} created.
 	 */
 	static IInputProvider createDefault() {
 		return new ReaderInputProvider(new BufferedReader(
-				new InputStreamReader(System.in)));
+				new InputStreamReader(System.in))); // use default charset for System.in
 	}
 
 	/**
 	 * Creates an instance of {@link IInputProvider} which retrieves input from the
-	 * given file.
+	 * given file using UTF-8 as file encoding.
 	 *
 	 * @param filename
-	 * 		The name of the file to output to.
+	 * 		The name of the file to retrieve input from.
 	 *
 	 * @return The {@link IInputProvider} created.
+	 *
 	 * @throws IOException
 	 * 		Is the file does not exist or is not readable.
 	 */
 	static IInputProvider createFromFile(String filename) throws IOException {
+		return createFromFile(filename, (Charset) null);
+	}
+
+	/**
+	 * Creates an instance of {@link IInputProvider} which retrieves input from the
+	 * given file using a given charset as encoding.
+	 *
+	 * @param filename
+	 * 		The name of the file to retrieve input from.
+	 * @param charsetName
+	 * 		The optional name of the charset to use, defaulted to "UTF-8".
+	 *
+	 * @return The {@link IInputProvider} created.
+	 *
+	 * @throws IOException
+	 * 		Is the file does not exist or is not readable.
+	 * @throws UnsupportedCharsetException
+	 * 		If the charset referred to by the given name is not supported.
+	 */
+	static IInputProvider createFromFile(String filename, String charsetName)
+			throws IOException, UnsupportedCharsetException {
+		Charset charset = null;
+		if (charsetName != null) charset = Charset.forName(charsetName);
+		return createFromFile(filename, charset);
+	}
+
+	/**
+	 * Creates an instance of {@link IInputProvider} which retrieves input from the
+	 * given file using a given charset as encoding.
+	 *
+	 * @param filename
+	 * 		The name of the file to retrieve input from.
+	 * @param charset
+	 * 		The optional file encoding to use, defaulted to UTF-8.
+	 *
+	 * @return The {@link IInputProvider} created.
+	 *
+	 * @throws IOException
+	 * 		Is the file does not exist or is not readable.
+	 */
+	static IInputProvider createFromFile(String filename, Charset charset)
+			throws IOException {
 		if (filename == null) return null;
-		return new ReaderInputProvider(Files.newBufferedReader(Paths.get(filename)));
+		// Files.newBufferedReader throws NPE is charset is null, default it to UTF-8
+		if (charset == null) charset = StandardCharsets.UTF_8;
+		return new ReaderInputProvider(
+				Files.newBufferedReader(Paths.get(filename), charset));
+	}
+
+	/**
+	 * Creates an instance of {@link IInputProvider} which retrieves input from the
+	 * given {@link String}.
+	 *
+	 * @param input
+	 * 		The input string.
+	 *
+	 * @return The {@link IInputProvider} created.
+	 */
+	static IInputProvider createFromString(String input) {
+		if (input == null) return null;
+		return new ReaderInputProvider(
+				new BufferedReader(StringUtils.toReader(input, null)));
 	}
 
 	/**
