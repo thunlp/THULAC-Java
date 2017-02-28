@@ -7,6 +7,7 @@ import org.thunlp.thulac.postprocess.*;
 import org.thunlp.thulac.preprocess.ConvertT2SPass;
 import org.thunlp.thulac.preprocess.IPreprocessPass;
 import org.thunlp.thulac.preprocess.PreprocessPass;
+import org.thunlp.thulac.util.StringOutputHandler;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,6 +15,27 @@ import java.util.List;
 import java.util.Vector;
 
 public class Thulac {
+	/**
+	 * Run the segmentation program with argument {@code segOnly}, take input from the
+	 * given {@link String} and return the segmented output as a {@link String}.
+	 *
+	 * @param input
+	 * 		The input {@link String}.
+	 * @param segOnly
+	 * 		Whether to output only segments.
+	 *
+	 * @return The segmented output as a {@link String}.
+	 *
+	 * @throws IOException
+	 * 		If one of the model files fails to load.
+	 */
+	public static String split(String input, boolean segOnly) throws IOException {
+		StringOutputHandler outputProvider = IOutputHandler.createOutputToString();
+		IInputProvider inputProvider = IInputProvider.createFromString(input);
+		split(inputProvider, outputProvider, segOnly);
+		return outputProvider.getString();
+	}
+
 	/**
 	 * Run the segmentation program with argument {@code segOnly} and default values
 	 * for all others.
@@ -26,8 +48,8 @@ public class Thulac {
 	 * 		Whether to output only segments.
 	 *
 	 * @throws IOException
-	 * 		If I/O of either {@code input}, {@code output} or one of the model files
-	 * 		resulted in an exception.
+	 * 		If I/O of either {@code input}, {@code output} or one of the model files resulted
+	 * 		in an exception.
 	 */
 	public static void split(IInputProvider input, IOutputHandler output, boolean segOnly)
 			throws IOException {
@@ -56,8 +78,8 @@ public class Thulac {
 	 * 		The {@link IOutputHandler} instance to handle output.
 	 *
 	 * @throws IOException
-	 * 		If I/O of either {@code input}, {@code output} or one of the model files
-	 * 		resulted in an exception.
+	 * 		If I/O of either {@code input}, {@code output} or one of the model files resulted
+	 * 		in an exception.
 	 */
 	public static void split(
 			String modelDir, char separator, String userDict,
@@ -73,7 +95,8 @@ public class Thulac {
 			taggingDecoder.threshold = segOnly ? 0 : 10000;
 			taggingDecoder.separator = separator;
 			String prefix = modelDir + (segOnly ? "cws_" : "model_c_");
-			taggingDecoder.init(prefix + "model.bin", prefix + "dat.bin",
+			taggingDecoder.init(prefix + "model.bin",
+					prefix + "dat.bin",
 					prefix + "label.txt");
 			taggingDecoder.setLabelTrans();
 
