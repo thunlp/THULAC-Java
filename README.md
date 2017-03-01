@@ -15,7 +15,7 @@
 * [开源协议](#开源协议)
 * [相关论文](#相关论文)
 * [作者](#作者)
-* [其他协助开发者](#其他协助开发者)
+* [致谢](#致谢)
 
 ## 项目介绍
 
@@ -34,7 +34,7 @@ THULAC (THU Lexical Analyzer for Chinese) 是由清华大学自然语言处理�
 下载编译本库需要计算机上已安装[java](https://www.java.com/), [git](https://git-scm.com/)和[gradle](https://gradle.org/)，以及稳定可靠的网络连接。
 之后，运行命令行：
 ``` bat
-git clone https://github.com/std4453/THULAC-Java.git
+git clone https://github.com/thunlp/THULAC-Java.git
 ```
 执行完毕后，运行命令行：
 ``` bat
@@ -141,8 +141,11 @@ CNKI_journal.txt（51 MB）
 1. 欢迎对该工具包提出任何宝贵意见和建议。请发邮件至thunlp@gmail.com。
 1. 如果您在THULAC基础上发表论文或取得科研成果，请您在发表论文和申报成果时声明“使用了清华大学THULAC”，并按如下格式引用：
 
-> **中文： 孙茂松, 陈新雄, 张开旭, 郭志芃, 刘知远. THULAC：一个高效的中文词法分析工具包. 2016.**
-> **英文： Maosong Sun, Xinxiong Chen, Kaixu Zhang, Zhipeng Guo, Zhiyuan Liu. THULAC: An Efficient Lexical Analyzer for Chinese. 2016.**
+中文： 
+> **孙茂松, 陈新雄, 张开旭, 郭志芃, 刘知远. THULAC：一个高效的中文词法分析工具包. 2016.**
+
+英文：
+> **Maosong Sun, Xinxiong Chen, Kaixu Zhang, Zhipeng Guo, Zhiyuan Liu. THULAC: An Efficient Lexical Analyzer for Chinese. 2016.**
 
 ## 相关论文
 * Zhongguo Li, Maosong Sun. Punctuation as Implicit Annotations for Chinese Word Segmentation. Computational Linguistics, vol. 35, no. 4, pp. 505-512, 2009.
