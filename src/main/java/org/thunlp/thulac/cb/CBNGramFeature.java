@@ -5,6 +5,8 @@ import org.thunlp.thulac.data.Dat;
 import java.util.Vector;
 
 public class CBNGramFeature {
+	// TODO: add documentation
+
 	private static final int SENTENCE_BOUNDARY = '#';
 
 	private int separator;
@@ -18,8 +20,8 @@ public class CBNGramFeature {
 
 	public CBNGramFeature(Dat myDat, CBModel model, int[] values) {
 		this.separator = ' ';
-		this.datSize = myDat.getDatSize();
-		this.dat = myDat.getDat();
+		this.datSize = myDat.datSize;
+		this.dat = myDat.dat;
 		this.model = model;
 		this.maxLength = 20000;
 		this.uniBases = new int[this.maxLength + 2];

@@ -7,13 +7,15 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- *
+ * An implementation of {@link IOutputHandler} which writes output to a {@link
+ * BufferedWriter}.
  */
 public class WriterOutputHandler implements IOutputHandler {
 	private BufferedWriter writer;
 	private StringBuilder sb;
 
 	public WriterOutputHandler(BufferedWriter writer) {
+		// writer must be non-null
 		if (writer == null) throw new IllegalArgumentException("writer == null!");
 		this.writer = writer;
 		this.sb = new StringBuilder();
@@ -53,7 +55,7 @@ public class WriterOutputHandler implements IOutputHandler {
 	@Override
 	public void onProgramEnd() {
 		try {
-			this.writer.close();
+			this.writer.close(); // release system resources
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

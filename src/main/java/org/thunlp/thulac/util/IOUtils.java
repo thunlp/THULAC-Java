@@ -8,9 +8,20 @@ import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
+ * A class which provides static utility methods used dealing with {@link IInputProvider}
+ * and {@link IOutputHandler}. Some of them construct instances of {@link IInputProvider}
+ * and {@link IOutputHandler}, hiding the implementation details from the user. Others
+ * can be used within implementations of {@link IInputProvider} and
+ * {@link IOutputHandler}, avoiding code duplicates.
  *
+ * @see IInputProvider
+ * @see IOutputHandler
  */
 public class IOUtils {
 	/**
@@ -133,8 +144,7 @@ public class IOUtils {
 	 */
 	public static IInputProvider inputFromString(String input) {
 		if (input == null) return null;
-		return new ReaderInputProvider(
-				new BufferedReader(StringUtils.toReader(input, null)));
+		return new StringInputProvider(input);
 	}
 
 	/**
@@ -260,5 +270,29 @@ public class IOUtils {
 	 */
 	public static StringOutputHandler outputToString() {
 		return new StringOutputHandler();
+	}
+
+	private static final int MAX_LENGTH = 20000;
+	private static final Pattern SPLIT_PATTERN =
+			Pattern.compile(".*([\u3002\uff1f\uff01\uff1b;!?]|$)");
+
+	/**
+	 * Split a given line into a list of line segments if the line is too long. It is
+	 * promised that each line segment either is the last one or ends with an
+	 * punctuation character.
+	 *
+	 * @param line
+	 * 		The line to split into line segments.
+	 *
+	 * @return The list of line segments split.
+	 */
+	public static List<String> getLineSegments(String line) {
+		List<String> lineSegments = new ArrayList<>();
+		if (line.length() < MAX_LENGTH) lineSegments.add(line);
+		else { // split the line into short line segments
+			Matcher matcher = SPLIT_PATTERN.matcher(line);
+			while (matcher.find()) lineSegments.add(matcher.group());
+		}
+		return lineSegments;
 	}
 }

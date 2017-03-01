@@ -1,6 +1,8 @@
 package org.thunlp.thulac.cb;
 
-import org.thunlp.thulac.data.*;
+import org.thunlp.thulac.data.Dat;
+import org.thunlp.thulac.data.POCGraph;
+import org.thunlp.thulac.data.TaggedWord;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -10,6 +12,8 @@ import java.util.List;
 import java.util.Vector;
 
 public class CBTaggingDecoder {
+	// TODO: add documentation
+
 	public char separator;
 	private int maxLength;
 	private int len;

@@ -8,7 +8,7 @@ import org.thunlp.thulac.util.IOUtils;
 import java.io.IOException;
 
 /**
- *
+ * The program entrance which deals with command line arguments.
  */
 public class Main {
 	public static void main(String[] args) throws IOException {

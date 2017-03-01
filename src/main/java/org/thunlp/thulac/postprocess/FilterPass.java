@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Set;
 
 public class FilterPass implements IPostprocessPass {
+	// TODO: add more documentation
+
 	private static final Set<String> ALLOWED_TAGS = new HashSet<>(Arrays.asList(
 			"n", "np", "ns", "ni", "nz", "v", "a", "id", "t", "uw"));
 	private static final String ARABIC_NUMBER_CODE_POINTS =
@@ -20,17 +22,17 @@ public class FilterPass implements IPostprocessPass {
 			StringUtils.toString(12295, 19968, 20108, 19977, 22235,
 					20116, 20845, 19971, 20843, 20061);
 
-	private Dat xu_dat;
-	private Dat time_dat;
+	private Dat xuDat;
+	private Dat timeDat;
 
 	public FilterPass(String xuWordFile, String timeWordFile) throws IOException {
-		this.xu_dat = new Dat(xuWordFile);
-		this.time_dat = new Dat(timeWordFile);
+		this.xuDat = new Dat(xuWordFile);
+		this.timeDat = new Dat(timeWordFile);
 	}
 
 	@Override
 	public void process(List<TaggedWord> sentence) {
-		if (this.xu_dat == null || this.time_dat == null) return;
+		if (this.xuDat == null || this.timeDat == null) return;
 		if (sentence.isEmpty()) return;
 
 		for (int i = sentence.size() - 1; i >= 0; --i) {
@@ -38,7 +40,7 @@ public class FilterPass implements IPostprocessPass {
 			String tag = sentence.get(i).tag;
 
 			if (ALLOWED_TAGS.contains(tag)) {
-				if (this.xu_dat.match(word) != -1)
+				if (this.xuDat.match(word) != -1)
 					sentence.remove(i);
 				else if ("t".equals(tag)) {
 					int count = 0;
@@ -59,7 +61,7 @@ public class FilterPass implements IPostprocessPass {
 						}
 					}
 					if (hasArabicNum || hasChineseNum ||
-							(this.time_dat.match(word) != -1)) sentence.remove(i);
+							(this.timeDat.match(word) != -1)) sentence.remove(i);
 				}
 			} else sentence.remove(i);
 		}

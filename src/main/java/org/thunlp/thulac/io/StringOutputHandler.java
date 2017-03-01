@@ -6,7 +6,8 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- *
+ * An implementation of {@link IOutputHandler} to allow access to the output in form of
+ * {@link String}.
  */
 public class StringOutputHandler implements IOutputHandler {
 	private StringBuilder str;

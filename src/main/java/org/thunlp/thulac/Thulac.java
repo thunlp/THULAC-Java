@@ -19,6 +19,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+/**
+ * The central class which acts as core of the THULAC API. It provides several
+ * convenient methods make things easier for users.
+ */
 public class Thulac {
 	/**
 	 * Run the segmentation program with argument {@code segOnly}, taking input from the
@@ -102,8 +106,8 @@ public class Thulac {
 	 * 		Whether to output only segments.
 	 *
 	 * @throws IOException
-	 * 		If I/O of either {@code input}, {@code output} or one of the model files resulted
-	 * 		in an exception.
+	 * 		If I/O of either {@code input}, {@code output} or one of the model files
+	 * 		resulted in an exception.
 	 */
 	public static void split(IInputProvider input, IOutputHandler output, boolean segOnly)
 			throws IOException {
@@ -132,8 +136,8 @@ public class Thulac {
 	 * 		The {@link IOutputHandler} instance to handle output.
 	 *
 	 * @throws IOException
-	 * 		If I/O of either {@code input}, {@code output} or one of the model files resulted
-	 * 		in an exception.
+	 * 		If I/O of either {@code input}, {@code output} or one of the model files
+	 * 		resulted in an exception.
 	 */
 	public static void split(
 			String modelDir, char separator, String userDict,
@@ -185,7 +189,7 @@ public class Thulac {
 				}
 				output.handleLineEnd();
 			}
-		} finally {
+		} finally { // close resources even when program crashes
 			input.onProgramEnd();
 			output.onProgramEnd();
 		}

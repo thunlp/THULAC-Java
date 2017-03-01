@@ -1,17 +1,10 @@
-/**
- * Created锛�May 10, 2013 2:18:41 PM
- * Project锛�ThulacJava
- *
- * @author cxx
- * @since JDK 1.6.0_13
- * filename锛�AlphaBeta.java
- * description锛�
- */
-package org.thunlp.thulac.data;
+package org.thunlp.thulac.cb;
 
 
-//a structure for alphas and betas
+// a structure for alphas and betas
 public class AlphaBeta {
+	// TODO: add documentation
+
 	public int value;
 	public int nodeId;
 	public int labelId;

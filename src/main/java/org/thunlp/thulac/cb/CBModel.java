@@ -10,6 +10,8 @@ import java.nio.IntBuffer;
 import java.nio.channels.FileChannel;
 
 public class CBModel {
+	// TODO: add documentation
+
 	public int l_size; // size of the labels
 	public int f_size; // size of the features
 

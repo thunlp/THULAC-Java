@@ -1,18 +1,20 @@
 package org.thunlp.thulac.io;
 
-import org.thunlp.thulac.util.InputProviderUtils;
+import org.thunlp.thulac.util.IOUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.List;
 
 /**
- *
+ * An implementation of {@link IInputProvider} which retrieves input from a
+ * {@link BufferedReader}.
  */
 public class ReaderInputProvider implements IInputProvider {
 	private BufferedReader reader;
 
 	public ReaderInputProvider(BufferedReader reader) {
+		// reader must be non-null
 		if (reader == null) throw new IllegalArgumentException("reader == null!");
 		this.reader = reader;
 	}
@@ -21,7 +23,7 @@ public class ReaderInputProvider implements IInputProvider {
 	public List<String> provideInput() throws IOException {
 		String line = this.reader.readLine();
 		if (line == null) return null;
-		return InputProviderUtils.getLineSegments(line);
+		return IOUtils.getLineSegments(line);
 	}
 
 	@Override
@@ -31,7 +33,7 @@ public class ReaderInputProvider implements IInputProvider {
 	@Override
 	public void onProgramEnd() {
 		try {
-			this.reader.close();
+			this.reader.close(); // release system resources
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

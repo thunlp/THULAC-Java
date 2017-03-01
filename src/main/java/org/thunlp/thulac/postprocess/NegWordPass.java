@@ -7,21 +7,27 @@ import org.thunlp.thulac.util.StringUtils;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * A postprocess pass which extract negative words (like "not" in english) and add them
+ * to the word list.
+ */
 public class NegWordPass implements IPostprocessPass {
-	private Dat neg_dat;
+	// TODO: add more documentation
+
+	private Dat netWordDat;
 
 	public NegWordPass(String filename) throws IOException {
-		this.neg_dat = new Dat(filename);
+		this.netWordDat = new Dat(filename);
 	}
 
 	@Override
 	public void process(List<TaggedWord> sentence) {
-		if (this.neg_dat == null) return;
+		if (this.netWordDat == null) return;
 		if (sentence.isEmpty()) return;
 
 		for (int i = sentence.size() - 1; i >= 0; --i) {
 			TaggedWord tagged = sentence.get(i);
-			if (this.neg_dat.match(tagged.word) != -1) {
+			if (this.netWordDat.match(tagged.word) != -1) {
 				TaggedWord newWord = new TaggedWord(tagged.separator);
 				newWord.word = StringUtils.toString(
 						tagged.word.codePointAt(tagged.word.offsetByCodePoints(0, 1)));

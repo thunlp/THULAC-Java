@@ -10,7 +10,8 @@ import java.io.IOException;
 import java.util.HashMap;
 
 /**
- *
+ * A preprocess pass which convert traditional Chinese characters to simplified ones,
+ * used when switch {@code -t2s} exists in the command line.
  */
 public class ConvertT2SPass implements IPreprocessPass {
 	private HashMap<Integer, Integer> t2sMap;
@@ -21,10 +22,16 @@ public class ConvertT2SPass implements IPreprocessPass {
 	}
 
 	private void loadT2SMap(String filename) throws IOException {
+		// TODO: adapt NIO
+
 		File mapFile = new File(filename);
+		// t2s map format: recordCount * DWORD traditional +
+		//                 recordCount * DWORD simplified
+		// -> 8 * recordCount bytes in total
 		int recordCount = (int) (mapFile.length() >> 3);
+
 		DataInputStream input = new DataInputStream(new FileInputStream(mapFile));
-		int[] traditional = new int[recordCount];
+		int[] traditional = new int[recordCount]; // cache
 		for (int i = 0; i < recordCount; ++i) traditional[i] = input.readInt();
 		for (int i = 0; i < recordCount; ++i) {
 			int simplified = input.readInt();

@@ -7,15 +7,50 @@ import java.io.InputStreamReader;
 import java.util.Comparator;
 import java.util.Vector;
 
+/**
+ * A class used to construct instances of {@link Dat} from user-specified dictionary
+ * files. It extends {@link Dat} to avoid unnecessary array copies and to increase
+ * performance.<br>
+ */
 public class DatMaker extends Dat {
-	public static Comparator<KeyValue> KEY_VALUE_COMPARATOR = new Comparator<KeyValue>() {
-		@Override
-		public int compare(KeyValue first, KeyValue second) {
-			return first.key.compareTo(second.key);
-		}
-	};
+	// TODO: add more documentations
 
-	public static DatMaker readFromTxtFile(String filename) throws IOException {
+	private static class KeyValue {
+		public String key;
+		public int value;
+
+		public KeyValue() {
+			this("", 0);
+		}
+
+		public KeyValue(String key, int value) {
+			this.key = key;
+			this.value = value;
+		}
+	}
+
+	private static Comparator<KeyValue> KEY_VALUE_COMPARATOR =
+			new Comparator<KeyValue>() {
+				@Override
+				public int compare(KeyValue first, KeyValue second) {
+					return first.key.compareTo(second.key);
+				}
+			};
+
+	/**
+	 * Read (or more precisely, construct) an instance of {@link Dat} from the given
+	 * file. This is used to generate {@link Dat} from a user-specified dictionary,
+	 * which consists of multiple lines, each one representing a word in the dictionary.
+	 *
+	 * @param filename
+	 * 		The name of the file.
+	 *
+	 * @return The generated {@link Dat}.
+	 *
+	 * @throws IOException
+	 * 		If the given file does not exist or is not readable.
+	 */
+	public static Dat readFromTxtFile(String filename) throws IOException {
 		BufferedReader buf = new BufferedReader(
 				new InputStreamReader(new FileInputStream(filename)));
 		Vector<KeyValue> lexicon = new Vector<>();
@@ -30,7 +65,6 @@ public class DatMaker extends Dat {
 
 		DatMaker dm = new DatMaker();
 		dm.makeDat(lexicon);
-		dm.shrink();
 		return dm;
 	}
 
@@ -47,7 +81,7 @@ public class DatMaker extends Dat {
 	/**
 	 * Use {@code dat[ind]} as an entry.
 	 */
-	public void use(int ind) {
+	private void use(int ind) {
 		int base = this.dat[ind << 1], check = this.dat[(ind << 1) + 1];
 		if (check >= 0) System.out.println("cell reused!!");
 		if (base == 1) this.head = check;
@@ -57,7 +91,7 @@ public class DatMaker extends Dat {
 		this.dat[(ind << 1) + 1] = ind;
 	}
 
-	public void extend() {
+	private void extend() {
 		int oldSize = this.datSize;
 		this.datSize *= 2;
 		int[] newDat = new int[this.dat.length << 1];
@@ -76,13 +110,13 @@ public class DatMaker extends Dat {
 	/**
 	 * Remove trailing entries in {@code dat} which satisfies {@code entry.check < 0}.
 	 */
-	public void shrink() {
+	private void shrink() {
 		int last = this.datSize - 1;
 		for (; this.dat[(last << 1) + 1] < 0; --last) ;
 		this.datSize = last + 1;
 	}
 
-	public int alloc(Vector<Integer> offsets) {
+	private int alloc(Vector<Integer> offsets) {
 		int size = offsets.size();
 		int base = -this.head;
 
@@ -127,7 +161,7 @@ public class DatMaker extends Dat {
 	 * #KEY_VALUE_COMPARATOR}.<br> The result is stored in {@code children}, as <i>Unicode
 	 * Code Points</i>, and the previous content of {@code children} would be erased.
 	 */
-	public void genChildren(
+	private void genChildren(
 			Vector<KeyValue> lexicon, int start, String prefix,
 			Vector<Integer> children) {
 		children.clear();
@@ -142,7 +176,7 @@ public class DatMaker extends Dat {
 		}
 	}
 
-	public int assign(int check, Vector<Integer> offsets, boolean isWord) {
+	private int assign(int check, Vector<Integer> offsets, boolean isWord) {
 		int base = this.alloc(offsets);
 		this.dat[base << 1] = 0;
 		this.dat[(base << 1) + 1] = isWord ? check : base;
@@ -176,5 +210,7 @@ public class DatMaker extends Dat {
 			this.dat[this.dat[off << 1] << 1] = lexicon.get(i).value;
 			if (i != 0 && i % 100000 == 0) System.out.println((float) i / size);
 		}
+
+		this.shrink();
 	}
 }

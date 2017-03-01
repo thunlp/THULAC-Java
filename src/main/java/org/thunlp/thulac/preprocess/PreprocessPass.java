@@ -3,7 +3,12 @@ package org.thunlp.thulac.preprocess;
 import org.thunlp.thulac.data.POCGraph;
 import org.thunlp.thulac.util.StringUtils;
 
+/**
+ * A preprocess pass which cleans raw input up.
+ */
 public class PreprocessPass implements IPreprocessPass {
+	// TODO: add more documentation
+
 	private static final String OTHER_CODE_POINTS = StringUtils.toString(65292, 12290,
 			65311, 65281, 65306, 65307, 8216, 8217, 8220, 8221, 12304, 12305,
 			12289, 12298, 12299, 126, 183, 64, 124, 35, 65509, 37, 8230, 38, 42, 65288,

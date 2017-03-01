@@ -6,6 +6,8 @@ import org.thunlp.thulac.util.StringUtils;
 import java.util.List;
 
 public class TimeWordPass implements IPostprocessPass {
+	// TODO: add more documentation
+
 	private static final String ARABIC_NUMBER_CODE_POINTS =
 			StringUtils.toString(48, 49, 50, 51, 52, 53, 54, 55, 56, 57,
 					65296, 65297, 65298, 65299, 65300, 65301, 65302, 65303, 65304, 65305);
