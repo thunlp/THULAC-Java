@@ -1,11 +1,8 @@
-package org.thulac;
+package org.thunlp.thulac;
 
 import org.junit.Test;
-import org.thunlp.thulac.Thulac;
 
 import java.io.IOException;
-
-import static org.thulac.TestHelper.*;
 
 /**
  *
@@ -16,15 +13,16 @@ public class Tests {
 
 	@Test
 	public void test1() throws IOException {
-		run(resourceAt("input_1.txt"), tempAt("output_1.txt"), false);
+		TestHelper.run(TestHelper.resourceAt("input_1.txt"),
+				TestHelper.tempAt("output_1.txt"), false);
 	}
 
 
 	@Test
 	public void test2() throws IOException {
-		testSuite(resourceAt("input_2.txt"),
-				resourceAt("compare_2.txt"),
-				tempAt("output_2.txt"));
+		TestHelper.testSuite(TestHelper.resourceAt("input_2.txt"),
+				TestHelper.resourceAt("compare_2.txt"),
+				TestHelper.tempAt("output_2.txt"));
 	}
 
 	@Test

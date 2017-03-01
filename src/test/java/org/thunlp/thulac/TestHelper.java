@@ -1,6 +1,5 @@
-package org.thulac;
+package org.thunlp.thulac;
 
-import org.thunlp.thulac.Thulac;
 import org.thunlp.thulac.util.StringUtils;
 
 import java.io.IOException;
