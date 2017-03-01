@@ -3,12 +3,17 @@ package org.thunlp.thulac;
 import org.thunlp.thulac.cb.CBTaggingDecoder;
 import org.thunlp.thulac.data.POCGraph;
 import org.thunlp.thulac.data.TaggedWord;
+import org.thunlp.thulac.io.IInputProvider;
+import org.thunlp.thulac.io.IOutputHandler;
+import org.thunlp.thulac.io.StringOutputHandler;
 import org.thunlp.thulac.postprocess.*;
 import org.thunlp.thulac.preprocess.ConvertT2SPass;
 import org.thunlp.thulac.preprocess.IPreprocessPass;
 import org.thunlp.thulac.preprocess.PreprocessPass;
-import org.thunlp.thulac.util.StringOutputHandler;
+import org.thunlp.thulac.util.IOUtils;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +21,7 @@ import java.util.Vector;
 
 public class Thulac {
 	/**
-	 * Run the segmentation program with argument {@code segOnly}, take input from the
+	 * Run the segmentation program with argument {@code segOnly}, taking input from the
 	 * given {@link String} and return the segmented output as a {@link String}.
 	 *
 	 * @param input
@@ -30,10 +35,59 @@ public class Thulac {
 	 * 		If one of the model files fails to load.
 	 */
 	public static String split(String input, boolean segOnly) throws IOException {
-		StringOutputHandler outputProvider = IOutputHandler.createOutputToString();
-		IInputProvider inputProvider = IInputProvider.createFromString(input);
+		StringOutputHandler outputProvider = IOUtils.outputToString();
+		IInputProvider inputProvider = IOUtils.inputFromString(input);
 		split(inputProvider, outputProvider, segOnly);
 		return outputProvider.getString();
+	}
+
+	/**
+	 * Run the segmentation program with argument {@code segOnly}, taking input from the
+	 * given {@link File} and output the segmented return to a given {@link File}.<br>
+	 * This method returns directly if either {@code inputFile} or {@code outputFile}
+	 * is null.
+	 *
+	 * @param inputFile
+	 * 		The name of the input file.
+	 * @param outputFile
+	 * 		The name of the output file.
+	 * @param segOnly
+	 * 		Whether to output only segments.
+	 *
+	 * @throws IOException
+	 * 		If one of the model files fails to load or either the input file or the output
+	 * 		file is {@code null}.
+	 */
+	public static void split(String inputFile, String outputFile, boolean segOnly)
+			throws IOException {
+		if (inputFile == null || outputFile == null) return;
+		IInputProvider input = IOUtils.inputFromFile(inputFile);
+		IOutputHandler output = IOUtils.outputToFile(outputFile);
+		split(input, output, segOnly);
+	}
+
+	/**
+	 * Run the segmentation program with argument {@code segOnly}, taking input from the
+	 * given {@link File} and output the segmented return to a given {@link File}.
+	 *
+	 * @param input
+	 * 		The input {@link File}.
+	 * @param output
+	 * 		The output {@link File}.
+	 * @param segOnly
+	 * 		Whether to output only segments.
+	 *
+	 * @throws IOException
+	 * 		If one of the model files fails to load or either the input file or the output
+	 * 		file is {@code null}.
+	 */
+	public static void split(File input, File output, boolean segOnly)
+			throws IOException {
+		if (input == null) throw new FileNotFoundException("input == null!");
+		if (output == null) throw new FileNotFoundException("output == null!");
+		IInputProvider inputProvider = IOUtils.inputFromFile(input);
+		IOutputHandler outputHandler = IOUtils.outputToFile(output);
+		split(inputProvider, outputHandler, segOnly);
 	}
 
 	/**
@@ -90,7 +144,6 @@ public class Thulac {
 			output.onProgramStart();
 
 			// segmentation
-			POCGraph graph = new POCGraph();
 			CBTaggingDecoder taggingDecoder = new CBTaggingDecoder();
 			taggingDecoder.threshold = segOnly ? 0 : 10000;
 			taggingDecoder.separator = separator;
@@ -117,20 +170,18 @@ public class Thulac {
 				post.add(new FilterPass(modelDir + "xu.dat", modelDir + "time.dat"));
 
 			// main loop
-			for (
-					List<String> lineSegments = input.provideInput();
-					lineSegments != null;
-					lineSegments = input.provideInput()) {
+			List<TaggedWord> words = new Vector<>();
+			POCGraph graph = new POCGraph();
+			for (List<String> lineSegments = input.provideInput();
+				 lineSegments != null;
+				 lineSegments = input.provideInput()) {
 				output.handleLineStart();
 				for (String raw : lineSegments) {
 					for (IPreprocessPass pass : pre) raw = pass.process(raw, graph);
+					taggingDecoder.segment(raw, graph, words);
+					for (IPostprocessPass pass : post) pass.process(words);
 
-					List<TaggedWord> tagged = new Vector<>();
-					taggingDecoder.segment(raw, graph, tagged);
-
-					for (IPostprocessPass pass : post) pass.process(tagged);
-
-					output.handleLineSegment(tagged, segOnly);
+					output.handleLineSegment(words, segOnly);
 				}
 				output.handleLineEnd();
 			}

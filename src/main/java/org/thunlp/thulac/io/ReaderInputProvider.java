@@ -1,4 +1,4 @@
-package org.thunlp.thulac;
+package org.thunlp.thulac.io;
 
 import org.thunlp.thulac.util.InputProviderUtils;
 

@@ -1,7 +1,5 @@
 package org.thulac;
 
-import org.thunlp.thulac.IInputProvider;
-import org.thunlp.thulac.IOutputHandler;
 import org.thunlp.thulac.Thulac;
 import org.thunlp.thulac.util.StringUtils;
 
@@ -27,9 +25,11 @@ public class TestHelper {
 
 	public static void run(String inputFile, String outputFile, boolean segOnly)
 			throws IOException {
+		// create directories for outputFile, otherwise NoSuchFileException will be thrown
+		Files.createDirectories(Paths.get(outputFile).getParent());
+
 		long time = -System.currentTimeMillis();
-		Thulac.split(IInputProvider.createFromFile(inputFile),
-				IOutputHandler.createFromFile(outputFile), segOnly);
+		Thulac.split(inputFile, outputFile, segOnly);
 		time += System.currentTimeMillis();
 
 		System.out.printf("Time elapsed: %dms\n", time);

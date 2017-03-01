@@ -1,8 +1,9 @@
 package org.thunlp.thulac.main;
 
-import org.thunlp.thulac.IInputProvider;
-import org.thunlp.thulac.IOutputHandler;
 import org.thunlp.thulac.Thulac;
+import org.thunlp.thulac.io.IInputProvider;
+import org.thunlp.thulac.io.IOutputHandler;
+import org.thunlp.thulac.util.IOUtils;
 
 import java.io.IOException;
 
@@ -43,14 +44,14 @@ public class Main {
 						modelDir += '/';
 					break;
 				case "-input":
-					input = IInputProvider.createFromFile(args[++c]); // use UTf-8
+					input = IOUtils.inputFromFile(args[++c]); // use UTf-8
 					break;
 				case "-output":
-					output = IOutputHandler.createFromFile(args[++c]); // use UTF-8
+					output = IOUtils.outputToFile(args[++c]); // use UTF-8
 					break;
 			}
-		if (input == null) input = IInputProvider.createDefault();
-		if (output == null) output = IOutputHandler.createDefault();
+		if (input == null) input = IOUtils.inputFromConsole();
+		if (output == null) output = IOUtils.outputToConsole();
 
 		Thulac.split(modelDir, separator, userDict, useT2S, segOnly, useFilter,
 				input, output);

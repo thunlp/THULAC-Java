@@ -1,6 +1,5 @@
-package org.thunlp.thulac.util;
+package org.thunlp.thulac.io;
 
-import org.thunlp.thulac.IOutputHandler;
 import org.thunlp.thulac.data.TaggedWord;
 
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package org.thunlp.thulac;
+package org.thunlp.thulac.io;
 
 /**
  * An interface used to listen to the starting and termination events of the
