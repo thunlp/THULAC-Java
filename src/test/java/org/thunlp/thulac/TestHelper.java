@@ -1,5 +1,7 @@
 package org.thunlp.thulac;
 
+import org.thunlp.thulac.io.IInputProvider;
+import org.thunlp.thulac.io.IOutputHandler;
 import org.thunlp.thulac.util.StringUtils;
 
 import java.io.IOException;
@@ -7,39 +9,122 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
- *
+ * Helper class for THULAC tests.
  */
 public class TestHelper {
-	public static void testSuite(String inputFile, String compareFile, String outputFile)
+	/**
+	 * Run the segmentation program, write the output to the given position and
+	 * calculate the accuracy of the program.
+	 *
+	 * @param inputFile
+	 * 		The {@link IInputProvider} used as input.
+	 * @param compareFile
+	 * 		The {@link IInputProvider} used as answer.
+	 * @param outputFile
+	 * 		The {@link IOutputHandler} used as output.
+	 *
+	 * @throws IOException
+	 * 		If an error occurs while I/O.
+	 */
+	public static void testSuite(
+			IAccessible inputFile, IAccessible compareFile, IAccessible outputFile)
 			throws IOException {
 		run(inputFile, outputFile, true);
 		compare(inputFile, compareFile, outputFile);
 	}
 
-	public static void run(String inputFile, String outputFile, boolean segOnly)
+	/**
+	 * Runs the segmentation program with given input and output and the {@code
+	 * segOnly} flag and output execution time.
+	 *
+	 * @param input
+	 * 		The {@link IAccessible} used as input.
+	 * @param output
+	 * 		The {@link IAccessible} used as output.
+	 * @param segOnly
+	 * 		Whether to output segments only.
+	 *
+	 * @throws IOException
+	 * 		If one of the model files failed to load.
+	 */
+	public static void run(IAccessible input, IAccessible output, boolean segOnly)
 			throws IOException {
-		// Create directories for outputFile, otherwise NoSuchFileException will be thrown
-		Files.createDirectories(Paths.get(outputFile).getParent());
+		IInputProvider inputProvider = input.toInputProvider();
+		IOutputHandler outputHandler = output.toOutputHandler();
+		run(inputProvider, outputHandler, segOnly);
+	}
 
+	/**
+	 * Runs the segmentation program with given input and output and the {@code
+	 * segOnly} flag and output execution time.
+	 *
+	 * @param input
+	 * 		The {@link IInputProvider} used as input.
+	 * @param output
+	 * 		The {@link IOutputHandler} used as output.
+	 * @param segOnly
+	 * 		Whether to output segments only.
+	 *
+	 * @throws IOException
+	 * 		If one of the model files failed to load.
+	 */
+	public static void run(IInputProvider input, IOutputHandler output, boolean segOnly)
+			throws IOException {
 		long time = -System.currentTimeMillis();
-		Thulac.split(inputFile, outputFile, segOnly);
+		Thulac.split(input, output, segOnly);
 		time += System.currentTimeMillis();
-
 		System.out.printf("Time elapsed: %dms\n", time);
 	}
 
-	public static void compare(String inputFile, String compareFile, String outputFile)
+	/**
+	 * Runs the segmentation program in profiler mode, that is, provide fastest input
+	 * and output to measure the actual time consumed by the program. Note that this
+	 * method does not output the result, use {@link #run(IInputProvider, IOutputHandler,
+	 * boolean)} or {@link #run(IAccessible, IAccessible, boolean)} if the result must be
+	 * used afterwards.
+	 *
+	 * @param input
+	 * 		The {@link IAccessible} used as input.
+	 * @param segOnly
+	 * 		Whether to output segments only.
+	 *
+	 * @throws IOException
+	 * 		If one of the model files failed to load.
+	 */
+	public static void runProfiler(IAccessible input, boolean segOnly)
 			throws IOException {
-		// The comparison is done in such a way that, extracting split results from the
-		// files, the number of split positions in the output file which also exist in
-		// the compare file are counted.
+		run(new ProfilerInputProvider(input.toInputProvider()),
+				new ProfilerOutputHandler(), segOnly);
+	}
 
+	/**
+	 * Compare the output file and the answer file ({@code compareFile}) and calculate
+	 * accuracy.<br>
+	 * The comparison is done in such a way that, extracting split results from the
+	 * files, the number of split positions in the output file which also exist in
+	 * the compare file are counted.<br>
+	 * This method requires outputFile to be generated with flag -seg_only
+	 *
+	 * @param inputFile
+	 * 		The {@link IAccessible} used as input.
+	 * @param compareFile
+	 * 		The {@link IAccessible} used as answer.
+	 * @param outputFile
+	 * 		The {@link IAccessible} used as output.
+	 *
+	 * @throws IOException
+	 * 		If an exception was thrown while reading the lines from {@code inputFile},
+	 * 		{@code compareFile} or {@code outputFile}.
+	 */
+	public static void compare(
+			IAccessible inputFile, IAccessible compareFile, IAccessible outputFile)
+			throws IOException {
+		// ADDITIONAL TO JAVADOC: ( *XXX* means XXX is a variable )
 		// In other words, set *matches* to 0 initially. If THULAC splits input at
 		// point A and so will a human, increase *matches* by one.
 		// *total* is the number of total split segments in the answer, while
@@ -50,13 +135,9 @@ public class TestHelper {
 		//    segments - matches
 		// represent the number of wrongly split segments.
 
-		// ( *XXX* means XXX is a variable )
-
-		// This method requires outputFile to be generated with flag -seg_only
-
-		List<String> input = getLines(inputFile);
-		List<String> output = getLines(outputFile);
-		List<String> compare = getLines(compareFile);
+		List<String> input = inputFile.getLines();
+		List<String> output = outputFile.getLines();
+		List<String> compare = compareFile.getLines();
 
 		int lines = input.size();
 		List<List<Integer>> outputSeg = extractSegments(input, output);
@@ -71,14 +152,6 @@ public class TestHelper {
 
 		System.out.printf("Result: %d total, %d segments, %d matches, %.2f%% accuracy\n",
 				total, segments, matches, 100f * matches / total);
-	}
-
-	private static List<String> getLines(String fileName) throws IOException {
-		// Empty lines (or lines that contains only whitespaces) are discarded
-		return Files.lines(Paths.get(fileName))
-				.map(String::trim)
-				.filter(line -> !line.isEmpty())
-				.collect(Collectors.toList());
 	}
 
 	private static List<List<Integer>> extractSegments(
@@ -134,15 +207,27 @@ public class TestHelper {
 		return segments;
 	}
 
-	private static final String RESOURCE_FORMAT = "src/test/resources/%s";
-	// a temp directory is used to store output files
-	private static final String TMP_FORMAT = "tmp/%s";
+	private static final String RESOURCES_DIRECTORY = "/";
+	// the temp directory used to store output files
+	private static final String TEMP_DIRECTORY = "build/tmp/tests/";
 
-	public static String resourceAt(String name) {
-		return String.format(RESOURCE_FORMAT, name);
+	static {
+		try { // create tmp directory, otherwise IOException would be thrown
+			Files.createDirectories(Paths.get(TEMP_DIRECTORY));
+		} catch (IOException e) {
+			throw new RuntimeException("Unable to create temp directory!", e);
+		}
 	}
 
-	public static String tempAt(String name) {
-		return String.format(TMP_FORMAT, name);
+	public static IAccessible fileAt(String name) {
+		return IAccessible.fileAt(name);
+	}
+
+	public static IAccessible tempAt(String name) {
+		return fileAt(TEMP_DIRECTORY + name);
+	}
+
+	public static IAccessible resourceAt(String name) {
+		return IAccessible.resourceAt(RESOURCES_DIRECTORY + name);
 	}
 }
