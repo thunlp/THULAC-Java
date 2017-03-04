@@ -38,7 +38,7 @@ public class PunctuationPass implements IPostprocessPass {
 			}
 
 			int k = tmp.size() - 1;
-			for (; k >= 0 && this.punctuationDat.match(tmp.get(k)) != -1; k--) ;
+			for (; k >= 0 && this.punctuationDat.contains(tmp.get(k)); k--) ;
 			if (k >= 0) {
 				sb.setLength(0);
 				for (int j = i; j < i + k + 2; j++) sb.append(sentence.get(j).word);
@@ -46,7 +46,7 @@ public class PunctuationPass implements IPostprocessPass {
 				tagged.tag = "w";
 
 				for (int j = i + k + 1; j > i; j--) sentence.remove(j);
-			} else if (this.punctuationDat.match(tagged.word) != -1) tagged.tag = "w";
+			} else if (this.punctuationDat.contains(tagged.word)) tagged.tag = "w";
 		}
 	}
 }

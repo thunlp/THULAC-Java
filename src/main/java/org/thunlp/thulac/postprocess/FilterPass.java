@@ -40,7 +40,7 @@ public class FilterPass implements IPostprocessPass {
 			String tag = sentence.get(i).tag;
 
 			if (ALLOWED_TAGS.contains(tag)) {
-				if (this.xuDat.match(word) != -1)
+				if (this.xuDat.contains(word))
 					sentence.remove(i);
 				else if ("t".equals(tag)) {
 					int count = 0;

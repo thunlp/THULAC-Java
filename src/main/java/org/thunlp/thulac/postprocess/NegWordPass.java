@@ -27,7 +27,7 @@ public class NegWordPass implements IPostprocessPass {
 
 		for (int i = sentence.size() - 1; i >= 0; --i) {
 			TaggedWord tagged = sentence.get(i);
-			if (this.netWordDat.match(tagged.word) != -1) {
+			if (this.netWordDat.contains(tagged.word)) {
 				TaggedWord newWord = new TaggedWord(tagged.separator);
 				newWord.word = StringUtils.toString(
 						tagged.word.codePointAt(tagged.word.offsetByCodePoints(0, 1)));

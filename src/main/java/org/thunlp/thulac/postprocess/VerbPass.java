@@ -28,8 +28,8 @@ public class VerbPass implements IPostprocessPass {
 		for (int i = 0, max = sentence.size() - 1; i < max; i++) {
 			next = sentence.get(i + 1);
 			if (this.tag.equals(tagged.tag) && this.tag.equals(next.tag))
-				if (this.vM_dat.match(tagged.word) != -1) tagged.tag = "vm";
-				else if (this.vD_dat.match(next.word) != -1) next.tag = "vd";
+				if (this.vM_dat.contains(tagged.word)) tagged.tag = "vm";
+				else if (this.vD_dat.contains(next.word)) next.tag = "vd";
 			tagged = next;
 		}
 	}

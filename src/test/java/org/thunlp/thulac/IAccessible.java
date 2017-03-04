@@ -4,7 +4,9 @@ import org.thunlp.thulac.io.IInputProvider;
 import org.thunlp.thulac.io.IOutputHandler;
 import org.thunlp.thulac.util.IOUtils;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -83,13 +85,13 @@ public abstract class IAccessible {
 		}
 
 		@Override
-		public IInputProvider toInputProvider() throws IOException {
-			return IOUtils.inputFromInputStream(this.url.openStream());
+		public IOutputHandler toOutputHandler() throws IOException {
+			throw new UnsupportedOperationException("Output not supported on resources!");
 		}
 
 		@Override
-		public IOutputHandler toOutputHandler() throws IOException {
-			throw new UnsupportedOperationException("Output not supported on resources!");
+		public InputStream toInputStream() throws IOException {
+			return this.url.openStream();
 		}
 	}
 
@@ -117,6 +119,11 @@ public abstract class IAccessible {
 		public IOutputHandler toOutputHandler() throws IOException {
 			return IOUtils.outputToFile(this.filename);
 		}
+
+		@Override
+		public InputStream toInputStream() throws IOException {
+			return new FileInputStream(this.filename);
+		}
 	}
 
 	/**
@@ -131,7 +138,9 @@ public abstract class IAccessible {
 	 *
 	 * @return The {@link IInputProvider} created.
 	 */
-	public abstract IInputProvider toInputProvider() throws IOException;
+	public IInputProvider toInputProvider() throws IOException {
+		return IOUtils.inputFromInputStream(this.toInputStream());
+	}
 
 	/**
 	 * Create a {@link IOutputHandler} with this resource / file.
@@ -139,4 +148,11 @@ public abstract class IAccessible {
 	 * @return The {@link IOutputHandler} created.
 	 */
 	public abstract IOutputHandler toOutputHandler() throws IOException;
+
+	/**
+	 * Create a {@link InputStream} with this resource / file.
+	 *
+	 * @return The {@link InputStream} created.
+	 */
+	public abstract InputStream toInputStream() throws IOException;
 }

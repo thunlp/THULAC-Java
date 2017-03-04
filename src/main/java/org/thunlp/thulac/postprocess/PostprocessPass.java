@@ -44,7 +44,7 @@ public class PostprocessPass implements IPostprocessPass {
 			}
 
 			int k = tmp.size() - 1;
-			for (; k >= 0 && this.dictDat.match(tmp.get(k)) == -1; k--) ;
+			for (; k >= 0 && !this.dictDat.contains(tmp.get(k)); k--) ;
 			if (k >= 0) {
 				sb.setLength(0);
 				for (int j = i; j < i + k + 2; j++) sb.append(sentence.get(j).word);
