@@ -60,8 +60,8 @@ public class FilterPass implements IPostprocessPass {
 							}
 						}
 					}
-					if (hasArabicNum || hasChineseNum ||
-							(this.timeDat.match(word) != -1)) sentence.remove(i);
+					if (hasArabicNum || hasChineseNum || (this.timeDat.contains(word)))
+						sentence.remove(i);
 				}
 			} else sentence.remove(i);
 		}
