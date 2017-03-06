@@ -8,6 +8,7 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.+'
+    testCompile group: 'net.sf.jopt-simple', name: 'jopt-simple', version: '5.+'
 }
 
 jar {
