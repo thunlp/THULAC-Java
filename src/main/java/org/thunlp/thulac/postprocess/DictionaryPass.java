@@ -26,11 +26,11 @@ import java.util.List;
  * Please notice that although {@code "ABCD"} exists in {@link #dictionary}, the
  * {@link #process(List)} method will not attempt to split whole words apart.
  */
-public class PostprocessPass implements IPostprocessPass {
+public class DictionaryPass implements IPostprocessPass {
 	private Dat dictionary;
 	private String tag;
 
-	public PostprocessPass(String dictFile, String tag, boolean isTxt)
+	public DictionaryPass(String dictFile, String tag, boolean isTxt)
 			throws IOException {
 		this.tag = tag;
 		if (isTxt) this.dictionary = DatMaker.readFromTxtFile(dictFile);
