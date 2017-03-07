@@ -41,9 +41,8 @@ public class DictionaryPass implements IPostprocessPass {
 	public void process(List<TaggedWord> sentence) {
 		if (this.dictionary == null || sentence.isEmpty()) return;
 
-		int size = sentence.size();
-		for (int i = 0; i < size; i++) {
-			// search for longest concatenation which exist in dict
+		for (int i = 0, size = sentence.size(); i < size; i++) {
+			// search for longest concatenation which exists in dict
 			StringBuilder sb = new StringBuilder();
 			String longest = null, current;
 			int longestIndex = -1;

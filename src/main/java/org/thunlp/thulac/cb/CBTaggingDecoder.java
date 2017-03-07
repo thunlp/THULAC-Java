@@ -55,7 +55,7 @@ public class CBTaggingDecoder {
 		this.alphas = null;
 	}
 
-	public void init(String modelFile, String datFile, String labelFile) throws
+	public void loadFiles(String modelFile, String datFile, String labelFile) throws
 			IOException {
 		this.model = new CBModel(modelFile);
 

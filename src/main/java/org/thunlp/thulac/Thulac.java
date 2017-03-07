@@ -151,7 +151,7 @@ public class Thulac {
 			CBTaggingDecoder taggingDecoder = new CBTaggingDecoder();
 			taggingDecoder.threshold = segOnly ? 0 : 10000;
 			String prefix = modelDir + (segOnly ? "cws_" : "model_c_");
-			taggingDecoder.init(prefix + "model.bin",
+			taggingDecoder.loadFiles(prefix + "model.bin",
 					prefix + "dat.bin",
 					prefix + "label.txt");
 			taggingDecoder.setLabelTrans();
@@ -163,12 +163,12 @@ public class Thulac {
 
 			// postprocess passes
 			List<IPostprocessPass> post = new ArrayList<>();
-			post.add(new PostprocessPass(modelDir + "ns.dat", "ns", false));
-			post.add(new PostprocessPass(modelDir + "idiom.dat", "i", false));
-			post.add(new PunctuationPass(modelDir + "singlepun.dat"));
+			post.add(new DictionaryPass(modelDir + "ns.dat", "ns", false));
+			post.add(new DictionaryPass(modelDir + "idiom.dat", "i", false));
+			post.add(new DictionaryPass(modelDir + "singlepun.dat", "w", false));
 			post.add(new TimeWordPass());
 			post.add(new NegWordPass(modelDir + "neg.dat"));
-			if (userDict != null) post.add(new PostprocessPass(userDict, "uw", true));
+			if (userDict != null) post.add(new DictionaryPass(userDict, "uw", true));
 			if (useFilter)
 				post.add(new FilterPass(modelDir + "xu.dat", modelDir + "time.dat"));
 
