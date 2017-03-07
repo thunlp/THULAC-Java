@@ -85,6 +85,20 @@ public class Dat {
 	}
 
 	/**
+	 * Returns whether this {@link Dat} contains one or more words that begin with
+	 * {@code prefix}.
+	 *
+	 * @param prefix
+	 * 		The query prefix.
+	 *
+	 * @return Whether this {@link Dat} contains one or more words that begin with
+	 * {@code prefix}.
+	 */
+	public boolean containsPrefix(String prefix) {
+		return getInfo(prefix) < 0;
+	}
+
+	/**
 	 * Returns whether this {@link Dat} contains the given word.
 	 *
 	 * @param word
