@@ -20,7 +20,8 @@ public class ProfilerOutputHandler implements IOutputHandler {
 	}
 
 	@Override
-	public void handleLineSegment(List<TaggedWord> words, boolean segOnly) {
+	public void handleLineSegment(List<TaggedWord> words,
+								  boolean segOnly, char separator) {
 	}
 
 	@Override

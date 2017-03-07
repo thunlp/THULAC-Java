@@ -25,16 +25,19 @@ public class StringOutputHandler implements IOutputHandler {
 	}
 
 	@Override
-	public void handleLineSegment(List<TaggedWord> words, boolean segOnly) {
+	public void handleLineSegment(List<TaggedWord> words,
+								  boolean segOnly, char separator) {
 		if (segOnly) {
 			for (TaggedWord word : words) {
 				this.str.append(word.word);
-				this.str.append(" ");
+				this.str.append(' ');
 			}
 		} else {
 			for (TaggedWord word : words) {
-				this.str.append(word);
-				this.str.append(" ");
+				this.str.append(word.word);
+				this.str.append(separator);
+				this.str.append(word.tag);
+				this.str.append(' ');
 			}
 		}
 	}

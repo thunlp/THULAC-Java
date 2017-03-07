@@ -14,7 +14,6 @@ import java.util.Vector;
 public class CBTaggingDecoder {
 	// TODO: add documentation
 
-	public char separator;
 	private int maxLength;
 	private int len;
 	private String sequence;
@@ -39,7 +38,6 @@ public class CBTaggingDecoder {
 	public int threshold;
 
 	public CBTaggingDecoder() {
-		this.separator = '_';
 		this.maxLength = 20000;
 		this.len = 0;
 		this.sequence = "";
@@ -222,7 +220,7 @@ public class CBTaggingDecoder {
 		for (int i = 0; i < this.len; i++) {
 			if ((i == this.len - 1) || (this.labelInfo[this.result[i]].charAt(
 					0) == '2') || (this.labelInfo[this.result[i]].charAt(0) == '3')) {
-				ts.add(new TaggedWord(this.separator));
+				ts.add(new TaggedWord());
 				for (int j = offset; j < i + 1; j++) {
 					ts.get(ts.size() - 1).word += (this.sequence.charAt(j));
 				}

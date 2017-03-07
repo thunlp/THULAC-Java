@@ -22,17 +22,19 @@ public class WriterOutputHandler implements IOutputHandler {
 	}
 
 	@Override
-	public void handleLineSegment(List<TaggedWord> words, boolean segOnly)
+	public void handleLineSegment(List<TaggedWord> words, boolean segOnly, char separator)
 			throws IOException {
 		if (segOnly) {
 			for (TaggedWord word : words) {
 				this.sb.append(word.word);
-				this.sb.append(" ");
+				this.sb.append(' ');
 			}
 		} else {
 			for (TaggedWord word : words) {
-				this.sb.append(word);
-				this.sb.append(" ");
+				this.sb.append(word.word);
+				this.sb.append(separator);
+				this.sb.append(word.tag);
+				this.sb.append(' ');
 			}
 		}
 	}

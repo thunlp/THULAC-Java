@@ -14,21 +14,21 @@ import java.util.List;
 public class NegWordPass implements IPostprocessPass {
 	// TODO: add more documentation
 
-	private Dat netWordDat;
+	private Dat negWordDat;
 
-	public NegWordPass(String filename) throws IOException {
-		this.netWordDat = new Dat(filename);
+	public NegWordPass(String negDatFile) throws IOException {
+		this.negWordDat = new Dat(negDatFile);
 	}
 
 	@Override
 	public void process(List<TaggedWord> sentence) {
-		if (this.netWordDat == null) return;
+		if (this.negWordDat == null) return;
 		if (sentence.isEmpty()) return;
 
 		for (int i = sentence.size() - 1; i >= 0; --i) {
 			TaggedWord tagged = sentence.get(i);
-			if (this.netWordDat.contains(tagged.word)) {
-				TaggedWord newWord = new TaggedWord(tagged.separator);
+			if (this.negWordDat.contains(tagged.word)) {
+				TaggedWord newWord = new TaggedWord();
 				newWord.word = StringUtils.toString(
 						tagged.word.codePointAt(tagged.word.offsetByCodePoints(0, 1)));
 				newWord.tag = "v";

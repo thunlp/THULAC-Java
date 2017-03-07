@@ -150,7 +150,6 @@ public class Thulac {
 			// segmentation
 			CBTaggingDecoder taggingDecoder = new CBTaggingDecoder();
 			taggingDecoder.threshold = segOnly ? 0 : 10000;
-			taggingDecoder.separator = separator;
 			String prefix = modelDir + (segOnly ? "cws_" : "model_c_");
 			taggingDecoder.init(prefix + "model.bin",
 					prefix + "dat.bin",
@@ -185,7 +184,7 @@ public class Thulac {
 					taggingDecoder.segment(raw, graph, words);
 					for (IPostprocessPass pass : post) pass.process(words);
 
-					output.handleLineSegment(words, segOnly);
+					output.handleLineSegment(words, segOnly, separator);
 				}
 				output.handleLineEnd();
 			}

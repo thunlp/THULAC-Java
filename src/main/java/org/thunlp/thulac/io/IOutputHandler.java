@@ -24,14 +24,19 @@ public interface IOutputHandler extends IProgramStateListener {
 	 *
 	 * @param words
 	 * 		The {@link List} of {@link TaggedWord} generated processing one line segment.
+	 * @param segOnly
+	 * 		Whether to output without tags.
+	 * @param separator
+	 * 		The separator between output words and tags.
 	 */
-	void handleLineSegment(List<TaggedWord> words, boolean segOnly) throws IOException;
+	void handleLineSegment(List<TaggedWord> words, boolean segOnly, char separator)
+			throws IOException;
 
 	/**
 	 * Called when an input line is obtained from {@link IInputProvider} and the
 	 * segmentation program is about to begin breaking the line into segments. This
 	 * method is basically for initializations, e.g., creating new line, etc.<br>
-	 * This method is invoked before {@link #handleLineSegment(List, boolean)}.
+	 * This method is invoked before {@link #handleLineSegment(List, boolean, char)}.
 	 */
 	void handleLineStart() throws IOException;
 
@@ -39,7 +44,7 @@ public interface IOutputHandler extends IProgramStateListener {
 	 * Called when segmentation of an input line is finished and the segmentation
 	 * program is about to begin processing the next line. This method is basically for
 	 * finalisation, e.g., flushing input of this line, etc.<br>
-	 * This method is invoked after {@link #handleLineSegment(List, boolean)}.
+	 * This method is invoked after {@link #handleLineSegment(List, boolean, char)}.
 	 */
 	void handleLineEnd() throws IOException;
 }
