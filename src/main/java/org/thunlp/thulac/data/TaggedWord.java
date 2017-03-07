@@ -10,4 +10,9 @@ public class TaggedWord {
 	public TaggedWord() {
 		this.word = "";
 	}
+
+	public TaggedWord(String word, String tag) {
+		this.word = word;
+		this.tag = tag;
+	}
 }

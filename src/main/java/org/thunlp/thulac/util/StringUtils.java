@@ -14,8 +14,27 @@ public class StringUtils {
 	 * @return The converted {@link String}.
 	 */
 	public static String toString(int... codePoints) {
+		return toString(codePoints, 0, codePoints.length);
+	}
+
+	/**
+	 * Convert an array of code points to {@link String}.
+	 *
+	 * @param codePoints
+	 * 		The code points to convert.
+	 * @param offset
+	 * 		The starting offset of {@code codePoints}.
+	 * @param len
+	 * 		The number of code points to convert.
+	 *
+	 * @return The converted {@link String}, indices which exceeds {@code
+	 * codePoints.length} are discarded.
+	 */
+	public static String toString(int[] codePoints, int offset, int len) {
 		StringBuilder sb = new StringBuilder();
-		for (int codePoint : codePoints) sb.appendCodePoint(codePoint);
+		for (int i = offset, max = Math.min(codePoints.length, offset + len);
+			 i < max; ++i)
+			sb.appendCodePoint(codePoints[i]);
 		return sb.toString();
 	}
 
