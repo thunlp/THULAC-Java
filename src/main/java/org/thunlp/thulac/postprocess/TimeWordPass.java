@@ -5,99 +5,68 @@ import org.thunlp.thulac.util.StringUtils;
 
 import java.util.List;
 
+import static org.thunlp.thulac.util.CodePointUtils.DIGITS;
+import static org.thunlp.thulac.util.CodePointUtils.generate;
+
+/**
+ * A postprocess pass which combine words which together represent a time period into
+ * one word.<br>
+ * For example, for input word list {@code "A", "B", "C1", "2", "34" "year"} ("year"
+ * here can by any Chinese time unit in {@link #TIME_UNITS}), the output should be:
+ * {@code "A", "B", "C1", "234year"}.<br>
+ * It can be seen that {@code "C1"} is not concatenated to {@code "234year"}, since it
+ * contains non-digit characters.<br>
+ * Please notice that this class is able to deal with full-width numbers like U+FF10
+ * (full-width digit 1) yet not Chinese digits like U+3007 (Chinese for "one").
+ */
 public class TimeWordPass implements IPostprocessPass {
-	// TODO: add more documentation
+	/**
+	 * Chinese characters which represent time units: (description in English)<br>
+	 * YEAR: U+5E74, MONTH: U+6708, DAY: U+65E5 & U+53F7, HOUR: U+65F6 & U+70B9,
+	 * MINUTE: U+5206, SECOND: U+79D2.
+	 */
+	private static final String TIME_UNITS = generate('\u5E74', '\u6708', '\u65E5',
+			'\u53F7', '\u65F6', '\u70B9', '\u5206', '\u79D2');
 
-	private static final String ARABIC_NUMBER_CODE_POINTS =
-			StringUtils.toString(48, 49, 50, 51, 52, 53, 54, 55, 56, 57,
-					65296, 65297, 65298, 65299, 65300, 65301, 65302, 65303, 65304, 65305);
-	private static final String TIME_WORD_CODE_POINTS =
-			StringUtils.toString(24180, 26376, 26085, 21495, 26102, 28857, 20998, 31186);
-	private static final String OTHER_CODE_POINTS =
-			StringUtils.toString(65292, 12290, 65311, 65281, 65306, 65307, 8216, 8217,
-					8220, 8221, 12304, 12305, 12289, 12298, 12299, 126, 183, 64, 124, 35,
-					65509, 37, 8230, 38, 42, 65288, 65289, 8212, 45, 43, 61, 44, 46, 60,
-					62, 63, 47, 33, 59, 58, 39, 34, 123, 125, 91, 93, 92, 124, 35, 36, 37,
-					94, 38, 42, 40, 41, 95, 45, 43, 61, 9700, 9734, 9733, 65, 66, 67,
-					68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84,
-					85, 86, 87, 88, 89, 90, 97, 98, 99, 100, 101, 102, 103, 104, 105,
-					106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119,
-					120, 121, 122, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57);
-
-	private boolean isArabicNum(String word) {
-		int len = word.codePointCount(0, word.length());
-		for (int i = 0; i < len; i++)
-			if (ARABIC_NUMBER_CODE_POINTS.indexOf(word.codePointAt(i)) == -1)
-				return false;
+	/**
+	 * {@code word} is a number if all the code points in {@code word} is a
+	 * {@linkplain org.thunlp.thulac.util.CodePointUtils#DIGITS digit}.
+	 *
+	 * @param word
+	 * 		The word to check.
+	 *
+	 * @return Whether this {@code word} is a number.
+	 */
+	private boolean isNumber(String word) {
+		for (int codePoint : StringUtils.toCodePoints(word))
+			if (DIGITS.indexOf(codePoint) == -1) return false;
 		return true;
 	}
 
-	private boolean isTimeWord(String word) {
-		return word.length() == 1 && TIME_WORD_CODE_POINTS.indexOf(word.charAt(0)) != -1;
-	}
-
-	private boolean isDoubleWord(String word, String postWord) {
-		if (word.length() != 1 || postWord.length() != 1) return false;
-		else {
-			int wordInt = word.codePointAt(0);
-			int postWordInt = postWord.codePointAt(0);
-			return wordInt == postWordInt && OTHER_CODE_POINTS.indexOf(wordInt) != -1;
-		}
-	}
-
-	private boolean isHttpWord(String word) {
-		return word.length() >= 5 && word.startsWith("http");
+	/**
+	 * {@code word} is a time unit if and only if: {@code word} contains only ont code
+	 * point and this code point is a {@linkplain #TIME_UNITS time unit}.
+	 *
+	 * @param word
+	 * 		The word to check.
+	 *
+	 * @return Whether this {@code word} is a time unit.
+	 */
+	private boolean isTimeUnit(String word) {
+		return StringUtils.codePointCount(word) == 1 &&
+				TIME_UNITS.indexOf(word.codePointAt(0)) != -1;
 	}
 
 	@Override
 	public void process(List<TaggedWord> sentence) {
-		this.processTimeWords(sentence);
-		this.processDoubleWords(sentence);
-		this.processHttpWords(sentence);
-		this.processMailAddress(sentence);
-	}
-
-	private void processDoubleWords(List<TaggedWord> sentence) {
-		if (sentence.size() == 0) {
-			return;
-		}
-		TaggedWord tagged, last = sentence.get(sentence.size() - 1);
-		for (int i = sentence.size() - 2; i >= 0; i--) {
-			tagged = sentence.get(i);
-			if (this.isDoubleWord(tagged.word, last.word)) {
-				tagged.word += last.word;
-				sentence.remove(i + 1);
-			}
-			last = tagged;
-		}
-	}
-
-	private void processTimeWords(List<TaggedWord> sentence) {
-		boolean hasTimeWord = false;
+		boolean isTimeWord = false;
 		for (int i = sentence.size() - 1; i >= 0; i--) {
 			TaggedWord tagged = sentence.get(i);
-			if (this.isTimeWord(tagged.word)) hasTimeWord = true;
-			else if (hasTimeWord) {
-				if (this.isArabicNum(tagged.word)) {
-					tagged.word += sentence.remove(i + 1).word;
-					tagged.tag = "t";
-				} else hasTimeWord = false;
-			}
-		}
-	}
-
-	private void processHttpWords(List<TaggedWord> sentence) {
-		for (TaggedWord tagged : sentence)
-			if (this.isHttpWord(tagged.word)) tagged.tag = "x";
-	}
-
-	private void processMailAddress(List<TaggedWord> sentence) {
-		if (sentence.isEmpty()) return;
-		TaggedWord last = sentence.get(0), tagged;
-		for (int i = 1, size = sentence.size(); i < size; i++) {
-			tagged = sentence.get(i);
-			if ("@".equals(last.word) && !"@".equals(tagged.word)) tagged.tag = "np";
-			last = tagged;
+			if (this.isTimeUnit(tagged.word)) isTimeWord = true;
+			else if (isTimeWord && this.isNumber(tagged.word)) {
+				tagged.word += sentence.remove(i + 1).word;
+				tagged.tag = "t";
+			} else isTimeWord = false;
 		}
 	}
 }

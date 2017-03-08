@@ -10,6 +10,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static org.thunlp.thulac.util.CodePointUtils.CHINESE_DIGITS;
+import static org.thunlp.thulac.util.CodePointUtils.DIGITS;
+
 /**
  * A postprocess pass which filters forbidden tags from the the word list.
  */
@@ -20,18 +23,6 @@ public class FilterPass implements IPostprocessPass {
 	 */
 	private static final Set<String> ALLOWED_TAGS = new HashSet<>(Arrays.asList(
 			"n", "np", "ns", "ni", "nz", "v", "a", "id", "t", "uw"));
-	/**
-	 * Contains pure-ASCII and full-width digits.
-	 */
-	private static final String DIGITS =
-			StringUtils.toString(48, 49, 50, 51, 52, 53, 54, 55, 56, 57,
-					65296, 65297, 65298, 65299, 65300, 65301, 65302, 65303, 65304, 65305);
-	/**
-	 * Contains Chinese digits.
-	 */
-	private static final String CHINESE_DIGITS =
-			StringUtils.toString(12295, 19968, 20108, 19977, 22235,
-					20116, 20845, 19971, 20843, 20061);
 
 	private Dat xuDat;
 	private Dat timeDat;

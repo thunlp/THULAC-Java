@@ -167,6 +167,8 @@ public class Thulac {
 			post.add(new DictionaryPass(modelDir + "idiom.dat", "i", false));
 			post.add(new DictionaryPass(modelDir + "singlepun.dat", "w", false));
 			post.add(new TimeWordPass());
+			post.add(new DoubleWordPass());
+			post.add(new SpecialPass());
 			post.add(new NegWordPass(modelDir + "neg.dat"));
 			if (userDict != null) post.add(new DictionaryPass(userDict, "uw", true));
 			if (useFilter)

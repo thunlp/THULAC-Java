@@ -83,4 +83,35 @@ public class StringUtils {
 			codePoints[i] = str.codePointAt(str.offsetByCodePoints(0, i));
 		return codePoints;
 	}
+
+	/**
+	 * Return the number of code points in the given {@link String}.
+	 *
+	 * @param str
+	 * 		The given {@link String}.
+	 *
+	 * @return The number of code points in {@code str}.
+	 */
+	public static int codePointCount(String str) {
+		return str.codePointCount(0, str.length());
+	}
+
+	/**
+	 * Return code point {@code index}-ith code point in the given {@link String}.
+	 *
+	 * @param str
+	 * 		The given {@link String}.
+	 * @param index
+	 * 		The index of the code point to return.
+	 *
+	 * @return The cde point at {@code index}.
+	 *
+	 * @throws IndexOutOfBoundsException
+	 * 		If index is negative or greater than or equal to the number of code points
+	 * 		of {@code str}.
+	 */
+	public static int codePointAt(String str, int index) {
+		int codePointIndex = str.offsetByCodePoints(0, index);
+		return str.codePointAt(codePointIndex);
+	}
 }
