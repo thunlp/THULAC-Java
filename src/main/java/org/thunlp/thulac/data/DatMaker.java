@@ -14,10 +14,10 @@ import java.util.Vector;
  * {@link Dat}, see in-line comments for more information.
  */
 public class DatMaker extends Dat {
-	// a record of a word with an id
+	// a record of a word with an related integer
 	private static class Record {
 		public String word;
-		public int id;
+		public int num;
 
 		public Record() {
 			this("", 0);
@@ -25,11 +25,11 @@ public class DatMaker extends Dat {
 
 		public Record(String key, int value) {
 			this.word = key;
-			this.id = value;
+			this.num = value;
 		}
 	}
 
-	// the comparator used to compare Record pairs comparing their words
+	// pairs of Records are compared by comparing their words
 	private static Comparator<Record> RECORDS_COMPARATOR =
 			new Comparator<Record>() {
 				@Override
@@ -39,7 +39,7 @@ public class DatMaker extends Dat {
 			};
 
 	/**
-	 * Read (or more precisely, construct) an instance of {@link Dat} from the given
+	 * Reads (or more precisely, constructs) an instance of {@link Dat} from the given
 	 * {@link InputStream}. This is used to generate {@link Dat} from a user-specified
 	 * dictionary, which consists of multiple lines, each one representing a word in the
 	 * dictionary.
@@ -50,7 +50,7 @@ public class DatMaker extends Dat {
 	 * @return The generated {@link Dat}.
 	 *
 	 * @throws IOException
-	 * 		If an I/O error happen.
+	 * 		If an I/O error happens.
 	 */
 	public static Dat readFromInputStream(InputStream in) throws IOException {
 		List<String> words = new ArrayList<>();
@@ -65,7 +65,7 @@ public class DatMaker extends Dat {
 	}
 
 	/**
-	 * Read (or more precisely, construct) an instance of {@link Dat} from the given
+	 * Reads (or more precisely, constructs) an instance of {@link Dat} from the given
 	 * file. This is used to generate {@link Dat} from a user-specified dictionary,
 	 * which consists of multiple lines, each one representing a word in the dictionary.
 	 *
@@ -81,117 +81,98 @@ public class DatMaker extends Dat {
 		return readFromInputStream(new FileInputStream(filename));
 	}
 
-	// The idea of the algorithm which generates a Dat instance from the input string
-	// might be a bit difficult to grab, therefore let me explain it in a whole before
-	// we talk about the details.
-	// If you ask me, I would say that this algorithm is pretty complicated however
-	// genius. It makes use of the unused space of the original double-array Trie Tree
-	// to store a double-linked list, while not having to modify even one line of code
-	// in Dat.java. That is, it is fully compatible with the standard double-array Tree
-	// Tree data structure. Here, "make use of the unused space" means that this
-	// algorithm achieves its goal without having to require extra storage space.
-	// (expect for the fields head and tail, which are perfectly O(1) and can be simply
-	// ignored)
+	// The main idea of this ingenious algorithm that generates a Dat instance from the
+	// input string is that it makes use of the unused space of the original double-array
+	// Trie Tree to store a double-linked list. This means that it is fully
+	// compatible with the standard double-array Trie Tree data structure. What's more,
+	// this algorithm achieves its goal without extra storage space, expect for the head
+	// and tail fields. But these only require O(1) space, so they can be safely ignored.
 
-	// First of all, I find it helpful to first make some definitions.
-	// this.dat is the only storage block used by this algorithm, and it is actually an
-	// array of ELEMENTS. An ELEMENT contains two values, called BASE and CHECK, and
-	// the this.dat, which contains only integers, looks like this:
+	// this.dat, the only storage block used by this algorithm, is an
+	// array of ELEMENTS. An ELEMENT contains two values, called BASE and CHECK, both
+	// integers. this.dat is structured in this way:
 	// ELEMENTS[0].BASE, ELEMENTS[0].CHECK, ELEMENTS[1].BASE, ELEMENTS[1].CHECK, ...
-	// We also define that this.datSize is the total number of ELEMENTS, requiring
-	// this.dat.length to be 2 * this.datSize.
-	// In the following part in this article, I will refer to BASE and CHECK as the
+	// this.datSize is the total number of ELEMENTS, so
+	// this.dat.length = 2 * this.datSize.
+	// In the following parts,BASE and CHECK will be referred to as the
 	// FIELDS of an ELEMENT, for example, "the BASE FIELD of ELEMENT[4]".
 
-	// Now we know that in this.dat two different data structures are stored, there
-	// leaves a question that, how do the program (or other programs like Dat.java)
-	// distinguish one from the other?
-	// The answer is, the sign of the ELEMENTS' FIELDS.
-	// ELEMENTS whose CHECK FIELD is positive, belong to the double-array Trie Tree,
-	// while those whose CHECK FIELD is negative belong to the double-linked list.
-	// We use the term USED to define that an ELEMENT belongs to the Trie Tree, or
-	// UNUSED to defined the other situation.
+	// The program distinguishes the two different data structures stored in this.dat by
+	// the sign of the ELEMENTS' FIELDS.
+	// ELEMENTS whose CHECK and BASE FIELDS are positive belong to the double-array Trie
+	// Tree, while those whose CHECK and BASE FIELDS are negative belong to the
+	// double-linked list. When an ELEMENT belongs to the Trie Tree, we call it USED.
+	// Otherwise, we call it UNUSED.
 
-	// After that, we can come to the actual data structured.
-	// FIELDS of USED ELEMENTS follow the definitions of the double-array Trie Tree
-	// completely. (Here I assume that you have the basic knowledge of the Tree Tree,
-	// if not, consult Google) For the current stage S and input character C, we have:
+	// Here the specific data structures are explained.
+	// The data structure of the Trie Tree:
+	// FIELDS of USED ELEMENTS strictly follow the definitions of the double-array Trie
+	// Tree. (If unfamiliar, consult Google) For the current stage S and input
+	// character C, we have:
 	// ELEMENTS[ELEMENTS[S].BASE + C].CHECK = S
 	// ELEMENTS[S].BASE + C = T
-	// where T is the next stage the DFA described by the Trie Tree should jump to.
+	// where T is the next stage the DFA (Deterministic Finite Automaton) described by
+	// the Trie Tree should jump to.
 
-	// How the double-linked list is stored is the trickiest part.
-	// We know that in a double-linked list there are multiple NODES, each containing two
-	// pointers PREV and NEXT. Hoping that you will be familiar to the c-style arrow (->)
-	// operator, the list conforms to the following equations:
+	// The data structure of the double-linked list:
+	// In a double-linked list there are multiple NODES, each containing two
+	// pointers PREV and NEXT. In accordance with the c-style arrow (->) operator, this
+	// list conforms to the following equations:
 	// NODE->NEXT->PREV = NODE
 	// NODE->PREV->NEXT = NODE
-	// Looking back, we have claimed that UNUSED ELEMENTS belong to the double-linked
-	// list and have a negative CHECK FIELD. We also know that in actual
-	// implementations the PREV and NEXT pointers are often described as indices
-	// pointing to the array where the NODES are stored. What I am going to tell you
-	// now is that NODES and ELEMENTS are actually the same, as:
-	// ELEMENTS[ -ELEMENTS[i].CHECK ].BASE = i
-	// ELEMENTS[ -ELEMENTS[i].BASE ].CHECK = i
-	// I suppose that this will express the idea clear enough. Please notice the minus
-	// sign in these equations, this means that the BASE FIELD of UNUSED ELEMENTS are
-	// also negative. (To find out why isn't this used to distinguish USED and UNUSED
-	// ELEMENTS, please read on)
+	// In this implementation, pointers take the negative of the values of the indices of
+	// the NODES they point to. The PREV pointer is stored in the BASE field, and the
+	// NEXT pointer in the CHECK field. We have,
+	// -ELEMENTS[ -ELEMENTS[i].CHECK ].BASE = i
+	// -ELEMENTS[ -ELEMENTS[i].BASE ].CHECK = i
+	// The negative signs appear because fields of ELEMENTs in the double-linked list
+	// are negative.
 
-	// But, wait a moment. The double-array Trie Tree have a root ELEMENT, here being
-	// ELEMENTS[0], however the double-linked array should also have a HEAD NODE and a
-	// TAIL NODE, where are they then? If you have already looked down the code, you
-	// might have an faint impression of the fields this.head and this.tail. If I say
-	// that I have not been waiting for you to make the OHHHHHH sound, I would be
-	// telling a lie. Nevertheless, for those who still haven't understood, don't worry.
-	// The value of this.head is always non-positive, because -this.head points to the
-	// first NODE in the double-linked list, and the same applies for this.tail,
-	// with that -this.tail points to the last NODE.
-	// So why isn't BASE used to distinguish them after all? That is because, that the
-	// BASE FIELD of first NODE in the list is always 1 instead of something negative.
+	// The pointers to the HEAD NODE and the TAIL NODE are stored in this.head and
+	// this.tail, respectively. -this.head is the index of the first NODE in the
+	// double-linked list, and -this.tail is the index of the last NODE.
 
-	// After so many explanations of the data structure, we can finally come to the
+	// After so many explanations of the data structure, we finally come to the
 	// actual behavior of this algorithm.
-	// The buildDat() method takes a list of strings as input and sort them in alphabet
-	// order. The next step is to break strings - char sequences - into a tree of
-	// characters, as described in the Trie Tree and achieved by findChildren().
-	// We know that the Trie Tree is a representation of an DFA, therefore a stage has
-	// to be generated for each node in the tree. Such a stage, stored as ELEMENTS,
-	// have the BASE and CHECK FIELDS. The CHECK field is assigned when the parent stage
-	// of the current one is generated, however there still leaves the BASE FIELD to
-	// assign.
+	// The buildDat() method takes a list of strings as input and sorts them in
+	// alphabetical order. Afterwards, findChildren() breaks strings - char sequences -
+	// into a tree of characters, as described in the Trie Tree.
+	// Since the Trie Tree is a representation of an DFA (Deterministic Finite
+	// Automaton), a stage has to be generated for each node in the tree. Such a stage,
+	// stored as ELEMENTS, have the BASE and CHECK FIELDS. The CHECK field of an ELEMENT
+	// is assigned when its parent stage is generated. The assignment of the value in
+	// BASE FIELD is implemented in allocate() and described below:
 
-	// Implemented in allocate(), the way the algorithm searches for the available
-	// BASE FIELD is as follows:
 	// 1. Set variable BASE to this.head.
 	// 2. Determine whether BASE is available. (If all ELEMENTS[BASE + C] are UNUSED
-	//    for every C of the children nodes of the current one.
-	// 3. If BASE is available, return BASE, otherwise, set BASE to the next UNUSED
+	//    for every C of the child nodes of the current one)
+	// 3. If BASE is available, return BASE; otherwise, set BASE to the next UNUSED
 	//    ELEMENT, using the double-linked list.
-	// In this process, if no available BASE is found, the size of this.dat is expanded
-	// twice, invoking the expandDat() method, which also maintains the
-	// double-linked list in the newly allocated ELEMENTS.
+	// In this process, if no available BASE is found, the size of this.dat is doubled
+	// through the expandDat() method, which also maintains the double-linked list in
+	// the newly allocated ELEMENTS.
 
-	// And after an available BASE has been found for the current stage, markAsUsed()
-	// is called with BASE and all BASE + C, updating the double-linked list, after which
-	// all ELEMENTS[BASE + C].CHECK are set to S and ELEMENTS[S].BASE is set to BASE.
-	// ELEMENTS[S].CHECK is set to S if stage BASE can be the end of a word, or BASE
-	// otherwise. This is written in populate().
-	// For each word in lexicon, its corresponding leaf node in the Trie Tree will have
-	// its BASE field set to another value associated with the word.
+	// After an available BASE has been found for the current stage, markAsUsed()
+	// is called with BASE and all BASE + C, updating the double-linked list.
+
+	// Afterwards, populate() is called. It sets ELEMENTS[BASE + C].CHECK to S
+	// for all C in the child nodes and sets ELEMENTS[S].BASE to BASE. ELEMENTS[S]
+	// .CHECK is set to S if stage BASE can be the end of a word; otherwise, it is set
+	// to BASE otherwise. For each word in lexicon, its corresponding leaf node in the
+	// Trie Tree will have its BASE field set to the line number of the word. (Remember
+	// that the user-specified dictionary consists of multiple lines, each one
+	// representing a word in the dictionary.
 
 	// Finally, method packDat() is invoked to minimize the size of this.dat and reduce
 	// memory usage.
 
-	private int head;
-	private int tail;
+	private int head, tail;
 
 	private DatMaker() {
 		super(1);
 
 		// initialize the double-linked list: head = 0, next = 1
-		this.dat[0] = 1;
-		this.dat[1] = -1;
+		this.dat[0] = this.dat[1] = -1;
 		this.head = this.tail = 0;
 	}
 
@@ -200,11 +181,11 @@ public class DatMaker extends Dat {
 		// -base -> the previous element, -check -> the next element
 		int base = this.dat[index << 1], check = this.dat[(index << 1) + 1];
 
-		// if the the next element already used, print an error message
+		// if the the next element is already USED, print an error message
 		if (check >= 0) throw new RuntimeException("Cell reused! Index: " + index);
 
 		// maintain the double-linked list
-		if (base == 1) this.head = check;
+		if (base == -1) this.head = check;
 		else this.dat[((-base) << 1) + 1] = check;
 		if (check == -this.datSize) this.tail = base;
 		else this.dat[(-check) << 1] = base;
@@ -249,7 +230,7 @@ public class DatMaker extends Dat {
 	// allocate elements according to offsets and return BASE
 	private int allocate(List<Integer> offsets) {
 		int size = offsets.size();
-		int base = -this.head; // initially head of the double-linked list
+		int base = -this.head; // initialized to the head of the double-linked list
 		while (true) {
 			// expand this.dat as needed
 			if (base == this.datSize) this.expandDat();
@@ -341,7 +322,7 @@ public class DatMaker extends Dat {
 			}
 
 			off = -this.getInfo(word); // should always be positive
-			this.dat[this.dat[off << 1] << 1] = lexicon.get(i).id; // leaf node value
+			this.dat[this.dat[off << 1] << 1] = lexicon.get(i).num; // leaf node value
 		}
 
 		this.packDat();
