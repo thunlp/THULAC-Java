@@ -3,41 +3,37 @@ package org.thunlp.thulac.preprocess;
 import org.thunlp.thulac.data.POCGraph;
 import org.thunlp.thulac.util.StringUtils;
 
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.ByteOrder;
+import java.nio.IntBuffer;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A preprocess pass which convert traditional Chinese characters to simplified ones,
  * used when switch {@code -t2s} exists in the command line.
  */
 public class ConvertT2SPass implements IPreprocessPass {
-	private HashMap<Integer, Integer> t2sMap;
+	private final Map<Integer, Integer> t2sMap;
 
 	public ConvertT2SPass(String fileName) throws IOException {
-		this.t2sMap = new HashMap<>();
-		this.loadT2SMap(fileName);
-	}
-
-	private void loadT2SMap(String filename) throws IOException {
-		// TODO: adapt NIO
-
-		File mapFile = new File(filename);
-		// t2s map format: recordCount * DWORD traditional +
+	    // t2s map format: recordCount * DWORD traditional +
 		//                 recordCount * DWORD simplified
 		// -> 8 * recordCount bytes in total
-		int recordCount = (int) (mapFile.length() >> 3);
-
-		DataInputStream input = new DataInputStream(new FileInputStream(mapFile));
-		int[] traditional = new int[recordCount]; // cache
-		for (int i = 0; i < recordCount; ++i) traditional[i] = input.readInt();
-		for (int i = 0; i < recordCount; ++i) {
-			int simplified = input.readInt();
-			this.t2sMap.put(traditional[i], simplified);
+		try (FileChannel channel = FileChannel.open(Paths.get(fileName), StandardOpenOption.READ)) {
+			MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+			// the data is little endian
+			IntBuffer b = buffer.order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();
+			int recordCount = (int) (channel.size() >> 3);
+			t2sMap = new HashMap<>(recordCount);
+			for (int i = 0; i < recordCount; i++) {
+				t2sMap.put(b.get(i), b.get(i + recordCount));
+			}
 		}
-		input.close();
 	}
 
 	private int getSimplifiedCodePoint(int c) {
